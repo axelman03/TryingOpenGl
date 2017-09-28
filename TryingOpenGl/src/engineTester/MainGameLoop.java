@@ -137,9 +137,6 @@ public class MainGameLoop {
 	        
 	        //Mouse Picker
 	        MousePicker picker =null;
-	        for(Terrain terrain:terrains){
-	        	picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain);
-	        }
 	        
 	        //Water
 	        WaterShader waterShader = new WaterShader();
@@ -156,6 +153,7 @@ public class MainGameLoop {
 	        		        if(terrain.getZ() <= player.getPosition().z) {
 	        		            if(terrain.getZ() + terrain.getSize() > player.getPosition().z) {
 	        		                player.move(terrain);
+	        		                picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain); //NEED TO CHANGE BUT THIS IS PROGRESS
 	        		            }
 	        		        }
 	        		   }

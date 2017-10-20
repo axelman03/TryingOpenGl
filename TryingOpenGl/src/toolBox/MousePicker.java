@@ -1,5 +1,7 @@
 package toolBox;
 
+import java.util.List;
+
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Matrix4f;
@@ -21,14 +23,14 @@ public class MousePicker {
 	private Matrix4f viewMatrix;
 	private Camera camera;
 	
-	private Terrain terrain;
+	private List<Terrain> terrain;
 	private Vector3f currentTerrainPoint;
 
-	public MousePicker(Camera cam, Matrix4f projection, Terrain terrain) {
+	public MousePicker(Camera cam, Matrix4f projection, List<Terrain> terrains) {
 		camera = cam;
 		projectionMatrix = projection;
 		viewMatrix = Maths.createViewMatrix(camera);
-		this.terrain = terrain;
+		this.terrain = terrains;
 	}
 	
 	public Vector3f getCurrentTerrainPoint() {
@@ -130,7 +132,9 @@ public class MousePicker {
 	}
 
 	private Terrain getTerrain(float worldX, float worldZ) {
-		return terrain;
+		for(Terrain terrains : terrain) {
+			return terrains;
+		}
 	}
 
 }

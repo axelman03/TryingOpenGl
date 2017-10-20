@@ -165,12 +165,14 @@ public class MainGameLoop {
 	        		        if(terrain.getZ() <= player.getPosition().z) {
 	        		            if(terrain.getZ() + terrain.getSize() > player.getPosition().z) {
 	        		                player.move(terrain);
-	        		                picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain); //NEED TO CHANGE BUT THIS IS PROGRESS
+	        		                
+
 	        		            }
 	        		        }
 	        		   }
 	        	    }
 	        	}
+	            picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrains); //NEED TO CHANGE BUT THIS IS PROGRESS
 	            camera.move();
 	            picker.update();
 	            

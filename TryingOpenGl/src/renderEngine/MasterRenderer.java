@@ -63,11 +63,9 @@ public class MasterRenderer {
 		return projectionMatrix;
 	}
 	
-	public void renderScene(List<Entity> entities, List<Terrain>terrains, List<Light> lights, 
+	public void renderScene(List<Entity> entities, Terrain terrain, List<Light> lights, 
 			Camera camera, Vector4f clipPlane){
-		 for(Terrain terrain:terrains){
              processTerrain(terrain);
-         }
          for(Entity entity:entities){
              processEntity(entity);
          }

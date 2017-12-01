@@ -23,10 +23,10 @@ public class MousePicker {
 	private Matrix4f viewMatrix;
 	private Camera camera;
 	
-	private List<Terrain> terrain;
+	private Terrain terrain;
 	private Vector3f currentTerrainPoint;
 
-	public MousePicker(Camera cam, Matrix4f projection, List<Terrain> terrains) {
+	public MousePicker(Camera cam, Matrix4f projection, Terrain terrains) {
 		camera = cam;
 		projectionMatrix = projection;
 		viewMatrix = Maths.createViewMatrix(camera);
@@ -132,9 +132,6 @@ public class MousePicker {
 	}
 
 	private Terrain getTerrain(float worldX, float worldZ) {
-		for(Terrain terrains : terrain) {
-			return terrains;
+			return terrain;
 		}
 	}
-
-}

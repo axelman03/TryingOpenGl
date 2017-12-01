@@ -53,10 +53,10 @@ public class MainGameLoop {
 	        TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
 	        TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
 	        
-	        List<Terrain> terrains = new ArrayList<Terrain>();
-		    terrains.add(new Terrain(0,-1,loader,texturePack,blendMap, "heightMap"));
-		    terrains.add(new Terrain(-1,-1,loader,texturePack,blendMap, "heightMap"));
-		    /*Terrain terrain1 = new Terrain(0,-1,loader,texturePack,blendMap, "heightMap");
+	        //List<Terrain> terrains = new ArrayList<Terrain>();
+		    //terrains.add(new Terrain(0,-1,loader,texturePack,blendMap, "heightMap"));
+		    //terrains.add(new Terrain(-1,-1,loader,texturePack,blendMap, "heightMap"));
+		    Terrain terrain1 = new Terrain(0,-1,loader,texturePack,blendMap, "heightMap");
 		    Terrain terrain2 = new Terrain(-1,-1,loader,texturePack,blendMap, "heightMap");
 		    Terrain terrain3 = new Terrain(-1,0,loader,texturePack,blendMap, "heightMap");
 		    Terrain terrain4 = new Terrain(0,0,loader,texturePack,blendMap, "heightMap");
@@ -65,7 +65,7 @@ public class MainGameLoop {
 		    terrain[0][0] = terrain1;
 		    terrain[1][0] = terrain2;
 		    terrain[0][1] = terrain3;
-		    terrain[1][1] = terrain4;*/
+		    terrain[1][1] = terrain4;
 		    
 		    //Creating Models and Stuff
 		    ModelData data = OBJFileLoader.loadOBJ("tree");
@@ -87,30 +87,32 @@ public class MainGameLoop {
 	        List<Entity> entities = new ArrayList<Entity>();
 	        Random random = new Random(676452);
 	       
-	        for (Terrain terrain:terrains){
+	        for (int q = 0; q < terrain.length; q++){
+	        	for (int c = 0; c < terrain.length; c++){
 	        	for(int i=0;i<500;i++){
 		        	if(i%20 == 0){
-		        		float x = random.nextInt((int)terrain.getSize())+terrain.getX();
-		        		float z = random.nextInt((int)terrain.getSize())+terrain.getZ();
-		        		float y = terrain.getHeightOfTerrain(x,z);
-		        		entities.add(new Entity(staticModel, new Vector3f(x,y,z),0,random.nextFloat() * 360, 0, 6f));
-		        		x = random.nextInt((int)terrain.getSize())+terrain.getX();
-		        		z = random.nextInt((int)terrain.getSize())+terrain.getZ();
-		        		y = terrain.getHeightOfTerrain(x,z);
-		        		entities.add(new Entity(grass, new Vector3f(x,y,z),0,random.nextFloat() * 360, 0, 2f));
-		        		x = random.nextInt((int)terrain.getSize())+terrain.getX();
-		        		z = random.nextInt((int)terrain.getSize())+terrain.getZ();
-		        		y = terrain.getHeightOfTerrain(x,z);
-		        		entities.add(new Entity(fern, random.nextInt(4), new Vector3f(x,y,z),0,random.nextFloat() * 360, 0, 0.9f));
-		        		x = random.nextInt((int)terrain.getSize())+terrain.getX();
-		        		z = random.nextInt((int)terrain.getSize())+terrain.getZ();
-		        		y = terrain.getHeightOfTerrain(x,z);
-		        		entities.add(new Entity(tree, new Vector3f(x,y,z),0,random.nextFloat() * 360, 0, random.nextFloat()*0.1f + 0.8f));
-		        		x = random.nextInt((int)terrain.getSize())+terrain.getX();
-		        		z = random.nextInt((int)terrain.getSize())+terrain.getZ();
-		        		y = terrain.getHeightOfTerrain(x,z);
-		        		entities.add(new Entity(flowers, new Vector3f(x,y,z),0,random.nextFloat() * 360, 0, 0.9f));
-		        	}
+		        			float x = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getX();
+		        			float z = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getZ();
+		        			float y = terrain[q][c].getHeightOfTerrain(x,z);
+		        			entities.add(new Entity(staticModel, new Vector3f(x,y,z),0,random.nextFloat() * 360, 0, 6f));
+		        			x = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getX();
+		        			z = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getZ();
+		        			y = terrain[q][c].getHeightOfTerrain(x,z);
+		        			entities.add(new Entity(grass, new Vector3f(x,y,z),0,random.nextFloat() * 360, 0, 2f));
+		        			x = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getX();
+		        			z = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getZ();
+		        			y = terrain[q][c].getHeightOfTerrain(x,z);
+		        			entities.add(new Entity(fern, random.nextInt(4), new Vector3f(x,y,z),0,random.nextFloat() * 360, 0, 0.9f));
+		        			x = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getX();
+		        			z = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getZ();
+		        			y = terrain[q][q].getHeightOfTerrain(x,z);
+		        			entities.add(new Entity(tree, new Vector3f(x,y,z),0,random.nextFloat() * 360, 0, random.nextFloat()*0.1f + 0.8f));
+		        			x = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getX();
+		        			z = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getZ();
+		        			y = terrain[q][c].getHeightOfTerrain(x,z);
+		        			entities.add(new Entity(flowers, new Vector3f(x,y,z),0,random.nextFloat() * 360, 0, 0.9f));
+		        		}
+	        		}
 	        	}
 	        }
 	        
@@ -159,12 +161,12 @@ public class MainGameLoop {
 	        //The GameLoop
 	        while(!Display.isCloseRequested()){
 	        	
-	        	 for(Terrain terrain : terrains) {
-	        		if(terrain.getX() <= player.getPosition().x) { 
-	        		    if(terrain.getX() + terrain.getSize() > player.getPosition().x) {
-	        		        if(terrain.getZ() <= player.getPosition().z) {
-	        		            if(terrain.getZ() + terrain.getSize() > player.getPosition().z) {
-	        		                player.move(terrain);
+	        	 for(int q = 0; q < terrain.length; q++) {
+	        		if(terrain[q][q].getX() <= player.getPosition().x) { 
+	        		    if(terrain[q][q].getX() + terrain[q][q].getSize() > player.getPosition().x) {
+	        		        if(terrain[q][q].getZ() <= player.getPosition().z) {
+	        		            if(terrain[q][q].getZ() + terrain[q][q].getSize() > player.getPosition().z) {
+	        		                player.move(terrain[q][q]);
 	        		                
 
 	        		            }
@@ -172,24 +174,31 @@ public class MainGameLoop {
 	        		   }
 	        	    }
 	        	}
-	            picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrains); //NEED TO CHANGE BUT THIS IS PROGRESS
+	        	 //for(Terrain terrain:terrains) {
+	        	 for(int x = 0; x < terrain.length; x++) {
+	        		 picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain[x][x]); //NEED TO CHANGE BUT THIS IS PROGRESS
+	        	 }
+	 	            
+	        	 //}
+
 	            camera.move();
 	            picker.update();
 	            
 	            GL11.glEnable(GL30.GL_CLIP_DISTANCE0);
 	            
 	            //Frame Buffers for reflections
-	            fbos.bindReflectionFrameBuffer();
-	            float distance = 2*(camera.getPosition().y - water.getHeight());
-	            camera.getPosition().y -= distance;
-	            camera.invertPitch();
-	            renderer.renderScene(entities, terrains, lights, camera, new Vector4f(0, 1, 0, -water.getHeight()));
-	            camera.getPosition().y += distance;
-	            camera.invertPitch();
+	            for(int q = 0; q < terrain.length; q++) {
+	            	fbos.bindReflectionFrameBuffer();
+	            	float distance = 2*(camera.getPosition().y - water.getHeight());
+	            	camera.getPosition().y -= distance;
+	            	camera.invertPitch();
+	            	renderer.renderScene(entities, terrain[q][q], lights, camera, new Vector4f(0, 1, 0, -water.getHeight()));
+	            	camera.getPosition().y += distance;
+	            	camera.invertPitch();
 	            
-	            fbos.bindRefractionFrameBuffer();
-	            renderer.renderScene(entities, terrains, lights, camera, new Vector4f(0, -1, 0, water.getHeight()));
-	            
+	            	fbos.bindRefractionFrameBuffer();
+	            	renderer.renderScene(entities, terrain[q][q], lights, camera, new Vector4f(0, -1, 0, water.getHeight()));
+	            }
 	            
 	            
 	            //for mouse picker, to move lamp around
@@ -202,7 +211,9 @@ public class MainGameLoop {
 	            GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
 	            fbos.unbindCurrentFrameBuffer();
 	            renderer.processEntity(player);
-	            renderer.renderScene(entities, terrains, lights, camera, new Vector4f(0, -1, 0, 15));
+	            for(int q = 0; q < terrain.length; q++) {
+	            	renderer.renderScene(entities, terrain[q][q], lights, camera, new Vector4f(0, -1, 0, 15));
+	            }
 	            waterRenderer.render(waters, camera);
 	            guiRenderer.render(guis);
 	            DisplayManager.updateDisplay();

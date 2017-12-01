@@ -10,6 +10,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector4f;
 
+import engineTester.MainGameLoop;
 import entities.Camera;
 import entities.Entity;
 import entities.Light;
@@ -63,9 +64,13 @@ public class MasterRenderer {
 		return projectionMatrix;
 	}
 	
-	public void renderScene(List<Entity> entities, Terrain terrain, List<Light> lights, 
+	public void renderScene(List<Entity> entities, Terrain[][] terrain, List<Light> lights, 
 			Camera camera, Vector4f clipPlane){
-             processTerrain(terrain);
+		for(int q = 0; q < MainGameLoop.GRIDX; q++) {
+			for(int c = 0; c < MainGameLoop.GRIDY; c++) {
+	             processTerrain(terrain[q][c]);
+			}
+		}
          for(Entity entity:entities){
              processEntity(entity);
          }

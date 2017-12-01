@@ -37,7 +37,12 @@ import water.WaterShader;
 import water.WaterTile;
 
 public class MainGameLoop {
+	
 
+	public final static int GRIDX = 2;
+	public final static int GRIDY = 2;
+	
+	
 	 public static void main(String[] args) {
 		 
 	        DisplayManager.createDisplay();
@@ -60,8 +65,9 @@ public class MainGameLoop {
 		    Terrain terrain2 = new Terrain(-1,-1,loader,texturePack,blendMap, "heightMap");
 		    Terrain terrain3 = new Terrain(-1,0,loader,texturePack,blendMap, "heightMap");
 		    Terrain terrain4 = new Terrain(0,0,loader,texturePack,blendMap, "heightMap");
+
 		    Terrain[][] terrain;
-		    terrain = new Terrain[2][2];
+		    terrain = new Terrain[GRIDY][GRIDX];
 		    terrain[0][0] = terrain1;
 		    terrain[1][0] = terrain2;
 		    terrain[0][1] = terrain3;
@@ -87,10 +93,10 @@ public class MainGameLoop {
 	        List<Entity> entities = new ArrayList<Entity>();
 	        Random random = new Random(676452);
 	       
-	        for (int q = 0; q < terrain.length; q++){
-	        	for (int c = 0; c < terrain.length; c++){
-	        	for(int i=0;i<500;i++){
-		        	if(i%20 == 0){
+	        for (int q = 0; q < GRIDY; q++){
+	        	for (int c = 0; c < GRIDX; c++){
+	        		for(int i=0;i<500;i++){
+	        			if(i%20 == 0){
 		        			float x = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getX();
 		        			float z = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getZ();
 		        			float y = terrain[q][c].getHeightOfTerrain(x,z);
@@ -161,25 +167,23 @@ public class MainGameLoop {
 	        //The GameLoop
 	        while(!Display.isCloseRequested()){
 	        	
-	        	 for(int q = 0; q < terrain.length; q++) {
-	        		if(terrain[q][q].getX() <= player.getPosition().x) { 
-	        		    if(terrain[q][q].getX() + terrain[q][q].getSize() > player.getPosition().x) {
-	        		        if(terrain[q][q].getZ() <= player.getPosition().z) {
-	        		            if(terrain[q][q].getZ() + terrain[q][q].getSize() > player.getPosition().z) {
-	        		                player.move(terrain[q][q]);
+	        	 for(int q = 0; q < GRIDY; q++) {
+	        		 for (int c = 0; c < GRIDX; c++){
+	        			 if(terrain[q][c].getX() <= player.getPosition().x) { 
+	        		    	if(terrain[q][c].getX() + terrain[q][c].getSize() > player.getPosition().x) {
+	        		    		if(terrain[q][c].getZ() <= player.getPosition().z) {
+	        		            	if(terrain[q][c].getZ() + terrain[q][c].getSize() > player.getPosition().z) {
+	        		                	player.move(terrain[q][c]);
 	        		                
 
-	        		            }
-	        		        }
-	        		   }
-	        	    }
-	        	}
-	        	 //for(Terrain terrain:terrains) {
-	        	 for(int x = 0; x < terrain.length; x++) {
-	        		 picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain[x][x]); //NEED TO CHANGE BUT THIS IS PROGRESS
+	        		            	}
+	        		        	}
+	        		    	}
+	        	    	}
+	        		 }
 	        	 }
+	        	 picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain);
 	 	            
-	        	 //}
 
 	            camera.move();
 	            picker.update();
@@ -187,18 +191,16 @@ public class MainGameLoop {
 	            GL11.glEnable(GL30.GL_CLIP_DISTANCE0);
 	            
 	            //Frame Buffers for reflections
-	            for(int q = 0; q < terrain.length; q++) {
-	            	fbos.bindReflectionFrameBuffer();
-	            	float distance = 2*(camera.getPosition().y - water.getHeight());
-	            	camera.getPosition().y -= distance;
-	            	camera.invertPitch();
-	            	renderer.renderScene(entities, terrain[q][q], lights, camera, new Vector4f(0, 1, 0, -water.getHeight()));
-	            	camera.getPosition().y += distance;
-	            	camera.invertPitch();
+	            fbos.bindReflectionFrameBuffer();
+	            float distance = 2*(camera.getPosition().y - water.getHeight());
+	            camera.getPosition().y -= distance;
+	            camera.invertPitch();
+	            renderer.renderScene(entities, terrain, lights, camera, new Vector4f(0, 1, 0, -water.getHeight()));
+	            camera.getPosition().y += distance;
+	            camera.invertPitch();
 	            
-	            	fbos.bindRefractionFrameBuffer();
-	            	renderer.renderScene(entities, terrain[q][q], lights, camera, new Vector4f(0, -1, 0, water.getHeight()));
-	            }
+	            fbos.bindRefractionFrameBuffer();
+	            renderer.renderScene(entities, terrain, lights, camera, new Vector4f(0, -1, 0, water.getHeight()));
 	            
 	            
 	            //for mouse picker, to move lamp around
@@ -211,9 +213,7 @@ public class MainGameLoop {
 	            GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
 	            fbos.unbindCurrentFrameBuffer();
 	            renderer.processEntity(player);
-	            for(int q = 0; q < terrain.length; q++) {
-	            	renderer.renderScene(entities, terrain[q][q], lights, camera, new Vector4f(0, -1, 0, 15));
-	            }
+	            renderer.renderScene(entities, terrain, lights, camera, new Vector4f(0, -1, 0, 15));
 	            waterRenderer.render(waters, camera);
 	            guiRenderer.render(guis);
 	            DisplayManager.updateDisplay();

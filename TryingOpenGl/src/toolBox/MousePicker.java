@@ -1,6 +1,5 @@
 package toolBox;
 
-import java.util.List;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
@@ -9,6 +8,7 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
+import engineTester.MainGameLoop;
 import entities.Camera;
 import terrain.Terrain;
 
@@ -24,13 +24,19 @@ public class MousePicker {
 	private Camera camera;
 	
 	private Terrain terrain;
+	private Terrain[][] terrain2;
 	private Vector3f currentTerrainPoint;
 
-	public MousePicker(Camera cam, Matrix4f projection, Terrain terrains) {
+	public MousePicker(Camera cam, Matrix4f projection, Terrain[][] terrain2) {
 		camera = cam;
 		projectionMatrix = projection;
 		viewMatrix = Maths.createViewMatrix(camera);
-		this.terrain = terrains;
+		
+		this.terrain2 = terrain2;
+	}
+	
+	public void setTerrain(Terrain[][] terrain, int q, int c) {
+		this.terrain = terrain[q][c];
 	}
 	
 	public Vector3f getCurrentTerrainPoint() {
@@ -91,15 +97,35 @@ public class MousePicker {
 	}
 	
 	private Vector3f binarySearch(int count, float start, float finish, Vector3f ray) {
+		
 		float half = start + ((finish - start) / 2f);
+		boolean terrainTrue = false;
 		if (count >= RECURSION_COUNT) {
+			
+			for(int q = 0; q < MainGameLoop.GRIDY; q++) {
+				for(int c = 0; c < MainGameLoop.GRIDX; c++) {
+					setTerrain(terrain2, q, c);
+					
+					Vector3f endPoint = getPointOnRay(ray, half);
+					Terrain terrain = getTerrain(endPoint.getX(), endPoint.getZ());
+					if (terrain != null) {
+						terrainTrue = true;
+						break;
+					} else {
+						terrainTrue = false;
+					}
+				}
+				if(terrainTrue == true) {
+					break;
+				}
+			}
 			Vector3f endPoint = getPointOnRay(ray, half);
-			Terrain terrain = getTerrain(endPoint.getX(), endPoint.getZ());
 			if (terrain != null) {
 				return endPoint;
 			} else {
 				return null;
 			}
+			
 		}
 		if (intersectionInRange(start, half, ray)) {
 			return binarySearch(count + 1, start, half, ray);
@@ -109,16 +135,28 @@ public class MousePicker {
 	}
 
 	private boolean intersectionInRange(float start, float finish, Vector3f ray) {
+		boolean tf = false;
 		Vector3f startPoint = getPointOnRay(ray, start);
 		Vector3f endPoint = getPointOnRay(ray, finish);
-		if (!isUnderGround(startPoint) && isUnderGround(endPoint)) {
-			return true;
-		} else {
-			return false;
+		for(int q = 0; q < MainGameLoop.GRIDY; q++) {
+			for(int c = 0; c < MainGameLoop.GRIDX; c++) {
+				if (!isUnderGround(startPoint, q, c) && isUnderGround(endPoint, q, c)) {
+					tf = true;
+					break;
+				} else {
+					tf = false;
+				}
+			}
+			if(tf == true){
+				break;
+			}
 		}
+		return tf;
+		
 	}
 
-	private boolean isUnderGround(Vector3f testPoint) {
+	private boolean isUnderGround(Vector3f testPoint, int q, int c) {
+		setTerrain(terrain2, q, c);
 		Terrain terrain = getTerrain(testPoint.getX(), testPoint.getZ());
 		float height = 0;
 		if (terrain != null) {

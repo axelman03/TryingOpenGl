@@ -122,8 +122,7 @@ public class SkyboxRenderer {
 			texture2 = nightTexture;
 			blendFactor = (time - 64800)/(86400 - 64800);
 		}
-		System.out.println(realTime.toSecondOfDay());
-		System.out.println(time);
+		//System.out.println(realTime.toSecondOfDay());
 
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, texture1);

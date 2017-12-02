@@ -12,6 +12,7 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
+
 import entities.Camera;
 import entities.Entity;
 import entities.Light;
@@ -151,18 +152,15 @@ public class MainGameLoop {
 	        MousePicker picker =null;
 	        
 	        //Water
+	        WaterFrameBuffers fbos = new WaterFrameBuffers();
+	        
 	        WaterShader waterShader = new WaterShader();
-	        WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix());
+	        WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix(), fbos);
 	        List<WaterTile> waters = new ArrayList<WaterTile>();
 	        WaterTile water = new WaterTile(275, -275, 0);
 	        waters.add(water);
 	        
-	        
-	        WaterFrameBuffers fbos = new WaterFrameBuffers();
-	        GuiTexture refraction = new GuiTexture(fbos.getRefractionTexture(), new Vector2f(0.5f,0.5f), 0, new Vector2f(0.25f,0.25f));
-	        GuiTexture reflection = new GuiTexture(fbos.getReflectionTexture(), new Vector2f(-0.5f,0.5f), 0, new Vector2f(0.25f,0.25f));
-	        guis.add(refraction);
-	        guis.add(reflection);
+	 
 	        
 	        //The GameLoop
 	        while(!Display.isCloseRequested()){
@@ -195,12 +193,12 @@ public class MainGameLoop {
 	            float distance = 2*(camera.getPosition().y - water.getHeight());
 	            camera.getPosition().y -= distance;
 	            camera.invertPitch();
-	            renderer.renderScene(entities, terrain, lights, camera, new Vector4f(0, 1, 0, -water.getHeight()));
+	            renderer.renderScene(entities, terrain, lights, camera, new Vector4f(0, 1, 0, -water.getHeight() + 1f));
 	            camera.getPosition().y += distance;
 	            camera.invertPitch();
 	            
 	            fbos.bindRefractionFrameBuffer();
-	            renderer.renderScene(entities, terrain, lights, camera, new Vector4f(0, -1, 0, water.getHeight()));
+	            renderer.renderScene(entities, terrain, lights, camera, new Vector4f(0, -1, 0, water.getHeight() + 1f));
 	            
 	            
 	            //for mouse picker, to move lamp around
@@ -214,7 +212,7 @@ public class MainGameLoop {
 	            fbos.unbindCurrentFrameBuffer();
 	            renderer.processEntity(player);
 	            renderer.renderScene(entities, terrain, lights, camera, new Vector4f(0, -1, 0, 15));
-	            waterRenderer.render(waters, camera);
+	            waterRenderer.render(waters, camera, lights.get(1)); //Need to change the light part into a sun, that means adding a sun
 	            guiRenderer.render(guis);
 	            DisplayManager.updateDisplay();
 	        }

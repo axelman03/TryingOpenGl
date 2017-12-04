@@ -26,12 +26,15 @@ public class MousePicker {
 	private Terrain terrain;
 	private Terrain[][] terrain2;
 	private Vector3f currentTerrainPoint;
+	private int gridX;
+	private int gridY;
 
-	public MousePicker(Camera cam, Matrix4f projection, Terrain[][] terrain2) {
+	public MousePicker(Camera cam, Matrix4f projection, Terrain[][] terrain2, int gridX, int gridY) {
 		camera = cam;
 		projectionMatrix = projection;
 		viewMatrix = Maths.createViewMatrix(camera);
-		
+		this.gridX = gridX;
+		this.gridY = gridY;
 		this.terrain2 = terrain2;
 	}
 	
@@ -102,8 +105,8 @@ public class MousePicker {
 		boolean terrainTrue = false;
 		if (count >= RECURSION_COUNT) {
 			
-			for(int q = 0; q < MainGameLoop.GRIDY; q++) {
-				for(int c = 0; c < MainGameLoop.GRIDX; c++) {
+			for(int q = 0; q < gridY; q++) {
+				for(int c = 0; c < gridX; c++) {
 					setTerrain(terrain2, q, c);
 					
 					Vector3f endPoint = getPointOnRay(ray, half);
@@ -138,8 +141,8 @@ public class MousePicker {
 		boolean tf = false;
 		Vector3f startPoint = getPointOnRay(ray, start);
 		Vector3f endPoint = getPointOnRay(ray, finish);
-		for(int q = 0; q < MainGameLoop.GRIDY; q++) {
-			for(int c = 0; c < MainGameLoop.GRIDX; c++) {
+		for(int q = 0; q < gridY; q++) {
+			for(int c = 0; c < gridX; c++) {
 				if (!isUnderGround(startPoint, q, c) && isUnderGround(endPoint, q, c)) {
 					tf = true;
 					break;

@@ -65,9 +65,9 @@ public class MasterRenderer {
 	}
 	
 	public void renderScene(List<Entity> entities, Terrain[][] terrain, List<Light> lights, 
-			Camera camera, Vector4f clipPlane){
-		for(int q = 0; q < MainGameLoop.GRIDX; q++) {
-			for(int c = 0; c < MainGameLoop.GRIDY; c++) {
+			Camera camera, Vector4f clipPlane, int GRIDX, int GRIDY){
+		for(int q = 0; q < GRIDX; q++) {
+			for(int c = 0; c < GRIDY; c++) {
 	             processTerrain(terrain[q][c]);
 			}
 		}

@@ -97,9 +97,9 @@ public class SkyboxRenderer {
 	}
 	
 	private void bindTextures(){
+		//for day/night cycle
 		realTime = LocalTime.now();
 		time = realTime.toSecondOfDay();
-		//for day/night cycle
 		time += DisplayManager.getFrameTimeSeconds();
 		time %= 86400;
 		int texture1;

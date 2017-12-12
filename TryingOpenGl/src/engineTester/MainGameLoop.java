@@ -26,6 +26,6 @@ public class MainGameLoop {
 	        }
 	        
 	        DisplayManager.closeDisplay();
-	        testScene.Disable();
+	        testScene.Destroy();
 	    }
 	}

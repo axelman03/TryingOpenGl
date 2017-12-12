@@ -18,6 +18,7 @@ import guis.GuiRenderer;
 import guis.GuiTexture;
 import models.RawModel;
 import models.TexturedModel;
+import normalMappingObjConverter.NormalMappedObjLoader;
 import renderEngine.DisplayManager;
 import renderEngine.Loader;
 import renderEngine.MasterRenderer;
@@ -33,7 +34,7 @@ import water.WaterRenderer;
 import water.WaterShader;
 import water.WaterTile;
 
-public class TestScene {
+public class TestScene implements SceneSetup{
 	public final static int GRIDX = 2;
 	public final static int GRIDY = 2;
 	Loader loader;
@@ -41,6 +42,7 @@ public class TestScene {
 	
 	Terrain[][] terrain;
 	List<Entity> entities;
+	List<Entity> normalMapEntities;
 	List<Light>lights;
 	List<GuiTexture>guis;
 	List<WaterTile>waters;
@@ -57,10 +59,15 @@ public class TestScene {
     GuiRenderer guiRenderer;
 	
     public TestScene() {
+    	load();
+    }
+    
+    public void load() {
     	loader = new Loader();
     	renderer = new MasterRenderer(loader);
     	
     	entities = new ArrayList<Entity>();
+    	normalMapEntities = new ArrayList<Entity>();
     	lights = new ArrayList<Light>();
     	guis = new ArrayList<GuiTexture>();
     	
@@ -76,6 +83,7 @@ public class TestScene {
     	
     	guiRenderer = new GuiRenderer(loader);
     }
+    
 	public void Create() {
 		
         
@@ -88,10 +96,7 @@ public class TestScene {
         
         TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
         TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
-        
-        //List<Terrain> terrains = new ArrayList<Terrain>();
-	    //terrains.add(new Terrain(0,-1,loader,texturePack,blendMap, "heightMap"));
-	    //terrains.add(new Terrain(-1,-1,loader,texturePack,blendMap, "heightMap"));
+
 	    Terrain terrain1 = new Terrain(0,-1,loader,texturePack,blendMap, "heightMap");
 	    Terrain terrain2 = new Terrain(-1,-1,loader,texturePack,blendMap, "heightMap");
 	    Terrain terrain3 = new Terrain(-1,0,loader,texturePack,blendMap, "heightMap");
@@ -164,6 +169,14 @@ public class TestScene {
         TexturedModel lamp = new TexturedModel(OBJLoader.loadObjModel("lamp", loader),new ModelTexture(loader.loadTexture("lamp"))); 
         Entity lampEntity = (new Entity(lamp, new Vector3f(185,-4.7f,-293),0,0,0,1));
         entities.add(lampEntity);
+        
+        //Loading up normal Mapped Entities
+        TexturedModel barrelModel = new TexturedModel(NormalMappedObjLoader.loadOBJ("barrel", loader), new ModelTexture(loader.loadTexture("barrel")));
+        barrelModel.getTexture().setShineDamper(10);
+        barrelModel.getTexture().setReflectivity(0.5f);
+        
+        normalMapEntities.add(new Entity(barrelModel, new Vector3f(75, 10, -75), 0, 0, 0, 1f));
+        
         //Loading the Player
  
         //Loading the Gui
@@ -187,8 +200,6 @@ public class TestScene {
    		    		if(terrain[q][c].getZ() <= player.getPosition().z) {
    		            	if(terrain[q][c].getZ() + terrain[q][c].getSize() > player.getPosition().z) {
    		                	player.move(terrain[q][c]);
-   		                
-
    		            	}
    		        	}
    		    	}
@@ -208,12 +219,12 @@ public class TestScene {
        float distance = 2*(camera.getPosition().y - waters.get(0).getHeight());
        camera.getPosition().y -= distance;
        camera.invertPitch();
-       renderer.renderScene(entities, terrain, lights, camera, new Vector4f(0, 1, 0, -waters.get(0).getHeight() + 1f), GRIDX, GRIDY);
+       renderer.renderScene(entities, normalMapEntities, terrain, lights, camera, new Vector4f(0, 1, 0, -waters.get(0).getHeight() + 1f), GRIDX, GRIDY);
        camera.getPosition().y += distance;
        camera.invertPitch();
        
        fbos.bindRefractionFrameBuffer();
-       renderer.renderScene(entities, terrain, lights, camera, new Vector4f(0, -1, 0, waters.get(0).getHeight() + 1f), GRIDX, GRIDY);
+       renderer.renderScene(entities, normalMapEntities, terrain, lights, camera, new Vector4f(0, -1, 0, waters.get(0).getHeight() + 1f), GRIDX, GRIDY);
        
        
        //for mouse picker, to move lamp around
@@ -226,17 +237,18 @@ public class TestScene {
        GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
        fbos.unbindCurrentFrameBuffer();
        renderer.processEntity(player);
-       renderer.renderScene(entities, terrain, lights, camera, new Vector4f(0, -1, 0, 15), GRIDX, GRIDY);
+       renderer.renderScene(entities, normalMapEntities, terrain, lights, camera, new Vector4f(0, -1, 0, 15), GRIDX, GRIDY);
        waterRenderer.render(waters, camera, lights.get(0)); //Need to change the light part into a sun, that means adding a sun
        guiRenderer.render(guis);
        DisplayManager.updateDisplay();
 	}
 	
-	public void Disable() {
+	public void Destroy() {
 		fbos.cleanUp();
         waterShader.cleanUp();
         guiRenderer.cleanUp();
         renderer.cleanUp();
         loader.cleanUp();
 	}
+	
 }

@@ -1,5 +1,6 @@
 package scenes;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -14,6 +15,9 @@ import entities.Camera;
 import entities.Entity;
 import entities.Light;
 import entities.Player;
+import fontMeshCreator.FontType;
+import fontMeshCreator.GUIText;
+import fontRendering.TextMaster;
 import guis.GuiRenderer;
 import guis.GuiTexture;
 import models.RawModel;
@@ -57,6 +61,8 @@ public class TestScene implements SceneSetup{
     Camera camera; 
     
     GuiRenderer guiRenderer;
+    FontType font;
+    GUIText text;
 	
     public TestScene() {
     	load();
@@ -64,6 +70,7 @@ public class TestScene implements SceneSetup{
     
     public void load() {
     	loader = new Loader();
+    	TextMaster.init(loader);
     	renderer = new MasterRenderer(loader);
     	
     	entities = new ArrayList<Entity>();
@@ -82,13 +89,26 @@ public class TestScene implements SceneSetup{
     	waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix(), fbos);
     	
     	guiRenderer = new GuiRenderer(loader);
+    	font = new FontType(loader.loadTexture("candara"), new File("res/candara.fnt"));
     }
     
 	public void Create() {
-		
-        
-	       
-        //Loading Terrain
+	       CreateTerrain();
+	       CreateObjects();
+	       CreateLighting();
+	       CreateNormalMappedObjects();
+	       CreatePlayer();
+	       CreateGui();
+	       CreateMousePicker();
+	       CreateWater();
+	}
+
+	
+	
+	
+	@Override
+	public void CreateTerrain() {
+		 //Loading Terrain
         TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy"));
         TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("dirt"));
         TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("pinkFlowers"));
@@ -102,14 +122,18 @@ public class TestScene implements SceneSetup{
 	    Terrain terrain3 = new Terrain(-1,0,loader,texturePack,blendMap, "heightMap");
 	    Terrain terrain4 = new Terrain(0,0,loader,texturePack,blendMap, "heightMap");
 
-	    
 	    terrain = new Terrain[GRIDY][GRIDX];
 	    terrain[0][0] = terrain1;
 	    terrain[1][0] = terrain2;
 	    terrain[0][1] = terrain3;
 	    terrain[1][1] = terrain4;
-	    
-	    //Creating Models and Stuff
+		
+	}
+
+	
+	@Override
+	public void CreateObjects() {
+		   //Creating Models and Stuff
 	    ModelData data = OBJFileLoader.loadOBJ("tree");
         RawModel model = loader.loadToVAO(data.getVertices(), data.getTextureCoords(), data.getNormals(), data.getIndices());
         
@@ -157,11 +181,13 @@ public class TestScene implements SceneSetup{
         		}
         	}
         }
-        
-       
-       
-        
-        //Lighting - make seperate class to do this - including adding the lamps
+		
+	}
+	
+
+	@Override
+	public void CreateLighting() {
+		 //Lighting - make seperate class to do this - including adding the lamps
         Light sun = new Light(new Vector3f(0,10000,-7000),new Vector3f(0.7f,0.7f,0.7f)); //The light of the sun
         lights.add(sun);
         //lights.add(new Light(new Vector3f(-200,10,-200), new Vector3f(10,0,0))); //example added non-attenuating light
@@ -169,86 +195,130 @@ public class TestScene implements SceneSetup{
         TexturedModel lamp = new TexturedModel(OBJLoader.loadObjModel("lamp", loader),new ModelTexture(loader.loadTexture("lamp"))); 
         Entity lampEntity = (new Entity(lamp, new Vector3f(185,-4.7f,-293),0,0,0,1));
         entities.add(lampEntity);
-        
-        //Loading up normal Mapped Entities
+		
+	}
+	
+	
+	@Override
+	public void CreateNormalMappedObjects() {
+		//Loading up normal Mapped Entities
         TexturedModel barrelModel = new TexturedModel(NormalMappedObjLoader.loadOBJ("barrel", loader), new ModelTexture(loader.loadTexture("barrel")));
+        barrelModel.getTexture().setNormalMap(loader.loadTexture("barrelNormal"));
         barrelModel.getTexture().setShineDamper(10);
         barrelModel.getTexture().setReflectivity(0.5f);
         
         normalMapEntities.add(new Entity(barrelModel, new Vector3f(75, 10, -75), 0, 0, 0, 1f));
-        
+	}
+	
+
+	@Override
+	public void CreatePlayer() {
         //Loading the Player
- 
-        //Loading the Gui
-        GuiTexture gui = new GuiTexture(loader.loadTexture("health"), new Vector2f(-0.75f, 0.90f),0, new Vector2f(0.20f, 0.30f));
+	}
+	
+	
+	@Override
+	public void CreateGui() {
+		 //Loading the Gui
+        GuiTexture gui = new GuiTexture(loader.loadFontTextureAltlas("health"), new Vector2f(-0.75f, 0.90f),0, new Vector2f(0.20f, 0.30f));
         guis.add(gui);
-  
+        
+        //Adding the text on the screen
+        		//To get font in hiero you pick font, set java, add characters, reset cashe, make padding 8 on each side
+        		//then size it to as big as possible on one page, then add distance field on side, remove just color
+        		//make the spread 10 and the scale 15
+        text = new GUIText("This is a test text!", 3, font, new Vector2f(0.0f,0.4f), 0.5f, true);
+        text.setColor(0, 0, 0);
+		
+	}
+
+	
+	@Override
+	public void CreateMousePicker() {
         //Mouse Picker
         //MousePicker picker =null;
-        
+		
+	}
+
+	
+	@Override
+	public void CreateWater() {
         //Water
         WaterTile water = new WaterTile(275, -275, 0);
         waters.add(water);
+		
 	}
 	
+	
+	
+	//In the while loop
 	public void Run() {
 		
-   	 for(int q = 0; q < GRIDY; q++) {
-   		 for (int c = 0; c < GRIDX; c++){
-   			 if(terrain[q][c].getX() <= player.getPosition().x) { 
-   		    	if(terrain[q][c].getX() + terrain[q][c].getSize() > player.getPosition().x) {
-   		    		if(terrain[q][c].getZ() <= player.getPosition().z) {
-   		            	if(terrain[q][c].getZ() + terrain[q][c].getSize() > player.getPosition().z) {
-   		                	player.move(terrain[q][c]);
-   		            	}
-   		        	}
-   		    	}
-   	    	}
-   		 }
-   	 }
-   	 //picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain);
-            
+	   	 for(int q = 0; q < GRIDY; q++) {
+	   		 for (int c = 0; c < GRIDX; c++){
+	   			 if(terrain[q][c].getX() <= player.getPosition().x) { 
+	   		    	if(terrain[q][c].getX() + terrain[q][c].getSize() > player.getPosition().x) {
+	   		    		if(terrain[q][c].getZ() <= player.getPosition().z) {
+	   		            	if(terrain[q][c].getZ() + terrain[q][c].getSize() > player.getPosition().z) {
+	   		                	player.move(terrain[q][c]);
+	   		            	}
+	   		        	}
+	   		    	}
+	   	    	}
+	   		 }
+	   	 }
+	   	 
+	   	 
+	   	   //picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain);
+	            
 
-       camera.move();
-       //picker.update();
-       
-       GL11.glEnable(GL30.GL_CLIP_DISTANCE0);
-       
-       //Frame Buffers for reflections
-       fbos.bindReflectionFrameBuffer();
-       float distance = 2*(camera.getPosition().y - waters.get(0).getHeight());
-       camera.getPosition().y -= distance;
-       camera.invertPitch();
-       renderer.renderScene(entities, normalMapEntities, terrain, lights, camera, new Vector4f(0, 1, 0, -waters.get(0).getHeight() + 1f), GRIDX, GRIDY);
-       camera.getPosition().y += distance;
-       camera.invertPitch();
-       
-       fbos.bindRefractionFrameBuffer();
-       renderer.renderScene(entities, normalMapEntities, terrain, lights, camera, new Vector4f(0, -1, 0, waters.get(0).getHeight() + 1f), GRIDX, GRIDY);
-       
-       
-       //for mouse picker, to move lamp around
-//       Vector3f terrainPoint = picker.getCurrentTerrainPoint();
-//       if(terrainPoint!=null){
-//       	 lampEntity.setPosition(terrainPoint);
-//       	light.setPosition(new Vector3f(terrainPoint.x, terrainPoint.y+15, terrainPoint.z));
-//       }
-       
-       GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
-       fbos.unbindCurrentFrameBuffer();
-       renderer.processEntity(player);
-       renderer.renderScene(entities, normalMapEntities, terrain, lights, camera, new Vector4f(0, -1, 0, 15), GRIDX, GRIDY);
-       waterRenderer.render(waters, camera, lights.get(0)); //Need to change the light part into a sun, that means adding a sun
-       guiRenderer.render(guis);
-       DisplayManager.updateDisplay();
-	}
+	   	 camera.move();
+	     //picker.update();
+	       
+	     GL11.glEnable(GL30.GL_CLIP_DISTANCE0);
+	       
+	     //Frame Buffers for reflections
+	     fbos.bindReflectionFrameBuffer();
+	     float distance = 2*(camera.getPosition().y - waters.get(0).getHeight());
+	     camera.getPosition().y -= distance;
+	     camera.invertPitch();
+	     renderer.renderScene(entities, normalMapEntities, terrain, lights, camera, new Vector4f(0, 1, 0, -waters.get(0).getHeight() + 1f), GRIDX, GRIDY);
+	     camera.getPosition().y += distance;
+	     camera.invertPitch();
+	       
+	     fbos.bindRefractionFrameBuffer();
+	     renderer.renderScene(entities, normalMapEntities, terrain, lights, camera, new Vector4f(0, -1, 0, waters.get(0).getHeight() + 1f), GRIDX, GRIDY);
+	       
+	       
+	     //for mouse picker, to move lamp around
+//	     Vector3f terrainPoint = picker.getCurrentTerrainPoint();
+//	     if(terrainPoint!=null){
+//	     	lampEntity.setPosition(terrainPoint);
+//	     light.setPosition(new Vector3f(terrainPoint.x, terrainPoint.y+15, terrainPoint.z));
+//	     }
+	       
+	     GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
+	     fbos.unbindCurrentFrameBuffer();
+	     renderer.processEntity(player);
+	     renderer.renderScene(entities, normalMapEntities, terrain, lights, camera, new Vector4f(0, -1, 0, 15), GRIDX, GRIDY);
+	     waterRenderer.render(waters, camera, lights.get(0)); //Need to change the light part into a sun, that means adding a sun
+	     guiRenderer.render(guis);
+	     TextMaster.render(0.5f, 0.1f, 0.7f, 0.1f, new Vector2f(0.003f, 0.003f), new Vector3f(1, 0, 0));
+
+		}
+	
+	
+	
 	
 	public void Destroy() {
+		TextMaster.cleanUp();
 		fbos.cleanUp();
         waterShader.cleanUp();
         guiRenderer.cleanUp();
         renderer.cleanUp();
         loader.cleanUp();
 	}
+
+	
 	
 }

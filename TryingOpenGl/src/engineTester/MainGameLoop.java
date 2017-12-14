@@ -23,6 +23,7 @@ public class MainGameLoop {
 	        //The GameLoop
 	        while(!Display.isCloseRequested()){
 	        	testScene.Run();
+	   	     	DisplayManager.updateDisplay();
 	        }
 	        
 	        DisplayManager.closeDisplay();

@@ -30,7 +30,7 @@ public class DisplayManager {
 			Display.setDisplayMode(new DisplayMode(WIDTH,HEIGHT));
 			//Display.setFullscreen(true);
 			Display.create(new PixelFormat(), attribs);
-			Display.setTitle("My First Display!");
+			Display.setTitle("My Cool Game!");
 		} catch (LWJGLException e) {
 			e.printStackTrace();
 		}

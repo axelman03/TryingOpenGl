@@ -42,6 +42,17 @@ public class Loader {
 		return new RawModel(vaoID,indices.length);	
 	}
 	
+	public RawModel loadToVAO(float[] positions, float[] textureCoords, float[] normals, float[] tangents, int[] indices){
+		int vaoID = createVAO();
+		bindIndicesBuffer(indices);
+		storeDataInAttributeList(0,3,positions);
+		storeDataInAttributeList(1,2,textureCoords);
+		storeDataInAttributeList(2,3,normals);
+		storeDataInAttributeList(3,3,tangents);
+		unbindVAO();
+		return new RawModel(vaoID,indices.length);	
+	}
+	
 	public RawModel loadToVAO(float[] positions, int dimensions){
 		int vaoID = createVAO();
 		this.storeDataInAttributeList(0, dimensions, positions);
@@ -49,6 +60,14 @@ public class Loader {
 		return new RawModel(vaoID, positions.length/dimensions);
 	}
 	
+	public int loadToVAO(float[] positions, float[] textureCoords){
+		int vaoID = createVAO();
+		storeDataInAttributeList(0,2,positions);
+		storeDataInAttributeList(1,2,textureCoords);
+		unbindVAO();
+		return vaoID;	
+	}
+	//mip-map at -0.4f so that as things get small, the texture resolution decreases so that it doesn't have to load all of that
 	public int loadTexture(String fileName){
 		Texture texture = null;
 		try {
@@ -56,6 +75,26 @@ public class Loader {
 			GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
 			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
 			GL11.glTexParameterf(GL11.GL_TEXTURE_2D,GL14.GL_TEXTURE_LOD_BIAS, -0.4f);
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.err.println("Tried to load texture "+fileName + ".png, but it failed");
+			System.exit(-1);
+		}
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
+		int textureID = texture.getTextureID();
+		textures.add(textureID);
+		return texture.getTextureID();
+	}
+	
+	//different mip-map loading so that edges on text are decent
+	public int loadFontTextureAltlas(String fileName){
+		Texture texture = null;
+		try {
+			texture = TextureLoader.getTexture("PNG", new FileInputStream("res/"+fileName+".png"));
+			GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
+			GL11.glTexParameterf(GL11.GL_TEXTURE_2D,GL14.GL_TEXTURE_LOD_BIAS, -0);
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.err.println("Tried to load texture "+fileName + ".png, but it failed");

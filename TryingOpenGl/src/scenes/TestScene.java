@@ -1,6 +1,7 @@
 package scenes;
 
 import java.io.File;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -63,33 +64,45 @@ public class TestScene implements SceneSetup{
     GuiRenderer guiRenderer;
     FontType font;
     GUIText text;
+    
+    float time;
+	LocalTime realTime;
+	double angle;
+	
+
 	
     public TestScene() {
     	load();
     }
     
     public void load() {
+    	//Basic Scene Loading
     	loader = new Loader();
     	TextMaster.init(loader);
     	renderer = new MasterRenderer(loader);
-    	
+    	//Entities and other Array Lists Loading
     	entities = new ArrayList<Entity>();
     	normalMapEntities = new ArrayList<Entity>();
     	lights = new ArrayList<Light>();
     	guis = new ArrayList<GuiTexture>();
-    	
+    	//Player Loading
     	personModel = OBJLoader.loadObjModel("person", loader);
     	person = new TexturedModel(personModel, new ModelTexture(loader.loadTexture("playerTexture")));
     	player = new Player(person, new Vector3f(100, 0 ,-50), 0 ,0,0,1);
     	camera = new Camera(player);
-    	
+    	//Water Loading
     	fbos = new WaterFrameBuffers();
     	waters = new ArrayList<WaterTile>();
     	waterShader = new WaterShader();
     	waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix(), fbos);
-    	
+    	//GUI Loading
     	guiRenderer = new GuiRenderer(loader);
     	font = new FontType(loader.loadTexture("candara"), new File("res/candara.fnt"));
+    	//Clock Initializing
+        realTime = LocalTime.now();
+    	time = realTime.toSecondOfDay();
+    	angle = (double)(time / 240);  //angle of line from the center of map to the point where the sun is
+    	angle = (angle*Math.PI) / 180;  //degrees to radians
     }
     
 	public void Create() {
@@ -188,13 +201,16 @@ public class TestScene implements SceneSetup{
 	@Override
 	public void CreateLighting() {
 		 //Lighting - make seperate class to do this - including adding the lamps
-        Light sun = new Light(new Vector3f(0,10000,-7000),new Vector3f(0.7f,0.7f,0.7f)); //The light of the sun
+		
+        Light sun = new Light(new Vector3f(0.0f, (float)(-(1000 * Math.cos(angle))), (float)((1000 * Math.sin(angle)))),new Vector3f(0.7f,0.7f,0.7f)); //The light of the sun
         lights.add(sun);
         //lights.add(new Light(new Vector3f(-200,10,-200), new Vector3f(10,0,0))); //example added non-attenuating light
         lights.add(new Light(new Vector3f(185,10,-293),new Vector3f(0,2,3), new Vector3f(1,0.01f,0.002f))); //example added attenuating point light
         TexturedModel lamp = new TexturedModel(OBJLoader.loadObjModel("lamp", loader),new ModelTexture(loader.loadTexture("lamp"))); 
         Entity lampEntity = (new Entity(lamp, new Vector3f(185,-4.7f,-293),0,0,0,1));
         entities.add(lampEntity);
+        
+ 
 		
 	}
 	
@@ -268,6 +284,12 @@ public class TestScene implements SceneSetup{
 	   		 }
 	   	 }
 	   	 
+	    //Clock to make the sun go around based on the real time	
+	   	time += DisplayManager.getFrameTimeSeconds();
+		time %= 86400;		
+		lights.get(0).setPosition(new Vector3f(0.0f, (float)(-(1000 * Math.cos(angle))), (float)((1000 * Math.sin(angle)))));
+			
+	   	 
 	   	 
 	   	   //picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain);
 	            
@@ -301,7 +323,7 @@ public class TestScene implements SceneSetup{
 	     fbos.unbindCurrentFrameBuffer();
 	     renderer.processEntity(player);
 	     renderer.renderScene(entities, normalMapEntities, terrain, lights, camera, new Vector4f(0, -1, 0, 15), GRIDX, GRIDY);
-	     waterRenderer.render(waters, camera, lights.get(0)); //Need to change the light part into a sun, that means adding a sun
+	     waterRenderer.render(waters, camera, lights.get(0));
 	     guiRenderer.render(guis);
 	     TextMaster.render(0.5f, 0.1f, 0.7f, 0.1f, new Vector2f(0.003f, 0.003f), new Vector3f(1, 0, 0));
 

@@ -202,7 +202,8 @@ public class TestScene implements SceneSetup{
 	public void CreateLighting() {
 		 //Lighting - make seperate class to do this - including adding the lamps
 		
-        Light sun = new Light(new Vector3f(0.0f, (float)(-(1000 * Math.cos(angle))), (float)((1000 * Math.sin(angle)))),new Vector3f(0.7f,0.7f,0.7f)); //The light of the sun
+        Light sun = new Light(new Vector3f(0.0f, (float)(-(1000 * Math.cos(angle))), (float)((1000 * Math.sin(angle)))),new Vector3f(0.7f,0.7f, 0.7f)); //The light of the sun 
+        //good sunset color is 1f, 0.7f, 0.7f, natural sun is 0.7f, 0.7f, 0.7f, darker/almost night = 0.3f, 0.3f, 0.5f, for no light, 0f, 0f, 0f, should make alternate between colors as time of day changes, have to make a plan for that
         lights.add(sun);
         //lights.add(new Light(new Vector3f(-200,10,-200), new Vector3f(10,0,0))); //example added non-attenuating light
         lights.add(new Light(new Vector3f(185,10,-293),new Vector3f(0,2,3), new Vector3f(1,0.01f,0.002f))); //example added attenuating point light

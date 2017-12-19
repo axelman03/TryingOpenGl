@@ -76,28 +76,34 @@ public class TestScene implements SceneSetup{
     }
     
     public void load() {
+    	
     	//Basic Scene Loading
     	loader = new Loader();
     	TextMaster.init(loader);
     	renderer = new MasterRenderer(loader);
+    	
     	//Entities and other Array Lists Loading
     	entities = new ArrayList<Entity>();
     	normalMapEntities = new ArrayList<Entity>();
     	lights = new ArrayList<Light>();
     	guis = new ArrayList<GuiTexture>();
+    	
     	//Player Loading
     	personModel = OBJLoader.loadObjModel("person", loader);
     	person = new TexturedModel(personModel, new ModelTexture(loader.loadTexture("playerTexture")));
     	player = new Player(person, new Vector3f(100, 0 ,-50), 0 ,0,0,1);
     	camera = new Camera(player);
+    	
     	//Water Loading
     	fbos = new WaterFrameBuffers();
     	waters = new ArrayList<WaterTile>();
     	waterShader = new WaterShader();
     	waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix(), fbos);
+    	
     	//GUI Loading
     	guiRenderer = new GuiRenderer(loader);
     	font = new FontType(loader.loadTexture("candara"), new File("res/candara.fnt"));
+    	
     	//Clock Initializing
         realTime = LocalTime.now();
     	time = realTime.toSecondOfDay();
@@ -105,11 +111,13 @@ public class TestScene implements SceneSetup{
     	angle = (angle*Math.PI) / 180;  //degrees to radians
     }
     
+    
+    
 	public void Create() {
 	       CreateTerrain();
 	       CreateObjects();
-	       CreateLighting();
 	       CreateNormalMappedObjects();
+	       CreateLighting();
 	       CreatePlayer();
 	       CreateGui();
 	       CreateMousePicker();
@@ -130,10 +138,10 @@ public class TestScene implements SceneSetup{
         TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
         TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
 
-	    Terrain terrain1 = new Terrain(0,-1,loader,texturePack,blendMap, "heightMap");
-	    Terrain terrain2 = new Terrain(-1,-1,loader,texturePack,blendMap, "heightMap");
-	    Terrain terrain3 = new Terrain(-1,0,loader,texturePack,blendMap, "heightMap");
-	    Terrain terrain4 = new Terrain(0,0,loader,texturePack,blendMap, "heightMap");
+	    Terrain terrain1 = new Terrain(0,-1,loader,texturePack,blendMap, "heightmap");
+	    Terrain terrain2 = new Terrain(-1,-1,loader,texturePack,blendMap, "heightmap");
+	    Terrain terrain3 = new Terrain(-1,0,loader,texturePack,blendMap, "heightmap");
+	    Terrain terrain4 = new Terrain(0,0,loader,texturePack,blendMap, "heightmap");
 
 	    terrain = new Terrain[GRIDY][GRIDX];
 	    terrain[0][0] = terrain1;
@@ -163,7 +171,6 @@ public class TestScene implements SceneSetup{
         TexturedModel tree = new TexturedModel(OBJLoader.loadObjModel("lowPolyTree", loader),new ModelTexture(loader.loadTexture("lowPolyTree"))); 
         
         //Loading Models and Stuff - make separate class to do this
-        
         Random random = new Random(676452);
        
         for (int q = 0; q < GRIDY; q++){
@@ -197,12 +204,35 @@ public class TestScene implements SceneSetup{
 		
 	}
 	
+	
+	@Override
+	public void CreateNormalMappedObjects() {
+		//Loading up normal Mapped Entities
+        TexturedModel barrelModel = new TexturedModel(NormalMappedObjLoader.loadOBJ("barrel", loader), new ModelTexture(loader.loadTexture("barrel")));
+        barrelModel.getTexture().setNormalMap(loader.loadTexture("barrelNormal"));
+        barrelModel.getTexture().setShineDamper(10);
+        barrelModel.getTexture().setReflectivity(0.1f);
+        normalMapEntities.add(new Entity(barrelModel, new Vector3f(75, 10, -75), 0, 0, 0, 1f));
+        
+        TexturedModel crateModel = new TexturedModel(NormalMappedObjLoader.loadOBJ("crate", loader), new ModelTexture(loader.loadTexture("crate")));
+        crateModel.getTexture().setNormalMap(loader.loadTexture("crateNormal"));
+        crateModel.getTexture().setShineDamper(10);
+        crateModel.getTexture().setReflectivity(0.1f);
+        normalMapEntities.add(new Entity(crateModel, new Vector3f(65, 10, -75), 0, 0, 0, 0.05f));
+        
+        TexturedModel boulderModel = new TexturedModel(NormalMappedObjLoader.loadOBJ("boulder", loader), new ModelTexture(loader.loadTexture("boulder")));
+        boulderModel.getTexture().setNormalMap(loader.loadTexture("boulderNormal"));
+        boulderModel.getTexture().setShineDamper(10);
+        boulderModel.getTexture().setReflectivity(0.1f);
+        normalMapEntities.add(new Entity(boulderModel, new Vector3f(55, 10, -75), 0, 0, 0, 1f));      
+	}
 
+	
 	@Override
 	public void CreateLighting() {
 		 //Lighting - make seperate class to do this - including adding the lamps
 		
-        Light sun = new Light(new Vector3f(0.0f, (float)(-(1000 * Math.cos(angle))), (float)((1000 * Math.sin(angle)))),new Vector3f(0.7f,0.7f,0.7f)); //The light of the sun
+        Light sun = new Light(new Vector3f(0.0f, (float)(-(1000 * Math.cos(angle))), (float)((1000 * Math.sin(angle)))),new Vector3f(1.3f,1.3f,1.3f)); //The light of the sun
         lights.add(sun);
         //lights.add(new Light(new Vector3f(-200,10,-200), new Vector3f(10,0,0))); //example added non-attenuating light
         lights.add(new Light(new Vector3f(185,10,-293),new Vector3f(0,2,3), new Vector3f(1,0.01f,0.002f))); //example added attenuating point light
@@ -212,18 +242,6 @@ public class TestScene implements SceneSetup{
         
  
 		
-	}
-	
-	
-	@Override
-	public void CreateNormalMappedObjects() {
-		//Loading up normal Mapped Entities
-        TexturedModel barrelModel = new TexturedModel(NormalMappedObjLoader.loadOBJ("barrel", loader), new ModelTexture(loader.loadTexture("barrel")));
-        barrelModel.getTexture().setNormalMap(loader.loadTexture("barrelNormal"));
-        barrelModel.getTexture().setShineDamper(10);
-        barrelModel.getTexture().setReflectivity(0.5f);
-        
-        normalMapEntities.add(new Entity(barrelModel, new Vector3f(75, 10, -75), 0, 0, 0, 1f));
 	}
 	
 
@@ -325,9 +343,18 @@ public class TestScene implements SceneSetup{
 	     renderer.renderScene(entities, normalMapEntities, terrain, lights, camera, new Vector4f(0, -1, 0, 15), GRIDX, GRIDY);
 	     waterRenderer.render(waters, camera, lights.get(0));
 	     guiRenderer.render(guis);
-	     TextMaster.render(0.5f, 0.1f, 0.7f, 0.1f, new Vector2f(0.003f, 0.003f), new Vector3f(1, 0, 0));
+	     
+	     //For the text
+	     float textWidth = 0.5f;
+	     float textEdge = 0.1f;
+	     float textBorderWidth = 0.7f;
+	     float textBorderEdge = 0.1f;
+	     Vector2f textOffset = new Vector2f(0.003f, 0.003f);
+	     Vector3f textOutlineColor = new Vector3f(1, 0, 0);
+	     
+	     TextMaster.render(textWidth, textEdge, textBorderWidth, textBorderEdge, textOffset, textOutlineColor);
 
-		}
+	}
 	
 	
 	

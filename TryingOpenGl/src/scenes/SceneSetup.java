@@ -6,8 +6,8 @@ public interface SceneSetup {
 	public void Create();
 	public void CreateTerrain();
 	public void CreateObjects();
-	public void CreateLighting();
 	public void CreateNormalMappedObjects();
+	public void CreateLighting();
 	public void CreatePlayer();
 	public void CreateGui();
 	public void CreateMousePicker();

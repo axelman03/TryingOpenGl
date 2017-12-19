@@ -96,6 +96,7 @@ public class SkyboxRenderer {
 		shader.stop();
 	}
 	
+	
 	private void bindTextures(){
 		//for day/night cycle
 		realTime = LocalTime.now();

@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -25,8 +24,8 @@ public class TextMaster {
 		loader = theLoader;
 	}
 	
-	public static void render(float width, float edge, float borderWidth, float borderEdge, Vector2f offset, Vector3f outlineColor) {
-		renderer.render(texts, width, edge, borderWidth, borderEdge, offset, outlineColor);
+	public static void render(float textWidth, float textEdge, float textBorderWidth, float textBorderEdge, Vector2f textOffset, Vector3f textOutlineColor) {
+		renderer.render(texts, textWidth, textEdge, textBorderWidth, textBorderEdge, textOffset, textOutlineColor);
 	}
 	
 	public static void loadText(GUIText text) {

@@ -4,6 +4,7 @@ package renderEngine;
 import java.nio.IntBuffer;
 
 import org.lwjgl.LWJGLException;
+import org.lwjgl.PointerBuffer;
 import org.lwjgl.Sys;
 import org.lwjgl.opengl.ContextAttribs;
 import org.lwjgl.opengl.Display;
@@ -12,6 +13,11 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.PixelFormat;
 import org.lwjgl.openvr.OpenVR;
 import org.lwjgl.ovr.OVR;
+import org.lwjgl.ovr.OVRDetectResult;
+import org.lwjgl.ovr.OVRGraphicsLuid;
+import org.lwjgl.ovr.OVRHmdDesc;
+import org.lwjgl.ovr.OVRInitParams;
+import org.lwjgl.ovr.OVRLogCallback;
 import org.lwjgl.system.MemoryStack;
 
 public class DisplayManager {
@@ -73,8 +79,8 @@ public class DisplayManager {
 		//Should have some classes to help me learn how to install open vr and also updeated openGL
 		
 		 System.err.println("VR_IsRuntimeInstalled() = " + VR_IsRuntimeInstalled());
-	        System.err.println("VR_RuntimePath() = " + VR_RuntimePath());
-	        System.err.println("VR_IsHmdPresent() = " + VR_IsHmdPresent());
+	     System.err.println("VR_RuntimePath() = " + VR_RuntimePath());
+	     System.err.println("VR_IsHmdPresent() = " + VR_IsHmdPresent());
 
 	        try (MemoryStack stack = stackPush()) {
 	            IntBuffer peError = stack.mallocInt(1);
@@ -111,9 +117,49 @@ public class DisplayManager {
 	    }
 	}
 	
-	public static void updateVRCamera() {
-		
-	}
+	public static void runOculusVR() {
+		try (OVRDetectResult detect = OVRDetectResult.calloc()) {
+            ovr_Detect(0, detect);
+
+            System.out.println("OVRDetectResult.IsOculusHMDConnected = " + detect.IsOculusHMDConnected());
+            System.out.println("OVRDetectResult.IsOculusServiceRunning = " + detect.IsOculusServiceRunning());
+        }
+
+        OVRLogCallback callback;
+        try (
+            OVRInitParams initParams = OVRInitParams.calloc()
+                .LogCallback((userData, level, message) -> System.out.println("LibOVR [" + level + "] " + memASCII(message)))
+                .Flags(ovrInit_Debug)
+        ) {
+            callback = initParams.LogCallback();
+            System.out.println("ovr_Initialize = " + ovr_Initialize(initParams));
+        }
+
+        System.out.println("ovr_GetVersionString = " + ovr_GetVersionString());
+
+        try (
+            OVRGraphicsLuid luid = OVRGraphicsLuid.calloc();
+            OVRHmdDesc desc = OVRHmdDesc.malloc();
+        ) {
+            PointerBuffer pSession = memAllocPointer(1);
+            System.out.println("ovr_Create = " + ovr_Create(pSession, luid));
+
+            long session = pSession.get(0);
+            memFree(pSession);
+
+            ovr_GetHmdDesc(session, desc);
+            System.out.println("ovr_GetHmdDesc = " + desc.ManufacturerString() + " " + desc.ProductNameString() + " " + desc.SerialNumberString());
+
+            if (session != NULL) {
+                ovr_Destroy(session);
+            }
+        }
+
+        OVR.ovr_Shutdown();
+
+        callback.free();
+    }
+	
 	
 	public static float getFrameTimeSeconds(){
 		return delta;

@@ -44,5 +44,6 @@
 	<classpathentry kind="lib" path="lib/jars/lwjglNew.jar"/>
 	<classpathentry kind="lib" path="lib/jars/lwjglx-debug-1.0.0.jar"/>
 	<classpathentry kind="lib" path="lib/jars/steamworks4j-1.6.2.jar"/>
+	<classpathentry kind="lib" path="lib/docs/lwjgl-ovr-javadoc.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -12,13 +12,17 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.PixelFormat;
 import org.lwjgl.openvr.OpenVR;
+import org.lwjgl.openvr.VR;
+import org.lwjgl.openvr.VRSystem;
 import org.lwjgl.ovr.OVR;
 import org.lwjgl.ovr.OVRDetectResult;
 import org.lwjgl.ovr.OVRGraphicsLuid;
 import org.lwjgl.ovr.OVRHmdDesc;
 import org.lwjgl.ovr.OVRInitParams;
 import org.lwjgl.ovr.OVRLogCallback;
+import org.lwjgl.ovr.OVRUtil;
 import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.MemoryUtil;
 
 public class DisplayManager {
 	
@@ -36,6 +40,7 @@ public class DisplayManager {
 		ContextAttribs attribs = new ContextAttribs(3,2)
 		.withForwardCompatible(true)
 		.withProfileCore(true);
+		runOculusVR();
 		if(vrTrue) {
 			try {
 				Display.setDisplayMode(new DisplayMode(WIDTH,HEIGHT));
@@ -76,87 +81,90 @@ public class DisplayManager {
 	public static void runVR() {
 		
 		// https://github.com/LWJGL/lwjgl3/tree/master/modules/core/src/test/java/org/lwjgl
+		//https://github.com/WhiteHexagon/example-lwjgl3-rift/blob/master/src/main/java/com/sunshineapps/rift/experimental/RiftWindow0800.java
 		//Should have some classes to help me learn how to install open vr and also updeated openGL
 		
-		 System.err.println("VR_IsRuntimeInstalled() = " + VR_IsRuntimeInstalled());
-	     System.err.println("VR_RuntimePath() = " + VR_RuntimePath());
-	     System.err.println("VR_IsHmdPresent() = " + VR_IsHmdPresent());
+		 System.err.println("VR_IsRuntimeInstalled() = " + VR.VR_IsRuntimeInstalled());
+	     System.err.println("VR_RuntimePath() = " + VR.VR_RuntimePath());
+	     System.err.println("VR_IsHmdPresent() = " + VR.VR_IsHmdPresent());
 
-	        try (MemoryStack stack = stackPush()) {
+	        try (MemoryStack stack = MemoryStack.stackPush()) {
 	            IntBuffer peError = stack.mallocInt(1);
 
-	            int token = VR_InitInternal(peError, 0);
+	            int token = VR.VR_InitInternal(peError, 0);
 	            if (peError.get(0) == 0) {
 	                try {
 	                    OpenVR.create(token);
 
-	                    System.err.println("Model Number : " + VRSystem_GetStringTrackedDeviceProperty(
-	                        k_unTrackedDeviceIndex_Hmd,
-	                        ETrackedDeviceProperty_Prop_ModelNumber_String,
+	                    System.err.println("Model Number : " + VRSystem.VRSystem_GetStringTrackedDeviceProperty(
+	                        VR.k_unTrackedDeviceIndex_Hmd,
+	                        VR.ETrackedDeviceProperty_Prop_ModelNumber_String,
 	                        peError
 	                    ));
-	                    System.err.println("Serial Number: " + VRSystem_GetStringTrackedDeviceProperty(
-	                        k_unTrackedDeviceIndex_Hmd,
-	                        ETrackedDeviceProperty_Prop_SerialNumber_String,
+	                    System.err.println("Serial Number: " + VRSystem.VRSystem_GetStringTrackedDeviceProperty(
+	                        VR.k_unTrackedDeviceIndex_Hmd,
+	                        VR.ETrackedDeviceProperty_Prop_SerialNumber_String,
 	                        peError
 	                    ));
 
 	                    IntBuffer w = stack.mallocInt(1);
 	                    IntBuffer h = stack.mallocInt(1);
-	                    VRSystem_GetRecommendedRenderTargetSize(w, h);
+	                    VRSystem.VRSystem_GetRecommendedRenderTargetSize(w, h);
 	                    System.err.println("Recommended width : " + w.get(0));
 	                    System.err.println("Recommended height: " + h.get(0));
 	                } finally {
-	                    VR_ShutdownInternal();
+	                    VR.VR_ShutdownInternal();
 	                }
 	            } else {
-	                System.out.println("INIT ERROR SYMBOL: " + VR_GetVRInitErrorAsSymbol(peError.get(0)));
-	                System.out.println("INIT ERROR  DESCR: " + VR_GetVRInitErrorAsEnglishDescription(peError.get(0)));
+	                System.out.println("INIT ERROR SYMBOL: " + VR.VR_GetVRInitErrorAsSymbol(peError.get(0)));
+	                System.out.println("INIT ERROR  DESCR: " + VR.VR_GetVRInitErrorAsEnglishDescription(peError.get(0)));
 	            }
 	        
 	    }
 	}
 	
+	
 	public static void runOculusVR() {
 		try (OVRDetectResult detect = OVRDetectResult.calloc()) {
-            ovr_Detect(0, detect);
+            OVRUtil.ovr_Detect(0, detect);
 
             System.out.println("OVRDetectResult.IsOculusHMDConnected = " + detect.IsOculusHMDConnected());
             System.out.println("OVRDetectResult.IsOculusServiceRunning = " + detect.IsOculusServiceRunning());
+            if(detect.IsOculusHMDConnected() == true) {
+            	vrTrue = true;
+            }
+            else {
+            	return;
+            }
         }
 
         OVRLogCallback callback;
         try (
-            OVRInitParams initParams = OVRInitParams.calloc()
-                .LogCallback((userData, level, message) -> System.out.println("LibOVR [" + level + "] " + memASCII(message)))
-                .Flags(ovrInit_Debug)
-        ) {
+            OVRInitParams initParams = OVRInitParams.calloc().LogCallback((userData, level, message) -> System.out.println("LibOVR [" + level + "] " + MemoryUtil.memASCII(message))).Flags(OVR.ovrInit_Debug)) {
             callback = initParams.LogCallback();
-            System.out.println("ovr_Initialize = " + ovr_Initialize(initParams));
+            System.out.println("ovr_Initialize = " + OVR.ovr_Initialize(initParams));
         }
 
-        System.out.println("ovr_GetVersionString = " + ovr_GetVersionString());
+        System.out.println("ovr_GetVersionString = " + OVR.ovr_GetVersionString());
 
         try (
             OVRGraphicsLuid luid = OVRGraphicsLuid.calloc();
             OVRHmdDesc desc = OVRHmdDesc.malloc();
         ) {
-            PointerBuffer pSession = memAllocPointer(1);
-            System.out.println("ovr_Create = " + ovr_Create(pSession, luid));
+            PointerBuffer pSession = MemoryUtil.memAllocPointer(1);
+            System.out.println("ovr_Create = " + OVR.ovr_Create(pSession, luid));
 
-            long session = pSession.get(0);
-            memFree(pSession);
+            Long session = pSession.get(0);
+            MemoryUtil.memFree(pSession);
 
-            ovr_GetHmdDesc(session, desc);
+            OVR.ovr_GetHmdDesc(session, desc);
             System.out.println("ovr_GetHmdDesc = " + desc.ManufacturerString() + " " + desc.ProductNameString() + " " + desc.SerialNumberString());
 
-            if (session != NULL) {
-                ovr_Destroy(session);
+            if (session != null) {
+                OVR.ovr_Destroy(session);
             }
         }
-
         OVR.ovr_Shutdown();
-
         callback.free();
     }
 	

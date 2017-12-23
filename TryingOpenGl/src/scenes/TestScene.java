@@ -68,6 +68,8 @@ public class TestScene implements SceneSetup{
     float time;
 	LocalTime realTime;
 	double angle;
+	float daylightTime;
+	double daylightAngle;
 	
 
 	
@@ -232,8 +234,8 @@ public class TestScene implements SceneSetup{
 	public void CreateLighting() {
 		 //Lighting - make seperate class to do this - including adding the lamps
 
-        Light sun = new Light(new Vector3f(0.0f, (float)(-(1000 * Math.cos(angle))), (float)((1000 * Math.sin(angle)))),new Vector3f(0.7f,0.7f, 0.7f)); //The light of the sun 
-        //good sunset color is 1f, 0.7f, 0.7f, natural sun is 0.7f, 0.7f, 0.7f, darker/almost night = 0.3f, 0.3f, 0.5f, for no light, 0f, 0f, 0f, should make alternate between colors as time of day changes, have to make a plan for that
+        Light sun = new Light(new Vector3f(0.0f, (float)(-(1000 * Math.cos(angle))), (float)((1000 * Math.sin(angle)))),new Vector3f(0.2f,0.2f, 0.3f)); //The light of the sun 
+        
 
         lights.add(sun);
         //lights.add(new Light(new Vector3f(-200,10,-200), new Vector3f(10,0,0))); //example added non-attenuating light
@@ -306,12 +308,57 @@ public class TestScene implements SceneSetup{
 	   	 
 	    //Clock to make the sun go around based on the real time	
 	   	time += DisplayManager.getFrameTimeSeconds();
-		time %= 86400;		
+		time %= 86400;
+		angle = (double)(time / 240);
+    	angle = (angle*Math.PI) / 180;
 		lights.get(0).setPosition(new Vector3f(0.0f, (float)(-(1000 * Math.cos(angle))), (float)((1000 * Math.sin(angle)))));
-			
+		//one hour is 3600 seconds
+		//Used to change the color of the daylight over time
+		if(time > 14400 && time <= 21600) {  //sunrise
+			daylightTime = time;
+			daylightTime %= 7200;
+			daylightAngle = (double)(daylightTime / 20);
+	    	daylightAngle = (daylightAngle*Math.PI) / 180;	
+	    	lights.get(0).setColor(new Vector3f( (float)(0.9 * Math.cos(daylightAngle) + 0.2), (float)(0.5 * Math.cos(daylightAngle) + 0.2), (float)(0.4 * Math.cos(daylightAngle) + 0.3)));
+		}
+		else if(time > 21600 && time <= 25200) {  //sunrise - day transition
+			daylightTime = time;
+			daylightTime %= 3600;
+			daylightAngle = (double)(daylightTime / 10);
+	    	daylightAngle = (daylightAngle*Math.PI) / 180;	
+	    	lights.get(0).setColor(new Vector3f((float)(-0.4 * Math.cos(daylightAngle) + 1.1), 0.7f, 0.7f));
+		}
+		else if(time > 25200 && time <= 61200) {  //day
+			daylightTime = time;
+			daylightTime %= 36000;
+			daylightAngle = (double)(daylightTime / 100);
+	    	daylightAngle = (daylightAngle*Math.PI) / 180;	
+	    	lights.get(0).setColor(new Vector3f(0.7f, 0.7f, 0.7f));
+		}
+		else if(time > 61200 && time <= 64800) {  //day - sunset transition
+			daylightTime = time;
+			daylightTime %= 3600;
+			daylightAngle = (double)(daylightTime / 10);
+	    	daylightAngle = (daylightAngle*Math.PI) / 180;	
+	    	lights.get(0).setColor(new Vector3f((float)(-0.5 * Math.cos(daylightAngle) + 0.7), 0.7f, 0.7f));
+		}
+		else if(time > 64800 && time <= 72000) {  //sunset
+			daylightTime = time;
+			daylightTime %= 7200;
+			daylightAngle = (double)(daylightTime / 20);
+	    	daylightAngle = (daylightAngle*Math.PI) / 180;	
+	    	lights.get(0).setColor(new Vector3f( (float)(1 * Math.cos(daylightAngle) + 0.2), (float)(0.5 * Math.cos(daylightAngle) + 0.2), (float)(0.4 * Math.cos(daylightAngle) + 0.3)));
+		}
+		else if(time > 72000 && time <= 14400) {  //night
+			daylightTime = time;
+			daylightTime %= 28800;
+			daylightAngle = (double)(daylightTime / 80);
+	    	daylightAngle = (daylightAngle*Math.PI) / 180;	
+	    	lights.get(0).setColor(new Vector3f( (float)(0.2 * Math.cos(daylightAngle)), (float)(0.2 * Math.cos(daylightAngle)), (float)(0.2 * Math.cos(daylightAngle) + 0.1)));
+		}
 	   	 
 	   	 
-	   	   //picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain);
+	    //picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain);
 	            
 
 	   	 camera.move();

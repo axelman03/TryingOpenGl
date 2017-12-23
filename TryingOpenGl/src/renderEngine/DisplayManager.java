@@ -40,7 +40,7 @@ public class DisplayManager {
 		ContextAttribs attribs = new ContextAttribs(3,2)
 		.withForwardCompatible(true)
 		.withProfileCore(true);
-		runOculusVR();
+		//runOculusVR();
 		if(vrTrue) {
 			try {
 				Display.setDisplayMode(new DisplayMode(WIDTH,HEIGHT));
@@ -140,9 +140,11 @@ public class DisplayManager {
 
         OVRLogCallback callback;
         try (
-            OVRInitParams initParams = OVRInitParams.calloc().LogCallback((userData, level, message) -> System.out.println("LibOVR [" + level + "] " + MemoryUtil.memASCII(message))).Flags(OVR.ovrInit_Debug)) {
-            callback = initParams.LogCallback();
-            System.out.println("ovr_Initialize = " + OVR.ovr_Initialize(initParams));
+            OVRInitParams initParams = OVRInitParams.calloc()
+            	.LogCallback((userData, level, message) -> System.out.println("LibOVR [" + level + "] " + MemoryUtil.memASCII(message)))
+            	.Flags(OVR.ovrInit_Debug)) {
+            		callback = initParams.LogCallback();
+            		System.out.println("ovr_Initialize = " + OVR.ovr_Initialize(initParams));
         }
 
         System.out.println("ovr_GetVersionString = " + OVR.ovr_GetVersionString());

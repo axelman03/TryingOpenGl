@@ -26,7 +26,10 @@ public class Light {
 		return position;
 	}
 	
-
+	public void setColor(Vector3f color) {
+		this.color = color;
+	}
+	
 	public void setPosition(Vector3f position) {
 		this.position = position;
 	}

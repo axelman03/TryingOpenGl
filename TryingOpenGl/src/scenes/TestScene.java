@@ -39,7 +39,7 @@ import water.WaterRenderer;
 import water.WaterShader;
 import water.WaterTile;
 
-public class TestScene implements SceneSetup{
+public class TestScene extends SceneSetup{
 	public final static int GRIDX = 2;
 	public final static int GRIDY = 2;
 	Loader loader;
@@ -112,23 +112,7 @@ public class TestScene implements SceneSetup{
     	angle = (double)(time / 240);  //angle of line from the center of map to the point where the sun is
     	angle = (angle*Math.PI) / 180;  //degrees to radians
     }
-    
-    
-    
-	public void Create() {
-	       CreateTerrain();
-	       CreateObjects();
-	       CreateNormalMappedObjects();
-	       CreateLighting();
-	       CreatePlayer();
-	       CreateGui();
-	       CreateMousePicker();
-	       CreateWater();
-	}
-
-	
-	
-	
+   	
 	@Override
 	public void CreateTerrain() {
 		 //Loading Terrain

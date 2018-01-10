@@ -1,17 +1,26 @@
 package scenes;
 
-public interface SceneSetup {
+public abstract class SceneSetup {
 
-	public void load();
-	public void Create();
-	public void CreateTerrain();
-	public void CreateObjects();
-	public void CreateNormalMappedObjects();
-	public void CreateLighting();
-	public void CreatePlayer();
-	public void CreateGui();
-	public void CreateMousePicker();
-	public void CreateWater();
-	public void Run();
-	public void Destroy();
+	public abstract void load();
+	public void Create() {
+	       CreateTerrain();
+	       CreateObjects();
+	       CreateNormalMappedObjects();
+	       CreateLighting();
+	       CreatePlayer();
+	       CreateGui();
+	       CreateMousePicker();
+	       CreateWater();
+	}
+	public abstract void CreateTerrain();
+	public abstract void CreateObjects();
+	public abstract void CreateNormalMappedObjects();
+	public abstract void CreateLighting();
+	public abstract void CreatePlayer();
+	public abstract void CreateGui();
+	public abstract void CreateMousePicker();
+	public abstract void CreateWater();
+	public abstract void Run();
+	public abstract void Destroy();
 }

@@ -1,7 +1,9 @@
 package scenes;
 
-public abstract class SceneSetup {
 
+
+public abstract class SceneSetup {
+	
 	public abstract void load();
 	public void Create() {
 	       CreateTerrain();

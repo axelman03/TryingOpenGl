@@ -91,7 +91,7 @@ public class ParticleSystem {
         velocity.scale(generateValue(averageSpeed, speedError));
         float scale = generateValue(averageScale, scaleError);
         float lifeLength = generateValue(averageLifeLength, lifeError);
-        ParticleMaster.addParticle(new Particle(texture, new Vector3f(center), velocity, gravityComplient, lifeLength, generateRotation(), scale));
+        new Particle(texture, new Vector3f(center), velocity, gravityComplient, lifeLength, generateRotation(), scale);
     }
  
     private float generateValue(float average, float errorMargin) {

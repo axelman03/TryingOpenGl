@@ -33,6 +33,7 @@ import renderEngine.MasterRenderer;
 import renderEngine.ModelData;
 import renderEngine.OBJFileLoader;
 import renderEngine.OBJLoader;
+import skybox.SunPosition;
 import terrain.Terrain;
 import textures.ModelTexture;
 import textures.TerrainTexture;
@@ -68,11 +69,7 @@ public class TestScene extends SceneSetup{
     FontType font;
     GUIText text;
     
-    float time;
-	LocalTime realTime;
-	double angle;
-	float daylightTime;
-	double daylightAngle;
+
 	
 	ParticleSystem particleSystem;
 	
@@ -122,12 +119,9 @@ public class TestScene extends SceneSetup{
     	particleSystem.setScaleError(0.8f);
     	particleSystem.randomizeRotation();
 
+
     	
-    	//Clock Initializing
-        realTime = LocalTime.now();
-    	time = realTime.toSecondOfDay();
-    	angle = (double)(time / 240);  //angle of line from the center of map to the point where the sun is
-    	angle = (angle*Math.PI) / 180;  //degrees to radians
+
     }
    	
 	@Override
@@ -235,7 +229,7 @@ public class TestScene extends SceneSetup{
 	public void CreateLighting() {
 		 //Lighting - make seperate class to do this - including adding the lamps
 
-        Light sun = new Light(new Vector3f(0.0f, (float)(-(1000 * Math.cos(angle))), (float)((1000 * Math.sin(angle)))),new Vector3f(0.2f,0.2f, 0.3f)); //The light of the sun 
+        Light sun = new Light(new Vector3f(0.0f, 0.0f, 0.0f),new Vector3f(0.0f,0.0f, 0.0f)); //The light of the sun 
         
 
         lights.add(sun);
@@ -244,6 +238,8 @@ public class TestScene extends SceneSetup{
         TexturedModel lamp = new TexturedModel(OBJLoader.loadObjModel("lamp", loader),new ModelTexture(loader.loadTexture("lamp"))); 
         Entity lampEntity = (new Entity(lamp, new Vector3f(185,-4.7f,-293),0,0,0,1));
         entities.add(lampEntity);
+        
+    	SunPosition.setRealTime(lights.get(0));
         
  
 		
@@ -307,54 +303,10 @@ public class TestScene extends SceneSetup{
 	   		 }
 	   	 }
 	   	 
-	    //Clock to make the sun go around based on the real time	
-	   	time += DisplayManager.getFrameTimeSeconds();
-		time %= 86400;
-		angle = (double)(time / 240);
-    	angle = (angle*Math.PI) / 180;
-		lights.get(0).setPosition(new Vector3f(0.0f, (float)(-(1000 * Math.cos(angle))), (float)((1000 * Math.sin(angle)))));
-		daylightTime = time;
-		//one hour is 3600 seconds
-		//Used to change the color of the daylight over time
-		if(time > 14400 && time <= 21600) {  //sunrise
-			daylightTime %= 7200;
-			daylightAngle = (double)(daylightTime / 20);
-	    	daylightAngle = (daylightAngle*Math.PI) / 180;	
-	    	lights.get(0).setColor(new Vector3f( (float)(0.9 * Math.cos(daylightAngle) + 0.2), (float)(0.5 * Math.cos(daylightAngle) + 0.2), (float)(0.4 * Math.cos(daylightAngle) + 0.3)));
-		}
-		else if(time > 21600 && time <= 25200) {  //sunrise - day transition
-			daylightTime %= 3600;
-			daylightAngle = (double)(daylightTime / 10);
-	    	daylightAngle = (daylightAngle*Math.PI) / 180;	
-	    	lights.get(0).setColor(new Vector3f((float)(-0.4 * Math.cos(daylightAngle) + 1.1), 0.7f, 0.7f));
-		}
-		else if(time > 25200 && time <= 61200) {  //day
-			daylightTime %= 36000;
-			daylightAngle = (double)(daylightTime / 100);
-	    	daylightAngle = (daylightAngle*Math.PI) / 180;	
-	    	lights.get(0).setColor(new Vector3f(0.7f, 0.7f, 0.7f));
-		}
-		else if(time > 61200 && time <= 64800) {  //day - sunset transition
-			daylightTime %= 3600;
-			daylightAngle = (double)(daylightTime / 10);
-	    	daylightAngle = (daylightAngle*Math.PI) / 180;	
-	    	lights.get(0).setColor(new Vector3f((float)(-0.5 * Math.cos(daylightAngle) + 0.7), 0.7f, 0.7f));
-		}
-		else if(time > 64800 && time <= 72000) {  //sunset
-			daylightTime %= 7200;
-			daylightAngle = (double)(daylightTime / 20);
-	    	daylightAngle = (daylightAngle*Math.PI) / 180;	
-	    	lights.get(0).setColor(new Vector3f( (float)(1 * Math.cos(daylightAngle) + 0.2), (float)(0.5 * Math.cos(daylightAngle) + 0.2), (float)(0.4 * Math.cos(daylightAngle) + 0.3)));
-		}
-		else if(time > 72000 && time <= 14400) {  //night
-			daylightTime %= 28800;
-			daylightAngle = (double)(daylightTime / 80);
-	    	daylightAngle = (daylightAngle*Math.PI) / 180;	
-	    	lights.get(0).setColor(new Vector3f( (float)(0.2 * Math.cos(daylightAngle)), (float)(0.2 * Math.cos(daylightAngle)), (float)(0.2 * Math.cos(daylightAngle) + 0.1)));
-		}
+
 	   	 
-	   	 
-	    //picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain);
+	   	 SunPosition.realLifeSun(lights.get(0));
+	     //picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain);
 	            
 
 	   	 camera.move();
@@ -364,7 +316,7 @@ public class TestScene extends SceneSetup{
 	   	 
 	   	 //For the Particle System	   	 
 	   	 particleSystem.generateParticles(player.getPosition());
-	     ParticleMaster.renderParticles(camera);
+
 	     ParticleMaster.update(camera);
 
 	     
@@ -391,12 +343,15 @@ public class TestScene extends SceneSetup{
 //	     	lampEntity.setPosition(terrainPoint);
 //	     light.setPosition(new Vector3f(terrainPoint.x, terrainPoint.y+15, terrainPoint.z));
 //	     }
-	       
+	     
+	     
+	     //Rendering to screen
 	     GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
 	     fbos.unbindCurrentFrameBuffer();
 	     renderer.processEntity(player);
 	     renderer.renderScene(entities, normalMapEntities, terrain, lights, camera, new Vector4f(0, -1, 0, 15), GRIDX, GRIDY);
 	     waterRenderer.render(waters, camera, lights.get(0));
+	     ParticleMaster.renderParticles(camera);
 	     guiRenderer.render(guis);
 	     
 	     //For the text

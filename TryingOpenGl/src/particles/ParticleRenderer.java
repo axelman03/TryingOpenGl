@@ -61,8 +61,7 @@ public class ParticleRenderer {
 			float[] vboData = new float[particleList.size() * INSTANCE_DATA_LENGTH];
 			//Updating and drawing the particle
 			for(Particle particle: particleList) {
-				updateModelViewMatrix(particle.getPosition(), particle.getRotation(),
-					particle.getScale(), viewMatrix, vboData);
+				updateModelViewMatrix(particle.getPosition(), particle.getRotation(), particle.getScale(), viewMatrix, vboData);
 				updateTexCoordInfo(particle, vboData);
 			}
 			loader.updateVbo(vbo, vboData, buffer);

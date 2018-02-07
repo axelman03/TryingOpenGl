@@ -114,7 +114,7 @@ public class TestScene extends SceneSetup{
     	
     	//Particle System Loading
     	ParticleTexture particleTexture = new ParticleTexture(loader.loadTexture("particleAtlas"), 4);
-    	ParticleMaster.renderParticles(camera);
+    	ParticleMaster.init(loader, renderer.getProjectionMatrix());
     	particleSystem = new ParticleSystem(particleTexture, 50, 25, 0.3f, 4, 1);
     	particleSystem.setDirection(new Vector3f(0, 1, 0), 0.1f);
     	particleSystem.setLifeError(0.1f);  //The higher the values, the more random they are
@@ -364,7 +364,9 @@ public class TestScene extends SceneSetup{
 	   	 
 	   	 //For the Particle System	   	 
 	   	 particleSystem.generateParticles(player.getPosition());
+	     ParticleMaster.renderParticles(camera);
 	     ParticleMaster.update(camera);
+
 	     
 	   	 
 	     

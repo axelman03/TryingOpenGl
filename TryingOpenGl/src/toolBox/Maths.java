@@ -5,9 +5,13 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import entities.Camera;
+import entities.Player;
 import renderEngine.DisplayManager;
 
 public class Maths {
+	
+	public static final float GRAVITY = -9.81f;  //Do stuff to make this able to be -9.81 instead, the actual value of gravity
+	public static final float GRAVITY2 = -50f;
 	
 	public static float barryCentric(Vector3f p1, Vector3f p2, Vector3f p3, Vector2f pos) {
 		float det = (p2.z - p3.z) * (p1.x - p3.x) + (p3.x - p2.x) * (p1.z - p3.z);
@@ -51,5 +55,11 @@ public class Maths {
 		Vector3f negativeCameraPos = new Vector3f(-cameraPos.x,-cameraPos.y,-cameraPos.z);
 		Matrix4f.translate(negativeCameraPos, viewMatrix, viewMatrix);
 		return viewMatrix;
+	}
+	
+	public static float getVelocity(float initialVelocity, float acceleration, float time) {
+		float velocity = (float) (initialVelocity + (acceleration * time));
+		System.out.println(velocity);
+		 return velocity;
 	}
 }

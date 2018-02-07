@@ -1,5 +1,7 @@
 package entities;
 
+import java.util.Timer;
+
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -11,12 +13,15 @@ public class Player extends Entity {
 	
 	private static final float RUN_SPEED = 20;
 	private static final float TURN_SPEED = 160;
-	private static final float GRAVITY = -60;
 	private static final float JUMP_POWER = 30;
 	
 	private float currentSpeed = 0;
 	private float currentTurnSpeed = 0;
-	private float upwardsSpeed = 0;
+	//private float upwardsInitialVelocity = 0;
+	private float upwardsVelocity = 0;
+	//private float gravity = 0;
+	//private float jumpStartTime = 0;
+	//private float jumpCurrentTime = 0;
 	
 	private boolean isInAir = false;
 	
@@ -32,20 +37,27 @@ public class Player extends Entity {
 		float dz = (float) (distance *Math.cos(Math.toRadians(super.getRotY())));
 		super.increasePosition(dx, 0, dz);
 
-		
-		upwardsSpeed += GRAVITY *DisplayManager.getFrameTimeSeconds();
-		super.increasePosition(0,upwardsSpeed * DisplayManager.getFrameTimeSeconds(),0);
+		//jumpCurrentTime = System.currentTimeMillis() / 1000;
+		//upwardsVelocity = toolBox.Maths.getVelocity(upwardsInitialVelocity, gravity, DisplayManager.getFrameTimeSeconds());
+		//System.out.println(upwardsVelocity);
+		upwardsVelocity += toolBox.Maths.GRAVITY2 * DisplayManager.getFrameTimeSeconds();
+		super.increasePosition(0,upwardsVelocity * DisplayManager.getFrameTimeSeconds(),0);
 		float terrainHeight = terrain.getHeightOfTerrain(super.getPosition().x, super.getPosition().z);
 		if(super.getPosition().y<=terrainHeight){
-			upwardsSpeed = 0;
+			//upwardsInitialVelocity = 0;
+			upwardsVelocity = 0;
+			//gravity = 0;
+			//jumpStartTime = 0; 
 			super.getPosition().y = terrainHeight;
 			isInAir = false;
 		}
 	}
 	private void jump(){
 		if(!isInAir){	
-			this.upwardsSpeed = JUMP_POWER;
+			this.upwardsVelocity = JUMP_POWER;
+			//gravity = toolBox.Maths.GRAVITY;
 			isInAir = true;
+			//jumpStartTime = (float) (System.currentTimeMillis() / 1000);
 		}
 		
 	}

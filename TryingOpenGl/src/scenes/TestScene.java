@@ -24,6 +24,9 @@ import guis.GuiTexture;
 import models.RawModel;
 import models.TexturedModel;
 import normalMappingObjConverter.NormalMappedObjLoader;
+import particles.ParticleMaster;
+import particles.ParticleSystem;
+import particles.ParticleTexture;
 import renderEngine.DisplayManager;
 import renderEngine.Loader;
 import renderEngine.MasterRenderer;
@@ -71,6 +74,8 @@ public class TestScene extends SceneSetup{
 	float daylightTime;
 	double daylightAngle;
 	
+	ParticleSystem particleSystem;
+	
 	//need to make water reflections work for each object in the lights array
 	
     public TestScene() {
@@ -83,6 +88,7 @@ public class TestScene extends SceneSetup{
     	loader = new Loader();
     	TextMaster.init(loader);
     	renderer = new MasterRenderer(loader);
+    	ParticleMaster.init(loader,  renderer.getProjectionMatrix());
     	
     	//Entities and other Array Lists Loading
     	entities = new ArrayList<Entity>();
@@ -105,6 +111,17 @@ public class TestScene extends SceneSetup{
     	//GUI Loading
     	guiRenderer = new GuiRenderer(loader);
     	font = new FontType(loader.loadTexture("candara"), new File("res/candara.fnt"));
+    	
+    	//Particle System Loading
+    	ParticleTexture particleTexture = new ParticleTexture(loader.loadTexture("particleAtlas"), 4);
+    	ParticleMaster.renderParticles(camera);
+    	particleSystem = new ParticleSystem(particleTexture, 50, 25, 0.3f, 4, 1);
+    	particleSystem.setDirection(new Vector3f(0, 1, 0), 0.1f);
+    	particleSystem.setLifeError(0.1f);  //The higher the values, the more random they are
+    	particleSystem.setSpeedError(0.4f);
+    	particleSystem.setScaleError(0.8f);
+    	particleSystem.randomizeRotation();
+
     	
     	//Clock Initializing
         realTime = LocalTime.now();
@@ -341,8 +358,16 @@ public class TestScene extends SceneSetup{
 	            
 
 	   	 camera.move();
+	   	 
 	     //picker.update();
 	       
+	   	 
+	   	 //For the Particle System	   	 
+	   	 particleSystem.generateParticles(player.getPosition());
+	     ParticleMaster.update(camera);
+	     
+	   	 
+	     
 	     GL11.glEnable(GL30.GL_CLIP_DISTANCE0);
 	       
 	     //Frame Buffers for reflections
@@ -388,6 +413,7 @@ public class TestScene extends SceneSetup{
 	
 	
 	public void Destroy() {
+		ParticleMaster.cleanUp();
 		TextMaster.cleanUp();
 		fbos.cleanUp();
         waterShader.cleanUp();

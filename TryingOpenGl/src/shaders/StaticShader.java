@@ -12,6 +12,7 @@ import entities.Light;
 import toolBox.Maths;
 
 public class StaticShader extends ShaderProgram {
+	//TODO use videos 39 & 40 to add shadows to entities with Vertex, Fragment Shaders, and Static Shader Class
 	
 	private static final int MAX_LIGHTS = 4;
 	

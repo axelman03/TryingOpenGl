@@ -81,23 +81,26 @@ public class TestScene extends SceneSetup{
     
     public void load() {
     	
+
+    	
     	//Basic Scene Loading
     	loader = new Loader();
     	TextMaster.init(loader);
-    	renderer = new MasterRenderer(loader);
-    	ParticleMaster.init(loader,  renderer.getProjectionMatrix());
-    	
-    	//Entities and other Array Lists Loading
-    	entities = new ArrayList<Entity>();
-    	normalMapEntities = new ArrayList<Entity>();
-    	lights = new ArrayList<Light>();
-    	guis = new ArrayList<GuiTexture>();
     	
     	//Player Loading
     	personModel = OBJLoader.loadObjModel("person", loader);
     	person = new TexturedModel(personModel, new ModelTexture(loader.loadTexture("playerTexture")));
     	player = new Player(person, new Vector3f(100, 0 ,-50), 0 ,0,0,1);
     	camera = new Camera(player);
+    	
+    	//More Basic Scene Loading
+    	renderer = new MasterRenderer(loader, camera);
+    	
+    	//Entities and other Array Lists Loading
+    	entities = new ArrayList<Entity>();
+    	normalMapEntities = new ArrayList<Entity>();
+    	lights = new ArrayList<Light>();
+    	guis = new ArrayList<GuiTexture>();
     	
     	//Water Loading
     	fbos = new WaterFrameBuffers();
@@ -110,6 +113,7 @@ public class TestScene extends SceneSetup{
     	font = new FontType(loader.loadTexture("candara"), new File("res/candara.fnt"));
     	
     	//Particle System Loading
+    	ParticleMaster.init(loader,  renderer.getProjectionMatrix());
     	ParticleTexture particleTexture = new ParticleTexture(loader.loadTexture("particleAtlas"), 4);
     	ParticleMaster.init(loader, renderer.getProjectionMatrix());
     	particleSystem = new ParticleSystem(particleTexture, 50, 25, 0.3f, 4, 1);
@@ -135,10 +139,10 @@ public class TestScene extends SceneSetup{
         TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
         TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
 
-	    Terrain terrain1 = new Terrain(0,-1,loader,texturePack,blendMap, "heightmap");
-	    Terrain terrain2 = new Terrain(-1,-1,loader,texturePack,blendMap, "heightmap");
-	    Terrain terrain3 = new Terrain(-1,0,loader,texturePack,blendMap, "heightmap");
-	    Terrain terrain4 = new Terrain(0,0,loader,texturePack,blendMap, "heightmap");
+	    Terrain terrain1 = new Terrain(0,-1,loader,texturePack,blendMap, "heightmap", true);
+	    Terrain terrain2 = new Terrain(-1,-1,loader,texturePack,blendMap, "heightmap", true);
+	    Terrain terrain3 = new Terrain(-1,0,loader,texturePack,blendMap, "heightmap", false);
+	    Terrain terrain4 = new Terrain(0,0,loader,texturePack,blendMap, "heightmap", false);
 
 	    terrain = new Terrain[GRIDY][GRIDX];
 	    terrain[0][0] = terrain1;
@@ -173,28 +177,44 @@ public class TestScene extends SceneSetup{
         for (int q = 0; q < GRIDY; q++){
         	for (int c = 0; c < GRIDX; c++){
         		for(int i=0;i<500;i++){
-        			if(i%20 == 0){
-	        			float x = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getX();
-	        			float z = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getZ();
-	        			float y = terrain[q][c].getHeightOfTerrain(x,z);
-	        			entities.add(new Entity(staticModel, new Vector3f(x,y,z),0,random.nextFloat() * 360, 0, 6f));
-	        			x = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getX();
-	        			z = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getZ();
-	        			y = terrain[q][c].getHeightOfTerrain(x,z);
-	        			entities.add(new Entity(grass, new Vector3f(x,y,z),0,random.nextFloat() * 360, 0, 2f));
-	        			x = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getX();
-	        			z = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getZ();
-	        			y = terrain[q][c].getHeightOfTerrain(x,z);
-	        			entities.add(new Entity(fern, random.nextInt(4), new Vector3f(x,y,z),0,random.nextFloat() * 360, 0, 0.9f));
-	        			x = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getX();
-	        			z = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getZ();
-	        			y = terrain[q][q].getHeightOfTerrain(x,z);
-	        			entities.add(new Entity(tree, new Vector3f(x,y,z),0,random.nextFloat() * 360, 0, random.nextFloat()*0.1f + 0.8f));
-	        			x = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getX();
-	        			z = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getZ();
-	        			y = terrain[q][c].getHeightOfTerrain(x,z);
-	        			entities.add(new Entity(flowers, new Vector3f(x,y,z),0,random.nextFloat() * 360, 0, 0.9f));
-	        		}
+        			for(int w = 0; w < waters.size(); w++) {
+        				if(i%20 == 0){
+    	        			float x = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getX();
+    	        			float z = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getZ();
+    	        			float y = terrain[q][c].getHeightOfTerrain(x,z);
+    	        			do {
+    	        				x = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getX();
+    	    	        		z = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getZ();
+    	    	        		y = terrain[q][c].getHeightOfTerrain(x,z);
+    	        			}while(y <= waters.get(w).getHeight());
+    	        			entities.add(new Entity(staticModel, new Vector3f(x,y,z),0,random.nextFloat() * 360, 0, 6f));
+    	        			do {
+    	        				x = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getX();
+    	    	        		z = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getZ();
+    	    	        		y = terrain[q][c].getHeightOfTerrain(x,z);
+    	        			}while(y <= waters.get(w).getHeight());
+    	        			entities.add(new Entity(grass, new Vector3f(x,y,z),0,random.nextFloat() * 360, 0, 2f));
+    	        			do {
+    	        				x = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getX();
+    	    	        		z = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getZ();
+    	    	        		y = terrain[q][c].getHeightOfTerrain(x,z);
+    	        			}while(y <= waters.get(w).getHeight());
+    	        			entities.add(new Entity(fern, random.nextInt(4), new Vector3f(x,y,z),0,random.nextFloat() * 360, 0, 0.9f));
+    	        			do {
+    	        				x = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getX();
+    	    	        		z = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getZ();
+    	    	        		y = terrain[q][c].getHeightOfTerrain(x,z);
+    	        			}while(y <= waters.get(w).getHeight());
+    	        			entities.add(new Entity(tree, new Vector3f(x,y,z),0,random.nextFloat() * 360, 0, random.nextFloat()*0.1f + 0.8f));
+    	        			do {
+    	        				x = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getX();
+    	    	        		z = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getZ();
+    	    	        		y = terrain[q][c].getHeightOfTerrain(x,z);
+    	        			}while(y <= waters.get(w).getHeight());
+    	        			entities.add(new Entity(flowers, new Vector3f(x,y,z),0,random.nextFloat() * 360, 0, 0.9f));
+    	        		}
+        			}
+        			
         		}
         	}
         }
@@ -308,20 +328,17 @@ public class TestScene extends SceneSetup{
 	   	 SunPosition.realLifeSun(lights.get(0));
 	     //picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain);
 	            
-
+	  
 	   	 camera.move();
 	   	 
 	     //picker.update();
 	       
 	   	 
 	   	 //For the Particle System	   	 
-	   	 particleSystem.generateParticles(player.getPosition());
-
+	   	 particleSystem.generateParticles(new Vector3f(275, 0, -275));
 	     ParticleMaster.update(camera);
-
-	     
-	   	 
-	     
+   	 
+	     renderer.renderShadowMap(entities, lights.get(0));
 	     GL11.glEnable(GL30.GL_CLIP_DISTANCE0);
 	       
 	     //Frame Buffers for reflections

@@ -22,7 +22,7 @@ public class SunPosition {
     	angle = (double)(time / 240);  //angle of line from the center of map to the point where the sun is
     	angle = (angle*Math.PI) / 180;  //degrees to radians
     	
-        light = new Light(new Vector3f(0.0f, (float)(-(1000 * Math.cos(angle))), (float)((1000 * Math.sin(angle)))),new Vector3f(0.2f,0.2f, 0.3f)); //The light of the sun 
+        light = new Light(new Vector3f(1000000f, (float)(-(1000000 * Math.cos(angle))), (float)((1000000 * Math.sin(angle)))),new Vector3f(0.2f,0.2f, 0.3f)); //The light of the sun 
 	}
 	
 	public static void realLifeSun(Light light) {
@@ -31,7 +31,7 @@ public class SunPosition {
 		time %= 86400;
 		angle = (double)(time / 240);
     	angle = (angle*Math.PI) / 180;
-		light.setPosition(new Vector3f(0.0f, (float)(-(1000 * Math.cos(angle))), (float)((1000 * Math.sin(angle)))));
+		light.setPosition(new Vector3f(1000000f, (float)(-(1000000 * Math.cos(angle))), (float)((1000000 * Math.sin(angle)))));
 		daylightTime = time;
 		//one hour is 3600 seconds
 		//Used to change the color of the daylight over time

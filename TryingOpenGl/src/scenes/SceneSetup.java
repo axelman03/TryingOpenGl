@@ -7,13 +7,13 @@ public abstract class SceneSetup {
 	public abstract void load();
 	public void Create() {
 	       CreateTerrain();
-	       CreateObjects();
-	       CreateNormalMappedObjects();
 	       CreateLighting();
 	       CreatePlayer();
 	       CreateGui();
 	       CreateMousePicker();
 	       CreateWater();
+	       CreateObjects();
+	       CreateNormalMappedObjects();
 	}
 	public abstract void CreateTerrain();
 	public abstract void CreateObjects();

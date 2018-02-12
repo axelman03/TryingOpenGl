@@ -46,7 +46,7 @@ public class SunPosition {
 			daylightAngle = (double)(daylightTime / 10);
 	    	daylightAngle = (daylightAngle*Math.PI) / 180;	
 	    	light.setColor(new Vector3f((float)(-0.4 * Math.cos(daylightAngle) + 1.1), 0.7f, 0.7f));
-		}
+		} 
 		else if(time > 25200 && time <= 61200) {  //day
 			daylightTime %= 36000;
 			daylightAngle = (double)(daylightTime / 100);

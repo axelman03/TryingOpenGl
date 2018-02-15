@@ -9,45 +9,53 @@ public class TestMenu extends SceneSetup{
 	}
 
 	@Override
-	public void CreateTerrain() {}
+	public void createTerrain() {}
 
 	@Override
-	public void CreateObjects() {
+	public void createObjects() {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void CreateNormalMappedObjects() {}
+	public void createNormalMappedObjects() {}
 
 	@Override
-	public void CreateLighting() {}
+	public void createLighting() {}
 
 	@Override
-	public void CreatePlayer() {}
+	public void createPlayer() {}
 	
 	@Override
-	public void CreateGui() {
+	public void createGui() {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void CreateMousePicker() {}
+	public void createMousePicker() {}
 
 	@Override
-	public void CreateWater() {}
-
+	public void createWater() {}
+	
 	@Override
-	public void Run() {
+	public void createSound() {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void Destroy() {
+	public void run() {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void destroy() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
 
 }

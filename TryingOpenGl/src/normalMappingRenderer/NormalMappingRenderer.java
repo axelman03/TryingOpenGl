@@ -16,6 +16,7 @@ import entities.Light;
 import models.RawModel;
 import models.TexturedModel;
 import renderEngine.MasterRenderer;
+import shadows.ShadowBox;
 import textures.ModelTexture;
 import toolBox.Maths;
 
@@ -27,12 +28,14 @@ public class NormalMappingRenderer {
 		this.shader = new NormalMappingShader();
 		shader.start();
 		shader.loadProjectionMatrix(projectionMatrix);
+		shader.loadShadowDistance(ShadowBox.SHADOW_DISTANCE);
 		shader.connectTextureUnits();
 		shader.stop();
 	}
 
-	public void render(Map<TexturedModel, List<Entity>> entities, Vector4f clipPlane, List<Light> lights, Camera camera) {
+	public void render(Map<TexturedModel, List<Entity>> entities, Vector4f clipPlane, List<Light> lights, Camera camera, Matrix4f toShadowSpace) {
 		shader.start();
+		shader.loadToShadowSpaceMatrix(toShadowSpace);
 		prepare(clipPlane, lights, camera);
 		for (TexturedModel model : entities.keySet()) {
 			prepareTexturedModel(model);

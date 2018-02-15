@@ -6,12 +6,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.lwjgl.openal.AL10;
+import org.lwjgl.openal.AL11;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
+import audio.AudioMaster;
+import audio.Source;
 import entities.Camera;
 import entities.Entity;
 import entities.Light;
@@ -55,6 +59,7 @@ public class TestScene extends SceneSetup{
 	List<Light>lights;
 	List<GuiTexture>guis;
 	List<WaterTile>waters;
+	List<Integer>sounds;
 	
 	WaterFrameBuffers fbos;
     WaterRenderer waterRenderer;
@@ -69,8 +74,8 @@ public class TestScene extends SceneSetup{
     FontType font;
     GUIText text;
     
-
-	
+    Source soundSource;
+    
 	ParticleSystem particleSystem;
 	
 	//need to make water reflections work for each object in the lights array
@@ -101,6 +106,7 @@ public class TestScene extends SceneSetup{
     	normalMapEntities = new ArrayList<Entity>();
     	lights = new ArrayList<Light>();
     	guis = new ArrayList<GuiTexture>();
+    	sounds = new ArrayList<Integer>();
     	
     	//Water Loading
     	fbos = new WaterFrameBuffers();
@@ -124,12 +130,16 @@ public class TestScene extends SceneSetup{
     	particleSystem.randomizeRotation();
 
 
-    	
+    	//Sound Loading
+    	AudioMaster.init();
+    	AudioMaster.setListenerData(camera.getPosition().x, camera.getPosition().y,camera.getPosition().z);
+		soundSource = new Source();
+		AL10.alDistanceModel(AL11.AL_EXPONENT_DISTANCE_CLAMPED);  //The farther from sound, the less you hear the noise; look at the last sound tutorial as reference for models
 
     }
    	
 	@Override
-	public void CreateTerrain() {
+	public void createTerrain() {
 		 //Loading Terrain
         TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy"));
         TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("dirt"));
@@ -154,7 +164,7 @@ public class TestScene extends SceneSetup{
 
 	
 	@Override
-	public void CreateObjects() {
+	public void createObjects() {
 		   //Creating Models and Stuff
 	    ModelData data = OBJFileLoader.loadOBJ("tree");
         RawModel model = loader.loadToVAO(data.getVertices(), data.getTextureCoords(), data.getNormals(), data.getIndices());
@@ -223,7 +233,7 @@ public class TestScene extends SceneSetup{
 	
 	
 	@Override
-	public void CreateNormalMappedObjects() {
+	public void createNormalMappedObjects() {
 		//Loading up normal Mapped Entities
         TexturedModel barrelModel = new TexturedModel(NormalMappedObjLoader.loadOBJ("barrel", loader), new ModelTexture(loader.loadTexture("barrel")));
         barrelModel.getTexture().setNormalMap(loader.loadTexture("barrelNormal"));
@@ -246,7 +256,7 @@ public class TestScene extends SceneSetup{
 
 	
 	@Override
-	public void CreateLighting() {
+	public void createLighting() {
 		 //Lighting - make seperate class to do this - including adding the lamps
 
         Light sun = new Light(new Vector3f(0.0f, 0.0f, 0.0f),new Vector3f(0.0f,0.0f, 0.0f)); //The light of the sun 
@@ -267,13 +277,13 @@ public class TestScene extends SceneSetup{
 	
 
 	@Override
-	public void CreatePlayer() {
+	public void createPlayer() {
         //Loading the Player
 	}
 	
 	
 	@Override
-	public void CreateGui() {
+	public void createGui() {
 		 //Loading the Gui
         GuiTexture gui = new GuiTexture(loader.loadFontTextureAltlas("health"), new Vector2f(-0.75f, 0.90f),0, new Vector2f(0.20f, 0.30f));
         guis.add(gui);
@@ -289,7 +299,7 @@ public class TestScene extends SceneSetup{
 
 	
 	@Override
-	public void CreateMousePicker() {
+	public void createMousePicker() {
         //Mouse Picker
         //MousePicker picker =null;
 		
@@ -297,17 +307,28 @@ public class TestScene extends SceneSetup{
 
 	
 	@Override
-	public void CreateWater() {
+	public void createWater() {
         //Water
         WaterTile water = new WaterTile(275, -275, 0);
         waters.add(water);
 		
 	}
 	
+	@Override
+	public void createSound() {
+		int buffer = AudioMaster.loadSound("audio/bounce.wav");
+		sounds.add(buffer);
+		soundSource.setLooping(true);
+		soundSource.setVolume(5);
+		soundSource.setPitch(1);
+		soundSource.setPosition(player.getPosition().x, player.getPosition().y, player.getPosition().z);
+	   	soundSource.play(sounds.get(0));
+	}
+	
 	
 	
 	//In the while loop
-	public void Run() {
+	public void run() {
 		
 	   	 for(int q = 0; q < GRIDY; q++) {
 	   		 for (int c = 0; c < GRIDX; c++){
@@ -333,6 +354,8 @@ public class TestScene extends SceneSetup{
 	   	 
 	     //picker.update();
 	       
+	   	 //For Sound System
+
 	   	 
 	   	 //For the Particle System	   	 
 	   	 particleSystem.generateParticles(new Vector3f(275, 0, -275));
@@ -386,9 +409,10 @@ public class TestScene extends SceneSetup{
 	
 	
 	
-	public void Destroy() {
+	public void destroy() {
 		ParticleMaster.cleanUp();
 		TextMaster.cleanUp();
+		AudioMaster.cleanUp();
 		fbos.cleanUp();
         waterShader.cleanUp();
         guiRenderer.cleanUp();

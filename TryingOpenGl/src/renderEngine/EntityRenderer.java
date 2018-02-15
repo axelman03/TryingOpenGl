@@ -13,6 +13,7 @@ import entities.Entity;
 import models.RawModel;
 import models.TexturedModel;
 import shaders.StaticShader;
+import shadows.ShadowBox;
 import textures.ModelTexture;
 import toolBox.Maths;
 
@@ -26,11 +27,14 @@ public class EntityRenderer {
 		this.shader = shader;
 		shader.start();
 		shader.loadProjectionMatrix(projectionMatrix);
+		shader.loadShadowDistance(ShadowBox.SHADOW_DISTANCE);
+		shader.loadShadowMap();
 		shader.stop();
 	}
 	
 	
-	public void render(Map<TexturedModel, List<Entity>> entities){
+	public void render(Map<TexturedModel, List<Entity>> entities, Matrix4f toShadowSpace){
+		shader.loadToShadowSpaceMatrix(toShadowSpace);
 		for(TexturedModel model:entities.keySet()){
 			prepareTexturedModel(model);
 			List<Entity> batch = entities.get(model);

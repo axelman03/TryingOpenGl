@@ -18,7 +18,7 @@ public class MainGameLoop {
 	        TestScene testScene = new TestScene();
 	        
 	        //Scenes get created here
-	        testScene.Create();
+	        testScene.create();
 	        
 	 
 	        
@@ -26,7 +26,7 @@ public class MainGameLoop {
 	        while(!Display.isCloseRequested()){
 	        	
 	        	//Scenes get ran here
-	        	testScene.Run();
+	        	testScene.run();
 	        	
 	   	     	DisplayManager.updateDisplay();
 	        }
@@ -34,6 +34,6 @@ public class MainGameLoop {
 	        DisplayManager.closeDisplay();
 	        
 	        //Scenes get destroyed here
-	        testScene.Destroy();
+	        testScene.destroy();
 	    }
 	}

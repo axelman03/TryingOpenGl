@@ -11,7 +11,7 @@ import entities.Light;
 import shaders.ShaderProgram;
 
 public class NormalMappingShader extends ShaderProgram{
-	
+		
 	private static final int MAX_LIGHTS = 4;
 	
 	private static final String VERTEX_FILE = "src/normalMappingRenderer/normalMapVShader.txt";
@@ -31,6 +31,9 @@ public class NormalMappingShader extends ShaderProgram{
 	private int location_plane;
 	private int location_modelTexture;
 	private int location_normalMap;
+	private int location_toShadowMapSpace;
+	private int location_shadowMap;
+	private int location_shadowDistance;
 
 	public NormalMappingShader() {
 		super(VERTEX_FILE, FRAGMENT_FILE);
@@ -57,6 +60,9 @@ public class NormalMappingShader extends ShaderProgram{
 		location_plane = super.getUniformLocation("plane");
 		location_modelTexture = super.getUniformLocation("modelTexture");
 		location_normalMap = super.getUniformLocation("normalMap");
+		location_toShadowMapSpace = super.getUniformLocation("toShadowMapSpace");
+		location_shadowMap = super.getUniformLocation("shadowMap");
+		location_shadowDistance = super.getUniformLocation("shadowDistance");
 		
 		location_lightPositionEyeSpace = new int[MAX_LIGHTS];
 		location_lightColor = new int[MAX_LIGHTS];
@@ -71,6 +77,15 @@ public class NormalMappingShader extends ShaderProgram{
 	protected void connectTextureUnits(){
 		super.loadInt(location_modelTexture, 0);
 		super.loadInt(location_normalMap, 1);
+		super.loadInt(location_shadowMap, 2);
+	}
+	
+	public void loadShadowDistance(float shadowDistance) {
+		super.loadFloat(location_shadowDistance, shadowDistance);
+	}
+	
+	public void loadToShadowSpaceMatrix(Matrix4f matrix) {
+		super.loadMatrix(location_toShadowMapSpace, matrix);
 	}
 	
 	protected void loadClipPlane(Vector4f plane){

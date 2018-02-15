@@ -12,7 +12,7 @@ import entities.Light;
 import toolBox.Maths;
 
 public class StaticShader extends ShaderProgram {
-	//TODO use videos 39 & 40 to add shadows to entities with Vertex, Fragment Shaders, and Static Shader Class
+	
 	
 	private static final int MAX_LIGHTS = 4;
 	
@@ -32,6 +32,9 @@ public class StaticShader extends ShaderProgram {
 	private int location_numberOfRows;
 	private int location_offset;
 	private int location_plane;
+	private int location_toShadowMapSpace;
+	private int location_shadowMap;
+	private int location_shadowDistance;
 	
 	
 	public StaticShader() {
@@ -59,6 +62,9 @@ public class StaticShader extends ShaderProgram {
 		location_numberOfRows = super.getUniformLocation("numberOfRows");
 		location_offset = super.getUniformLocation("offset");
 		location_plane = super.getUniformLocation("plane");
+		location_toShadowMapSpace = super.getUniformLocation("toShadowMapSpace");
+		location_shadowMap = super.getUniformLocation("shadowMap");
+		location_shadowDistance = super.getUniformLocation("shadowDistance");
 		
 		location_lightPosition = new int[MAX_LIGHTS];
 		location_lightColor = new int[MAX_LIGHTS];
@@ -68,6 +74,18 @@ public class StaticShader extends ShaderProgram {
 			location_lightColor[i] = super.getUniformLocation("lightColor["+i+"]");
 			location_attenuation[i] = super.getUniformLocation("attenuation["+i+"]");
 		}
+	}
+	
+	public void loadShadowDistance(float shadowDistance) {
+		super.loadFloat(location_shadowDistance, shadowDistance);
+	}
+	
+	public void loadShadowMap() {
+		super.loadInt(location_shadowMap, 0);
+	}
+	
+	public void loadToShadowSpaceMatrix(Matrix4f matrix) {
+		super.loadMatrix(location_toShadowMapSpace, matrix);
 	}
 	
 	public void loadClipPlane(Vector4f plane){

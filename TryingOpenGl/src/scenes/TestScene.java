@@ -38,6 +38,7 @@ import renderEngine.ModelData;
 import renderEngine.OBJFileLoader;
 import renderEngine.OBJLoader;
 import skybox.SunPosition;
+import terrain.HeightsGenerator;
 import terrain.Terrain;
 import textures.ModelTexture;
 import textures.TerrainTexture;
@@ -159,6 +160,12 @@ public class TestScene extends SceneSetup{
 	    terrain[1][0] = terrain2;
 	    terrain[0][1] = terrain3;
 	    terrain[1][1] = terrain4;
+	    
+	    HeightsGenerator.smoothBetweenTerrains(terrain1, terrain2);
+	    HeightsGenerator.smoothBetweenTerrains(terrain2, terrain3);
+	    HeightsGenerator.smoothBetweenTerrains(terrain3, terrain4);
+	    HeightsGenerator.smoothBetweenTerrains(terrain4, terrain1);
+	    
 		
 	}
 
@@ -316,6 +323,7 @@ public class TestScene extends SceneSetup{
 	
 	@Override
 	public void createSound() {
+		//Sound Effects
 		int buffer = AudioMaster.loadSound("audio/bounce.wav");
 		sounds.add(buffer);
 		soundSource.setLooping(true);

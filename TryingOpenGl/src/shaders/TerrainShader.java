@@ -13,8 +13,8 @@ import toolBox.Maths;
 public class TerrainShader extends ShaderProgram{
 
 	private static final int MAX_LIGHTS = 4;
-	private static final String VERTEX_FILE = "src/shaders/terrainVertexShader.txt";
-	private static final String FRAGMENT_FILE = "src/shaders/terrainFragmentShader.txt";
+	private static final String VERTEX_FILE = "TryingOpenGl/src/shaders/terrainVertexShader.txt";
+	private static final String FRAGMENT_FILE = "TryingOpenGl/src/shaders/terrainFragmentShader.txt";
 	
 	private int location_transformationMatrix;
 	private int location_projectionMatrix;

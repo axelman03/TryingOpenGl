@@ -12,6 +12,7 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.PixelFormat;
+/*
 import org.lwjgl.openvr.OpenVR;
 import org.lwjgl.openvr.VR;
 import org.lwjgl.openvr.VRSystem;
@@ -24,7 +25,7 @@ import org.lwjgl.ovr.OVRLogCallback;
 import org.lwjgl.ovr.OVRUtil;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
-
+*/
 public class DisplayManager {
 	
 	private static final int WIDTH = 1280;
@@ -79,7 +80,7 @@ public class DisplayManager {
 		delta =(currentFrameTime -lastFrameTime)/1000f;
 		lastFrameTime = currentFrameTime;
 	}
-	
+	/*
 	public static void runVR() {
 		
 		// https://github.com/LWJGL/lwjgl3/tree/master/modules/core/src/test/java/org/lwjgl
@@ -171,7 +172,7 @@ public class DisplayManager {
         OVR.ovr_Shutdown();
         callback.free();
     }
-	
+	*/
 	
 	public static float getFrameTimeSeconds(){
 		return delta;

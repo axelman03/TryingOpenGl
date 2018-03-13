@@ -101,7 +101,7 @@ public class Terrain {
 		
 		BufferedImage image = null;
 		try {
-			image = ImageIO.read(new File("res/" + heightMap + ".png"));
+			image = ImageIO.read(new File("TryingOpenGl/res/" + heightMap + ".png"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

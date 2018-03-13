@@ -117,7 +117,7 @@ public class TestScene extends SceneSetup{
     	
     	//GUI Loading
     	guiRenderer = new GuiRenderer(loader);
-    	font = new FontType(loader.loadTexture("candara"), new File("res/candara.fnt"));
+    	font = new FontType(loader.loadTexture("candara"), new File("TryingOpenGl/res/candara.fnt"));
     	
     	//Particle System Loading
     	ParticleMaster.init(loader,  renderer.getProjectionMatrix());
@@ -150,8 +150,8 @@ public class TestScene extends SceneSetup{
         TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
         TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
 
-	    Terrain terrain1 = new Terrain(0,-1,loader,texturePack,blendMap, "heightmap", true);
-	    Terrain terrain2 = new Terrain(-1,-1,loader,texturePack,blendMap, "heightmap", true);
+	    Terrain terrain1 = new Terrain(0,-1,loader,texturePack,blendMap, "heightmap", false);
+	    Terrain terrain2 = new Terrain(-1,-1,loader,texturePack,blendMap, "heightmap", false);
 	    Terrain terrain3 = new Terrain(-1,0,loader,texturePack,blendMap, "heightmap", false);
 	    Terrain terrain4 = new Terrain(0,0,loader,texturePack,blendMap, "heightmap", false);
 
@@ -186,7 +186,10 @@ public class TestScene extends SceneSetup{
         fern.getTexture().setHasTransparency(true);
         TexturedModel flowers = new TexturedModel(OBJLoader.loadObjModel("fern", loader),new ModelTexture(loader.loadTexture("flower")));
         flowers.getTexture().setHasTransparency(true);
-        TexturedModel tree = new TexturedModel(OBJLoader.loadObjModel("lowPolyTree", loader),new ModelTexture(loader.loadTexture("lowPolyTree"))); 
+        TexturedModel tree = new TexturedModel(OBJLoader.loadObjModel("lowPolyTree", loader),new ModelTexture(loader.loadTexture("lowPolyTree")));
+
+        TexturedModel car = new TexturedModel(OBJLoader.loadObjModel("Sunstorm", loader), new ModelTexture(loader.loadTexture("SunstormSkin1_Texture")));
+        entities.add(new Entity(car, new Vector3f(35, 10, -75), 0, 0, 0, 10f));
         
         //Loading Models and Stuff - make separate class to do this
         Random random = new Random(676452);

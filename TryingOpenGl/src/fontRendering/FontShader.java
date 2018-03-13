@@ -7,8 +7,8 @@ import shaders.ShaderProgram;
 
 public class FontShader extends ShaderProgram{
 
-	private static final String VERTEX_FILE = "src/fontRendering/fontVertex.txt";
-	private static final String FRAGMENT_FILE = "src/fontRendering/fontFragment.txt";
+	private static final String VERTEX_FILE = "TryingOpenGl/src/fontRendering/fontVertex.txt";  //Added "TryingOpenGl/" to every shader program for IntelliJ
+	private static final String FRAGMENT_FILE = "TryingOpenGl/src/fontRendering/fontFragment.txt";
 	
 	private int location_color;
 	private int location_translation;

@@ -101,7 +101,7 @@ public class Loader {
 	public int loadTexture(String fileName){
 		Texture texture = null;
 		try {
-			texture = TextureLoader.getTexture("PNG", new FileInputStream("res/"+fileName+".png"));
+			texture = TextureLoader.getTexture("PNG", new FileInputStream("TryingOpenGl/res/"+fileName+".png"));
 			GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
 			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
 			GL11.glTexParameterf(GL11.GL_TEXTURE_2D,GL14.GL_TEXTURE_LOD_BIAS, 0);
@@ -127,7 +127,7 @@ public class Loader {
 	public int loadFontTextureAltlas(String fileName){
 		Texture texture = null;
 		try {
-			texture = TextureLoader.getTexture("PNG", new FileInputStream("res/"+fileName+".png"));
+			texture = TextureLoader.getTexture("PNG", new FileInputStream("TryingOpenGl/res/"+fileName+".png"));
 			GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
 			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
 			GL11.glTexParameterf(GL11.GL_TEXTURE_2D,GL14.GL_TEXTURE_LOD_BIAS, -0);
@@ -162,7 +162,7 @@ public class Loader {
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, texID);
 		for(int i = 0; i < textureFiles.length; i++){
-			TextureData data = decodeTextureFile("res/"+textureFiles[i]+".png");
+			TextureData data = decodeTextureFile("TryingOpenGl/res/"+textureFiles[i]+".png");
 			GL11.glTexImage2D(GL13.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL11.GL_RGBA, data.getWidth(), data.getHeight(), 0, GL11.GL_RGBA,GL11.GL_UNSIGNED_BYTE,data.getBuffer());	
 		}
 		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);

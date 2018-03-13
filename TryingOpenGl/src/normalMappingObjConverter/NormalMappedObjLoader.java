@@ -16,7 +16,7 @@ import renderEngine.Loader;
 
 public class NormalMappedObjLoader {
 
-	private static final String RES_LOC = "res/";
+	private static final String RES_LOC = "TryingOpenGl/res/";
 
 	public static RawModel loadOBJ(String objFileName, Loader loader) {
 		FileReader isr = null;

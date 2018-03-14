@@ -23,8 +23,10 @@ public class TexturedModel {
 
 	public ModelTexture getTexture() {
 		return texture;
+
 	}
 
-	
-	
+	public void setTexture(ModelTexture texture) {
+		this.texture = texture;
+	}
 }

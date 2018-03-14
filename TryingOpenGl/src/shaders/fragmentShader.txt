@@ -56,14 +56,14 @@ void main(void){
 		float nDot1 = dot(unitNormal, unitLightVector);
 		float brightness = max(nDot1,0.0);
 		float level = floor(brightness * levels);  //for cel-shading
-		brightness = level / levels;  //for cel-shading
+		//brightness = level / levels;  //for cel-shading
 		vec3 lightDirection =-unitLightVector;
 		vec3 reflectedLightDirection = reflect(lightDirection,unitNormal);
 		float specularFactor = dot(reflectedLightDirection, unitVectorToCamera);
 		specularFactor = max(specularFactor, 0.0);
 		float dampedFactor = pow(specularFactor,shineDamper);
-		level = floor(dampedFactor * levels);  //for cel-shading
-		dampedFactor = level / levels;  //for cel-shading
+		//level = floor(dampedFactor * levels);  //for cel-shading
+		//dampedFactor = level / levels;  //for cel-shading
 		totalDiffuse = totalDiffuse + (brightness * lightColor[i])/attFactor;
 		totalSpecular = totalSpecular + (dampedFactor * reflectivity *  lightColor[i])/attFactor;
 	}

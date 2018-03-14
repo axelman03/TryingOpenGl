@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.AL11;
 import org.lwjgl.opengl.GL11;
@@ -78,6 +79,8 @@ public class TestScene extends SceneSetup{
     Source soundSource;
     
 	ParticleSystem particleSystem;
+
+	TexturedModel car;
 	
 	//need to make water reflections work for each object in the lights array
 	
@@ -169,6 +172,7 @@ public class TestScene extends SceneSetup{
 		
 	}
 
+	//To make Object textures work, select all in blender at bottom, and hit ctrl-J or join
 	
 	@Override
 	public void createObjects() {
@@ -188,8 +192,8 @@ public class TestScene extends SceneSetup{
         flowers.getTexture().setHasTransparency(true);
         TexturedModel tree = new TexturedModel(OBJLoader.loadObjModel("lowPolyTree", loader),new ModelTexture(loader.loadTexture("lowPolyTree")));
 
-        TexturedModel car = new TexturedModel(OBJLoader.loadObjModel("Sunstorm", loader), new ModelTexture(loader.loadTexture("SunstormSkin1_Texture")));
-        entities.add(new Entity(car, new Vector3f(35, 10, -75), 0, 0, 0, 10f));
+        car = new TexturedModel(OBJLoader.loadObjModel("bullet350_3", loader), new ModelTexture(loader.loadTexture("bullet350Skin2_Texture")));
+        entities.add(new Entity(car, new Vector3f(35, 10, -75), 0, 0, 0, 6f));
         
         //Loading Models and Stuff - make separate class to do this
         Random random = new Random(676452);
@@ -232,6 +236,7 @@ public class TestScene extends SceneSetup{
     	    	        		y = terrain[q][c].getHeightOfTerrain(x,z);
     	        			}while(y <= waters.get(w).getHeight());
     	        			entities.add(new Entity(flowers, new Vector3f(x,y,z),0,random.nextFloat() * 360, 0, 0.9f));
+
     	        		}
         			}
         			
@@ -240,8 +245,7 @@ public class TestScene extends SceneSetup{
         }
 		
 	}
-	
-	
+
 	@Override
 	public void createNormalMappedObjects() {
 		//Loading up normal Mapped Entities
@@ -261,7 +265,13 @@ public class TestScene extends SceneSetup{
         boulderModel.getTexture().setNormalMap(loader.loadTexture("boulderNormal"));
         boulderModel.getTexture().setShineDamper(10);
         boulderModel.getTexture().setReflectivity(0.1f);
-        normalMapEntities.add(new Entity(boulderModel, new Vector3f(55, 10, -75), 0, 0, 0, 1f));      
+        normalMapEntities.add(new Entity(boulderModel, new Vector3f(55, 10, -75), 0, 0, 0, 1f));
+
+        TexturedModel carModel = new TexturedModel(NormalMappedObjLoader.loadOBJ("bullet350_3", loader), new ModelTexture(loader.loadTexture("bullet350Skin2_Texture2_COLOR")));
+        carModel.getTexture().setNormalMap(loader.loadTexture("bullet350Skin2_Texture2_NRM"));
+        carModel.getTexture().setShineDamper(10);
+        carModel.getTexture().setReflectivity(0.1f);
+        normalMapEntities.add(new Entity(carModel, new Vector3f(15, 10, -75), 0, 0, 0, 10f));
 	}
 
 	
@@ -354,10 +364,16 @@ public class TestScene extends SceneSetup{
 	   	    	}
 	   		 }
 	   	 }
-	   	 
 
-	   	 
-	   	 SunPosition.realLifeSun(lights.get(0));
+		if (Keyboard.isKeyDown(Keyboard.KEY_R)){
+	   	 	car.setTexture(new ModelTexture(loader.loadTexture("bullet350Skin1_Texture")));
+			entities.add(0, new Entity(car, new Vector3f(35, 10, -75), 0, 0, 0, 10f));
+		}
+
+
+
+
+		SunPosition.realLifeSun(lights.get(0));
 	     //picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain);
 	            
 	  

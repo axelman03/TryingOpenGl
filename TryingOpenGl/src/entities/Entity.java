@@ -3,6 +3,7 @@ package entities;
 import org.lwjgl.util.vector.Vector3f;
 
 import models.TexturedModel;
+import textures.ModelTexture;
 
 public class Entity {
 	
@@ -55,8 +56,6 @@ public class Entity {
 		this.rotY+=dy;
 		this.rotZ+=dz;
 	}
-	
-	
 	
 	public TexturedModel getModel() {
 		return model;

@@ -48,7 +48,7 @@ import water.WaterFrameBuffers;
 import water.WaterRenderer;
 import water.WaterShader;
 import water.WaterTile;
-
+//ToDo: Make collision Detection Work
 public class TestScene extends SceneSetup{
 	public final static int GRIDX = 2;
 	public final static int GRIDY = 2;
@@ -56,7 +56,7 @@ public class TestScene extends SceneSetup{
 	MasterRenderer renderer;
 	
 	Terrain[][] terrain;
-	List<Entity> entities;
+	ArrayList<Entity> entities;
 	List<Entity> normalMapEntities;
 	List<Light>lights;
 	List<GuiTexture>guis;
@@ -357,7 +357,7 @@ public class TestScene extends SceneSetup{
 	   		    	if(terrain[q][c].getX() + terrain[q][c].getSize() > player.getPosition().x) {
 	   		    		if(terrain[q][c].getZ() <= player.getPosition().z) {
 	   		            	if(terrain[q][c].getZ() + terrain[q][c].getSize() > player.getPosition().z) {
-	   		                	player.move(terrain[q][c]);
+	   		                	player.move(terrain[q][c], entities);
 	   		            	}
 	   		        	}
 	   		    	}

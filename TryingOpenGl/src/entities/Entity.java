@@ -3,6 +3,7 @@ package entities;
 import org.lwjgl.util.vector.Vector3f;
 
 import models.TexturedModel;
+import entities.collisionDetection.HitBox;
 import textures.ModelTexture;
 
 public class Entity {
@@ -13,6 +14,10 @@ public class Entity {
 	private float scale;
 	
 	private float textureIndex = 0;
+
+	private HitBox box;
+	private boolean hasHitBox = false;
+	private boolean colides = false;
 	
 	public Entity(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
 		super();
@@ -34,6 +39,20 @@ public class Entity {
 		this.rotZ = rotZ;
 		this.scale = scale;
 	}
+
+	public HitBox getBox() {
+		return box;
+	}
+
+	public void setBox(HitBox box) {
+		hasHitBox = true;
+		this.box = box;
+		box.setPosition(new Vector3f(position.x, position.y, position.z));
+		box.setRotation(new Vector3f(rotX, rotY, rotZ));
+
+	}
+
+
 	
 	public float getTextureXOffset(){
 		int column = (int) (textureIndex%model.getTexture().getNumberOfRows());
@@ -49,12 +68,18 @@ public class Entity {
 		this.position.x+=dx;
 		this.position.y+=dy;
 		this.position.z+=dz;
+		if (hasHitBox) {
+			box.setPosition(new Vector3f(position.x, 0, position.y));
+		}
 	}
 	
 	public void increaseRotation(float dx, float dy, float dz){
 		this.rotX+=dx;
 		this.rotY+=dy;
 		this.rotZ+=dz;
+		if (hasHitBox) {
+			box.setRotation(new Vector3f(rotX, rotY, rotZ));
+		}
 	}
 	
 	public TexturedModel getModel() {

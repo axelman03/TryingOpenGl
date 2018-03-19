@@ -49,6 +49,9 @@ import water.WaterRenderer;
 import water.WaterShader;
 import water.WaterTile;
 //ToDo: Make collision Detection Work
+	//Finish adding Hitbox math, through the tutorial that helps
+	//then make sure that it takes in a box obj for each object, for detection
+		//then experament with different shapes and with simple object meshes
 public class TestScene extends SceneSetup{
 	public final static int GRIDX = 2;
 	public final static int GRIDY = 2;
@@ -153,7 +156,16 @@ public class TestScene extends SceneSetup{
         TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
         TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
 
-	    Terrain terrain1 = new Terrain(0,-1,loader,texturePack,blendMap, "heightmap", false);
+        //Desert Race Track
+		TerrainTexture desertBackgroundTexture = new TerrainTexture(loader.loadTexture("sandy"));
+		TerrainTexture desertRTexture = new TerrainTexture(loader.loadTexture("grassAroundTrack"));
+		TerrainTexture desertGTexture = new TerrainTexture(loader.loadTexture("hardSand"));
+		TerrainTexture desertBTexture = new TerrainTexture(loader.loadTexture("racingDirt"));
+
+		TerrainTexturePack desertTexturePack = new TerrainTexturePack(desertBackgroundTexture, desertRTexture, desertGTexture, desertBTexture);
+		TerrainTexture desertBlendMap = new TerrainTexture(loader.loadTexture("blendMapDesertRaceTrack"));
+
+	    Terrain terrain1 = new Terrain(0,-1,loader,desertTexturePack,desertBlendMap, "heightmap", false);
 	    Terrain terrain2 = new Terrain(-1,-1,loader,texturePack,blendMap, "heightmap", false);
 	    Terrain terrain3 = new Terrain(-1,0,loader,texturePack,blendMap, "heightmap", false);
 	    Terrain terrain4 = new Terrain(0,0,loader,texturePack,blendMap, "heightmap", false);

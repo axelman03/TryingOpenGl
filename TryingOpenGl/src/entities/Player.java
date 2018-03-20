@@ -27,8 +27,8 @@ public class Player extends Entity {
 	private boolean isInAir = false;
 	private boolean collision = false;
 	
-	public Player(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
-		super(model, position, rotX, rotY, rotZ, scale);
+	public Player(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale, Vector3f maxVertices, Vector3f minVertices) {
+		super(model, position, rotX, rotY, rotZ, scale, maxVertices, minVertices);
 		
 	}
 	public void move(Terrain terrain, ArrayList<Entity> entities){

@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import entities.collisionDetection.HitBoxMath;
+import entities.collisionDetection.HitBoxType;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.AL11;
@@ -49,9 +51,9 @@ import water.WaterRenderer;
 import water.WaterShader;
 import water.WaterTile;
 //ToDo: Make collision Detection Work
-	//Finish adding Hitbox math, through the tutorial that helps
-	//then make sure that it takes in a box obj for each object, for detection
-		//then experament with different shapes and with simple object meshes
+	//Make sure math is right, reduce some if needed
+		//then add narrow sweep, make broad sweep less resource intensive if possible, so its not checking every object every time
+		//experiment with different shapes and with simple object meshes
 public class TestScene extends SceneSetup{
 	public final static int GRIDX = 2;
 	public final static int GRIDY = 2;
@@ -101,8 +103,8 @@ public class TestScene extends SceneSetup{
     	
     	//Player Loading
     	personModel = OBJLoader.loadObjModel("person", loader);
-    	person = new TexturedModel(personModel, new ModelTexture(loader.loadTexture("playerTexture")));
-    	player = new Player(person, new Vector3f(100, 0 ,-50), 0 ,0,0,1);
+    	person = new TexturedModel(personModel, new ModelTexture(loader.loadTexture("playerTexture")), OBJLoader.getMaxVertices(), OBJLoader.getMinVertices());
+    	player = new Player(person, new Vector3f(100, 0 ,-50), 0 ,0,0,1, person.getMaxVertices(), person.getMinVertices());
     	camera = new Camera(player);
     	
     	//More Basic Scene Loading
@@ -192,20 +194,23 @@ public class TestScene extends SceneSetup{
 	    ModelData data = OBJFileLoader.loadOBJ("tree");
         RawModel model = loader.loadToVAO(data.getVertices(), data.getTextureCoords(), data.getNormals(), data.getIndices());
         
-        TexturedModel staticModel = new TexturedModel(model,new ModelTexture(loader.loadTexture("tree")));
-        TexturedModel grass = new TexturedModel(OBJLoader.loadObjModel("grassModel", loader),new ModelTexture(loader.loadTexture("grassTexture"))); 
+        TexturedModel highPolyTree = new TexturedModel(model,new ModelTexture(loader.loadTexture("tree")), OBJLoader.getMaxVertices(), OBJLoader.getMinVertices());
+        TexturedModel grass = new TexturedModel(OBJLoader.loadObjModel("grassModel", loader),new ModelTexture(loader.loadTexture("grassTexture")), OBJLoader.getMaxVertices(), OBJLoader.getMinVertices());
         grass.getTexture().setHasTransparency(true);
         grass.getTexture().setUseFakeLighting(true);
         ModelTexture fernTextureAtlas = new ModelTexture(loader.loadTexture("fern"));
         fernTextureAtlas.setNumberOfRows(2);
-        TexturedModel fern = new TexturedModel(OBJLoader.loadObjModel("fern", loader),fernTextureAtlas);
+        TexturedModel fern = new TexturedModel(OBJLoader.loadObjModel("fern", loader),fernTextureAtlas, OBJLoader.getMaxVertices(), OBJLoader.getMinVertices());
         fern.getTexture().setHasTransparency(true);
-        TexturedModel flowers = new TexturedModel(OBJLoader.loadObjModel("fern", loader),new ModelTexture(loader.loadTexture("flower")));
+        TexturedModel flowers = new TexturedModel(OBJLoader.loadObjModel("fern", loader),new ModelTexture(loader.loadTexture("flower")), OBJLoader.getMaxVertices(), OBJLoader.getMinVertices());
         flowers.getTexture().setHasTransparency(true);
-        TexturedModel tree = new TexturedModel(OBJLoader.loadObjModel("lowPolyTree", loader),new ModelTexture(loader.loadTexture("lowPolyTree")));
+        TexturedModel tree = new TexturedModel(OBJLoader.loadObjModel("lowPolyTree", loader),new ModelTexture(loader.loadTexture("lowPolyTree")), OBJLoader.getMaxVertices(), OBJLoader.getMinVertices());
 
-        car = new TexturedModel(OBJLoader.loadObjModel("bullet350_3", loader), new ModelTexture(loader.loadTexture("bullet350Skin2_Texture")));
-        entities.add(new Entity(car, new Vector3f(35, 10, -75), 0, 0, 0, 6f));
+        car = new TexturedModel(OBJLoader.loadObjModel("bullet350_3", loader), new ModelTexture(loader.loadTexture("bullet350Skin2_Texture")), OBJLoader.getMaxVertices(), OBJLoader.getMinVertices());
+        System.out.println(OBJLoader.getMaxVertices());
+		System.out.println(OBJLoader.getMinVertices());
+        entities.add(new Entity(car, new Vector3f(35, 5, -75), 0, 0, 0, 6f, car.getMaxVertices(), car.getMinVertices()));
+        entities.get(1).setBox(HitBoxType.Square);
         
         //Loading Models and Stuff - make separate class to do this
         Random random = new Random(676452);
@@ -223,31 +228,31 @@ public class TestScene extends SceneSetup{
     	    	        		z = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getZ();
     	    	        		y = terrain[q][c].getHeightOfTerrain(x,z);
     	        			}while(y <= waters.get(w).getHeight());
-    	        			entities.add(new Entity(staticModel, new Vector3f(x,y,z),0,random.nextFloat() * 360, 0, 6f));
+    	        			entities.add(new Entity(highPolyTree, new Vector3f(x,y,z),0,random.nextFloat() * 360, 0, 6f, highPolyTree.getMaxVertices(), highPolyTree.getMinVertices()));
     	        			do {
     	        				x = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getX();
     	    	        		z = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getZ();
     	    	        		y = terrain[q][c].getHeightOfTerrain(x,z);
     	        			}while(y <= waters.get(w).getHeight());
-    	        			entities.add(new Entity(grass, new Vector3f(x,y,z),0,random.nextFloat() * 360, 0, 2f));
+    	        			entities.add(new Entity(grass, new Vector3f(x,y,z),0,random.nextFloat() * 360, 0, 2f, grass.getMaxVertices(), grass.getMinVertices()));
     	        			do {
     	        				x = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getX();
     	    	        		z = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getZ();
     	    	        		y = terrain[q][c].getHeightOfTerrain(x,z);
     	        			}while(y <= waters.get(w).getHeight());
-    	        			entities.add(new Entity(fern, random.nextInt(4), new Vector3f(x,y,z),0,random.nextFloat() * 360, 0, 0.9f));
+    	        			entities.add(new Entity(fern, random.nextInt(4), new Vector3f(x,y,z),0,random.nextFloat() * 360, 0, 0.9f, fern.getMaxVertices(), fern.getMinVertices()));
     	        			do {
     	        				x = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getX();
     	    	        		z = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getZ();
     	    	        		y = terrain[q][c].getHeightOfTerrain(x,z);
     	        			}while(y <= waters.get(w).getHeight());
-    	        			entities.add(new Entity(tree, new Vector3f(x,y,z),0,random.nextFloat() * 360, 0, random.nextFloat()*0.1f + 0.8f));
+    	        			entities.add(new Entity(tree, new Vector3f(x,y,z),0,random.nextFloat() * 360, 0, random.nextFloat()*0.1f + 0.8f, tree.getMaxVertices(), tree.getMinVertices()));
     	        			do {
     	        				x = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getX();
     	    	        		z = random.nextInt((int)terrain[q][c].getSize())+terrain[q][c].getZ();
     	    	        		y = terrain[q][c].getHeightOfTerrain(x,z);
     	        			}while(y <= waters.get(w).getHeight());
-    	        			entities.add(new Entity(flowers, new Vector3f(x,y,z),0,random.nextFloat() * 360, 0, 0.9f));
+    	        			entities.add(new Entity(flowers, new Vector3f(x,y,z),0,random.nextFloat() * 360, 0, 0.9f, flowers.getMaxVertices(), flowers.getMinVertices()));
 
     	        		}
         			}
@@ -261,29 +266,29 @@ public class TestScene extends SceneSetup{
 	@Override
 	public void createNormalMappedObjects() {
 		//Loading up normal Mapped Entities
-        TexturedModel barrelModel = new TexturedModel(NormalMappedObjLoader.loadOBJ("barrel", loader), new ModelTexture(loader.loadTexture("barrel")));
+        TexturedModel barrelModel = new TexturedModel(NormalMappedObjLoader.loadOBJ("barrel", loader), new ModelTexture(loader.loadTexture("barrel")), OBJLoader.getMaxVertices(), OBJLoader.getMinVertices());
         barrelModel.getTexture().setNormalMap(loader.loadTexture("barrelNormal"));
         barrelModel.getTexture().setShineDamper(10);
         barrelModel.getTexture().setReflectivity(0.1f);
-        normalMapEntities.add(new Entity(barrelModel, new Vector3f(75, 10, -75), 0, 0, 0, 1f));
+        normalMapEntities.add(new Entity(barrelModel, new Vector3f(75, 10, -75), 0, 0, 0, 1f, barrelModel.getMaxVertices(), barrelModel.getMinVertices()));
         
-        TexturedModel crateModel = new TexturedModel(NormalMappedObjLoader.loadOBJ("crate", loader), new ModelTexture(loader.loadTexture("crate")));
+        TexturedModel crateModel = new TexturedModel(NormalMappedObjLoader.loadOBJ("crate", loader), new ModelTexture(loader.loadTexture("crate")), OBJLoader.getMaxVertices(), OBJLoader.getMinVertices());
         crateModel.getTexture().setNormalMap(loader.loadTexture("crateNormal"));
         crateModel.getTexture().setShineDamper(10);
         crateModel.getTexture().setReflectivity(0.1f);
-        normalMapEntities.add(new Entity(crateModel, new Vector3f(65, 10, -75), 0, 0, 0, 0.05f));
+        normalMapEntities.add(new Entity(crateModel, new Vector3f(65, 10, -75), 0, 0, 0, 0.05f, crateModel.getMaxVertices(), crateModel.getMinVertices()));
         
-        TexturedModel boulderModel = new TexturedModel(NormalMappedObjLoader.loadOBJ("boulder", loader), new ModelTexture(loader.loadTexture("boulder")));
+        TexturedModel boulderModel = new TexturedModel(NormalMappedObjLoader.loadOBJ("boulder", loader), new ModelTexture(loader.loadTexture("boulder")), OBJLoader.getMaxVertices(), OBJLoader.getMinVertices());
         boulderModel.getTexture().setNormalMap(loader.loadTexture("boulderNormal"));
         boulderModel.getTexture().setShineDamper(10);
         boulderModel.getTexture().setReflectivity(0.1f);
-        normalMapEntities.add(new Entity(boulderModel, new Vector3f(55, 10, -75), 0, 0, 0, 1f));
+        normalMapEntities.add(new Entity(boulderModel, new Vector3f(55, 10, -75), 0, 0, 0, 1f, boulderModel.getMaxVertices(), boulderModel.getMinVertices()));
 
-        TexturedModel carModel = new TexturedModel(NormalMappedObjLoader.loadOBJ("bullet350_3", loader), new ModelTexture(loader.loadTexture("bullet350Skin2_Texture2_COLOR")));
+        TexturedModel carModel = new TexturedModel(NormalMappedObjLoader.loadOBJ("bullet350_3", loader), new ModelTexture(loader.loadTexture("bullet350Skin2_Texture2_COLOR")), OBJLoader.getMaxVertices(), OBJLoader.getMinVertices());
         carModel.getTexture().setNormalMap(loader.loadTexture("bullet350Skin2_Texture2_NRM"));
         carModel.getTexture().setShineDamper(10);
         carModel.getTexture().setReflectivity(0.1f);
-        normalMapEntities.add(new Entity(carModel, new Vector3f(15, 10, -75), 0, 0, 0, 10f));
+        normalMapEntities.add(new Entity(carModel, new Vector3f(15, 10, -75), 0, 0, 0, 10f, carModel.getMaxVertices(), carModel.getMinVertices()));
 	}
 
 	
@@ -297,8 +302,8 @@ public class TestScene extends SceneSetup{
         lights.add(sun);
         //lights.add(new Light(new Vector3f(-200,10,-200), new Vector3f(10,0,0))); //example added non-attenuating light
         lights.add(new Light(new Vector3f(185,10,-293),new Vector3f(0,2,3), new Vector3f(1,0.01f,0.002f))); //example added attenuating point light
-        TexturedModel lamp = new TexturedModel(OBJLoader.loadObjModel("lamp", loader),new ModelTexture(loader.loadTexture("lamp"))); 
-        Entity lampEntity = (new Entity(lamp, new Vector3f(185,-4.7f,-293),0,0,0,1));
+        TexturedModel lamp = new TexturedModel(OBJLoader.loadObjModel("lamp", loader),new ModelTexture(loader.loadTexture("lamp")), OBJLoader.getMaxVertices(), OBJLoader.getMinVertices());
+        Entity lampEntity = (new Entity(lamp, new Vector3f(185,-4.7f,-293),0,0,0,1, lamp.getMaxVertices(), lamp.getMinVertices()));
         entities.add(lampEntity);
         
     	SunPosition.setRealTime(lights.get(0));
@@ -310,6 +315,7 @@ public class TestScene extends SceneSetup{
 
 	@Override
 	public void createPlayer() {
+    	player.setBox(HitBoxType.Square);
         //Loading the Player
 	}
 	
@@ -379,7 +385,15 @@ public class TestScene extends SceneSetup{
 
 		if (Keyboard.isKeyDown(Keyboard.KEY_R)){
 	   	 	car.setTexture(new ModelTexture(loader.loadTexture("bullet350Skin1_Texture")));
-			entities.add(0, new Entity(car, new Vector3f(35, 10, -75), 0, 0, 0, 10f));
+			entities.add(1, new Entity(car, new Vector3f(35, 10, -75), 0, 0, 0, 10f, car.getMaxVertices(), car.getMinVertices()));
+			entities.get(1).setBox(HitBoxType.Square);
+		}
+
+		//System.out.println(player.getBox().getPosition());
+	   	// System.out.println(player.getPosition());
+		//System.out.println(entities.get(1).getBox().getPosition());
+		if(HitBoxMath.isColliding(entities.get(1).getBox(), player.getBox())){
+	   	 	System.out.println("Collision");
 		}
 
 

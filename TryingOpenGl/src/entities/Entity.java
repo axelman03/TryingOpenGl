@@ -1,10 +1,11 @@
 package entities;
 
+import entities.collisionDetection.HitBoxSquare;
+import entities.collisionDetection.HitBoxType;
 import org.lwjgl.util.vector.Vector3f;
 
 import models.TexturedModel;
 import entities.collisionDetection.HitBox;
-import textures.ModelTexture;
 
 public class Entity {
 	
@@ -17,9 +18,11 @@ public class Entity {
 
 	private HitBox box;
 	private boolean hasHitBox = false;
-	private boolean colides = false;
+
+	private Vector3f maxVertices;
+	private Vector3f minVertices;
 	
-	public Entity(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
+	public Entity(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale, Vector3f maxVertices, Vector3f minVertices) {
 		super();
 		this.model = model;
 		this.position = position;
@@ -27,9 +30,11 @@ public class Entity {
 		this.rotY = rotY;
 		this.rotZ = rotZ;
 		this.scale = scale;
+		this.maxVertices = maxVertices;
+		this.minVertices = minVertices;
 	}
 	
-	public Entity(TexturedModel model,int index, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
+	public Entity(TexturedModel model,int index, Vector3f position, float rotX, float rotY, float rotZ, float scale, Vector3f maxVertices, Vector3f minVertices) {
 		super();
 		this.textureIndex = index;
 		this.model = model;
@@ -38,22 +43,28 @@ public class Entity {
 		this.rotY = rotY;
 		this.rotZ = rotZ;
 		this.scale = scale;
+		this.maxVertices = maxVertices;
+		this.minVertices = minVertices;
 	}
 
 	public HitBox getBox() {
 		return box;
 	}
 
-	public void setBox(HitBox box) {
+	public void setBox(HitBoxType type) {
 		hasHitBox = true;
-		this.box = box;
+		switch (type){
+			case Circle:
+				break;
+			case Square:
+				box = new HitBoxSquare(minVertices.x, maxVertices.x, minVertices.y, maxVertices.y, minVertices.z, minVertices.z);
+				break;
+		}
+		box.setScale(scale);
 		box.setPosition(new Vector3f(position.x, position.y, position.z));
 		box.setRotation(new Vector3f(rotX, rotY, rotZ));
-
 	}
 
-
-	
 	public float getTextureXOffset(){
 		int column = (int) (textureIndex%model.getTexture().getNumberOfRows());
 		return (float)column/(float)model.getTexture().getNumberOfRows();
@@ -69,7 +80,7 @@ public class Entity {
 		this.position.y+=dy;
 		this.position.z+=dz;
 		if (hasHitBox) {
-			box.setPosition(new Vector3f(position.x, 0, position.y));
+			box.setPosition(new Vector3f(position.x, position.y, position.z));
 		}
 	}
 	

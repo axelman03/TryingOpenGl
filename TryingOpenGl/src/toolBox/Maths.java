@@ -9,8 +9,7 @@ import entities.Player;
 import renderEngine.DisplayManager;
 
 public class Maths {
-	
-	public static final float GRAVITY = -9.81f;  //Do stuff to make this able to be -9.81 instead, the actual value of gravity
+
 	public static final float GRAVITY2 = -50f;
 	
 	public static float barryCentric(Vector3f p1, Vector3f p2, Vector3f p3, Vector2f pos) {
@@ -56,10 +55,11 @@ public class Maths {
 		Matrix4f.translate(negativeCameraPos, viewMatrix, viewMatrix);
 		return viewMatrix;
 	}
-	
-	public static float getVelocity(float initialVelocity, float acceleration, float time) {
-		float velocity = (float) (initialVelocity + (acceleration * time));
-		System.out.println(velocity);
-		 return velocity;
+
+	public static float distance(Vector3f position, Vector3f position2) {
+		float x = position.x - position2.x;
+		float z = position.z - position2.z;
+		float dis = (float) Math.sqrt(x * x + z * z);
+		return dis;
 	}
 }

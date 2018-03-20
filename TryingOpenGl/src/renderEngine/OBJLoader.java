@@ -14,7 +14,8 @@ import models.RawModel;
 
 public class OBJLoader {
 
-	
+    private static float[] verticesArray;
+
     public static RawModel loadObjModel(String fileName, Loader loader) {
         FileReader fr = null;
         try {
@@ -29,7 +30,7 @@ public class OBJLoader {
         List<Vector2f> textures = new ArrayList<Vector2f>();
         List<Vector3f> normals = new ArrayList<Vector3f>();
         List<Integer> indices = new ArrayList<Integer>();
-        float[] verticesArray = null;
+        verticesArray = null;
         float[] normalsArray = null;
         float[] textureArray = null;
         int[] indicesArray = null;
@@ -87,6 +88,74 @@ public class OBJLoader {
             indicesArray[i] = indices.get(i);
         }
         return loader.loadToVAO(verticesArray, textureArray, normalsArray, indicesArray);
+    }
+
+    public static Vector3f getMaxVertices(){
+        float maxX= 0;
+        float maxY = 0;
+        float maxZ = 0;
+        for (int x = 0; x < verticesArray.length - 2; x = x + 3) {
+            if(x == 0){
+                maxX = verticesArray[x];
+            }
+            if(verticesArray[x] > maxX){
+                maxX = verticesArray[x];
+            }
+        }
+
+        for (int y = 1; y < verticesArray.length - 1; y = y + 3) {
+            if(y == 1){
+                maxY = verticesArray[y];
+            }
+            if(verticesArray[y] > maxY){
+                maxY = verticesArray[y];
+            }
+        }
+
+        for (int z = 2; z < verticesArray.length; z = z + 3) {
+            if(z == 2){
+                maxZ = verticesArray[z];
+            }
+            if(verticesArray[z] > maxZ){
+                maxZ = verticesArray[z];
+            }
+        }
+
+        return new Vector3f(maxX, maxY, maxZ);
+    }
+
+    public static Vector3f getMinVertices(){
+        float minX= 0;
+        float minY = 0;
+        float minZ = 0;
+        for (int x = 0; x < verticesArray.length - 2; x = x + 3) {
+            if(x == 0){
+                minX = verticesArray[x];
+            }
+            if(verticesArray[x] < minX){
+                minX = verticesArray[x];
+            }
+        }
+
+        for (int y = 1; y < verticesArray.length - 1; y = y + 3) {
+            if(y == 1){
+                minY = verticesArray[y];
+            }
+            if(verticesArray[y] < minY){
+                minY = verticesArray[y];
+            }
+        }
+
+        for (int z = 2; z < verticesArray.length; z = z + 3) {
+            if(z == 2){
+                minZ = verticesArray[z];
+            }
+            if(verticesArray[z] < minZ){
+                minZ = verticesArray[z];
+            }
+        }
+
+        return new Vector3f(minX, minY, minZ);
     }
  
     private static void processVertex(String[] vertexData, List<Integer> indices, List<Vector2f> textures,

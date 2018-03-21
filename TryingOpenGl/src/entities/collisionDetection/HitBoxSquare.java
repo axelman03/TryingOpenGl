@@ -17,7 +17,7 @@ public class HitBoxSquare extends HitBox{
     public Vector3f cornerMax;
     public Vector3f cornerMin;
 
-    public HitBoxSquare(float xMin, float xMax, float yMin, float yMax, float zMin, float zMax) {
+    public HitBoxSquare(float xMin, float xMax, float yMin, float yMax, float zMin, float zMax, float scale) {
         cornerMin = new Vector3f(xMin, yMin, zMin);
         cornerMax = new Vector3f(xMax, yMax, zMax);
         this.xMin = xMin;
@@ -26,12 +26,11 @@ public class HitBoxSquare extends HitBox{
         this.yMax = yMax;
         this.zMin = zMin;
         this.zMax = zMax;
-        generateCorners(xMin, xMax, yMin, yMax, zMin, zMax);
+        setScale(scale);
         HitBoxManager.addHitBox(this);
     }
 
     private void generateCorners(float xMin, float xMax, float yMin, float yMax, float zMin, float zMax) {
-
         Vector3f c1 = new Vector3f(xMin, yMin, zMin);
         Vector3f c2 = new Vector3f(xMin, yMax, zMin);
 
@@ -54,27 +53,51 @@ public class HitBoxSquare extends HitBox{
         corners[7] = c8;
     }
 
-    public float getxMin() {
-        return xMin * getScale();
+    public void setScale(float scale) {
+        super.setScale(scale);
+        xMin = xMin * scale;
+        xMax = xMax * scale;
+        yMin = yMin * scale;
+        yMax = yMax * scale;
+        zMin = zMin * scale;
+        zMax = zMax * scale;
+
+        generateCorners(xMin, xMax, yMin, yMax, zMin, zMax);
     }
 
-    public float getxMax() {
-        return xMax * getScale();
+    public void setPosition(Vector3f position){
+        super.setPosition(position);
+        xMin = xMin + position.x;
+        xMax = xMax + position.x;
+        yMin = yMin + position.y;
+        yMax = yMax + position.y;
+        zMin = zMin + position.z;
+        zMax = zMax + position.z;
+
+        generateCorners(xMin, xMax, yMin, yMax, zMin, zMax);
     }
 
-    public float getyMin() {
-        return yMin * getScale();
+    public float getXMin() {
+        return xMin;
     }
 
-    public float getyMax() {
-        return yMax * getScale();
+    public float getXMax() {
+        return xMax;
     }
 
-    public float getzMin() {
-        return zMin * getScale();
+    public float getYMin() {
+        return yMin;
     }
 
-    public float getzMax() {
-        return zMax * getScale();
+    public float getYMax() {
+        return yMax;
+    }
+
+    public float getZMin() {
+        return zMin;
+    }
+
+    public float getZMax() {
+        return zMax;
     }
 }

@@ -211,7 +211,9 @@ public class TestScene extends SceneSetup{
 		System.out.println(OBJLoader.getMinVertices());
         entities.add(new Entity(car, new Vector3f(35, 5, -75), 0, 0, 0, 6f, car.getMaxVertices(), car.getMinVertices()));
         entities.get(1).setBox(HitBoxType.Square);
-        
+		System.out.println(entities.get(1).getBox().getPosition());
+		System.out.println(entities.get(1).getBox().getXMax() + " " + entities.get(1).getBox().getYMax() + " " + entities.get(1).getBox().getZMax());
+		System.out.println(entities.get(1).getBox().getXMin() + " " + entities.get(1).getBox().getYMin() + " " + entities.get(1).getBox().getZMin());
         //Loading Models and Stuff - make separate class to do this
         Random random = new Random(676452);
        
@@ -390,7 +392,7 @@ public class TestScene extends SceneSetup{
 		}
 
 		//System.out.println(player.getBox().getPosition());
-	   	// System.out.println(player.getPosition());
+	   	//System.out.println(player.getPosition());
 		//System.out.println(entities.get(1).getBox().getPosition());
 		if(HitBoxMath.isColliding(entities.get(1).getBox(), player.getBox())){
 	   	 	System.out.println("Collision");

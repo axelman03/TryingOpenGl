@@ -16,7 +16,7 @@ public class Entity {
 	
 	private float textureIndex = 0;
 
-	private HitBox box;
+	private HitBoxSquare box;
 	private boolean hasHitBox = false;
 
 	private Vector3f maxVertices;
@@ -47,7 +47,7 @@ public class Entity {
 		this.minVertices = minVertices;
 	}
 
-	public HitBox getBox() {
+	public HitBoxSquare getBox() {
 		return box;
 	}
 
@@ -57,10 +57,9 @@ public class Entity {
 			case Circle:
 				break;
 			case Square:
-				box = new HitBoxSquare(minVertices.x, maxVertices.x, minVertices.y, maxVertices.y, minVertices.z, minVertices.z);
+				box = new HitBoxSquare(minVertices.x, maxVertices.x, minVertices.y, maxVertices.y, minVertices.z, maxVertices.z, scale);
 				break;
 		}
-		box.setScale(scale);
 		box.setPosition(new Vector3f(position.x, position.y, position.z));
 		box.setRotation(new Vector3f(rotX, rotY, rotZ));
 	}

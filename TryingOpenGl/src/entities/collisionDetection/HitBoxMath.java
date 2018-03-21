@@ -67,10 +67,10 @@ public class HitBoxMath {
         float bZ = checkedPos.z;
         float aX = square.getPosition().x;
         float aZ = square.getPosition().z;
-        float aXmin = aX + square.getxMin();
-        float aXmax = aX + square.getxMax();
-        float aZmin = aZ + square.getzMin();
-        float aZmax = aZ + square.getzMax();
+        float aXmin = aX + square.getXMin();
+        float aXmax = aX + square.getXMax();
+        float aZmin = aZ + square.getZMin();
+        float aZmax = aZ + square.getZMax();
         if (bX >= aXmin && bX <= aXmax) {
             if (bZ >= aZ) {
                 float tot_off = circle.getDistance() + aZmax;
@@ -188,10 +188,10 @@ public class HitBoxMath {
             for (Vector3f vec : corners) {
                 float x = checkedPos.x + vec.x;
                 float z = checkedPos.z + vec.z;
-                float checkerxMax = checker.getPosition().x + checker.getxMax();
-                float checkerxMin = checker.getPosition().x + checker.getxMin();
-                float checkerzMax = checker.getPosition().z + checker.getzMax();
-                float checkerzMin = checker.getPosition().z + checker.getzMin();
+                float checkerxMax = checker.getPosition().x + checker.getXMax();
+                float checkerxMin = checker.getPosition().x + checker.getXMin();
+                float checkerzMax = checker.getPosition().z + checker.getZMax();
+                float checkerzMin = checker.getPosition().z + checker.getZMin();
                 if (x > checkerxMin && x < checkerxMax) {
                     if (z < checkerzMax && z > checkerzMin) {
                         inBox = true;

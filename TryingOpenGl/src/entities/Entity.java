@@ -57,7 +57,7 @@ public class Entity {
 			case Circle:
 				break;
 			case Square:
-				box = new HitBoxSquare(minVertices.x, maxVertices.x, minVertices.y, maxVertices.y, minVertices.z, maxVertices.z, scale);
+				box = new HitBoxSquare(minVertices.x, maxVertices.x, minVertices.y, maxVertices.y, minVertices.z, maxVertices.z, scale, new Vector3f(rotX, rotY, rotZ));
 				break;
 		}
 		box.setPosition(new Vector3f(position.x, position.y, position.z));
@@ -79,7 +79,7 @@ public class Entity {
 		this.position.y+=dy;
 		this.position.z+=dz;
 		if (hasHitBox) {
-			box.setPosition(new Vector3f(position.x, position.y, position.z));
+			box.setPosition(new Vector3f(dx, dy, dz));
 		}
 	}
 	
@@ -88,7 +88,7 @@ public class Entity {
 		this.rotY+=dy;
 		this.rotZ+=dz;
 		if (hasHitBox) {
-			box.setRotation(new Vector3f(rotX, rotY, rotZ));
+			box.setRotation(new Vector3f(dx, dy, dz), getPosition());
 		}
 	}
 	
@@ -115,7 +115,7 @@ public class Entity {
 	public float getScale() {
 		return scale;
 	}
-	
+
 	
 	
 }

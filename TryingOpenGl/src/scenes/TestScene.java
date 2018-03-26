@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Random;
 
 import entities.collisionDetection.HitBoxMath;
+import entities.collisionDetection.HitBoxSquare;
 import entities.collisionDetection.HitBoxType;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.openal.AL10;
@@ -67,6 +68,7 @@ public class TestScene extends SceneSetup{
 	List<GuiTexture>guis;
 	List<WaterTile>waters;
 	List<Integer>sounds;
+	ArrayList<HitBoxSquare>hitBoxes;
 	
 	WaterFrameBuffers fbos;
     WaterRenderer waterRenderer;
@@ -116,6 +118,7 @@ public class TestScene extends SceneSetup{
     	lights = new ArrayList<Light>();
     	guis = new ArrayList<GuiTexture>();
     	sounds = new ArrayList<Integer>();
+    	hitBoxes = new ArrayList<HitBoxSquare>();
     	
     	//Water Loading
     	fbos = new WaterFrameBuffers();
@@ -211,6 +214,7 @@ public class TestScene extends SceneSetup{
 		System.out.println(OBJLoader.getMinVertices());
         entities.add(new Entity(car, new Vector3f(35, 5, -75), 0, 0, 0, 6f, car.getMaxVertices(), car.getMinVertices()));
         entities.get(1).setBox(HitBoxType.Square);
+        hitBoxes.add(entities.get(1).getBox());
 		System.out.println(entities.get(1).getBox().getPosition());
 		System.out.println(entities.get(1).getBox().getXMax() + " " + entities.get(1).getBox().getYMax() + " " + entities.get(1).getBox().getZMax());
 		System.out.println(entities.get(1).getBox().getXMin() + " " + entities.get(1).getBox().getYMin() + " " + entities.get(1).getBox().getZMin());
@@ -394,7 +398,14 @@ public class TestScene extends SceneSetup{
 		//System.out.println(player.getBox().getPosition());
 	   	//System.out.println(player.getPosition());
 		//System.out.println(entities.get(1).getBox().getPosition());
-		if(HitBoxMath.isColliding(entities.get(1).getBox(), player.getBox())){
+		//System.out.println(entities.get(1).getBox().getXMax() + " " + entities.get(1).getBox().getYMax() + " " + entities.get(1).getBox().getZMax());
+		//System.out.println(entities.get(1).getBox().getXMin() + " " + entities.get(1).getBox().getYMin() + " " + entities.get(1).getBox().getZMin());
+
+		//System.out.println(player.getBox().getXMax() + " " + player.getBox().getYMax() + " " + player.getBox().getZMax());
+		//System.out.println(player.getBox().getXMin() + " " + player.getBox().getYMin() + " " + player.getBox().getZMin());
+		//System.out.println();
+
+		if(HitBoxMath.isBroadPlaneColliding(player.getBox(), hitBoxes)){
 	   	 	System.out.println("Collision");
 		}
 

@@ -41,13 +41,12 @@ public class Player extends Entity {
 			}
 		}
 
-		if(!collision) {
-			super.increaseRotation(0, currentTurnSpeed * DisplayManager.getFrameTimeSeconds(), 0);
-			float distance = currentSpeed * DisplayManager.getFrameTimeSeconds();
-			float dx = (float) (distance * Math.sin(Math.toRadians(super.getRotY())));
-			float dz = (float) (distance * Math.cos(Math.toRadians(super.getRotY())));
-			super.increasePosition(dx, 0, dz);
-		}
+		super.increaseRotation(0, currentTurnSpeed * DisplayManager.getFrameTimeSeconds(), 0);
+		float distance = currentSpeed * DisplayManager.getFrameTimeSeconds();
+		float dx = (float) (distance * Math.sin(Math.toRadians(super.getRotY())));
+		float dz = (float) (distance * Math.cos(Math.toRadians(super.getRotY())));
+		super.increasePosition(dx, 0, dz);
+
 
 		//jumpCurrentTime = System.currentTimeMillis() / 1000;
 		//upwardsVelocity = toolBox.Maths.getVelocity(upwardsInitialVelocity, gravity, DisplayManager.getFrameTimeSeconds());

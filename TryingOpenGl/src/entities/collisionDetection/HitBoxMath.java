@@ -3,7 +3,12 @@ package entities.collisionDetection;
 import org.lwjgl.util.vector.Vector3f;
 import toolBox.Maths;
 
+import java.util.ArrayList;
+
 public class HitBoxMath {
+
+    private static HitBoxSquare tempCollidedHitBox;
+/*
     public static boolean isColliding(HitBox box1, HitBox box2) {
         boolean isBox = false;
         if (box1 instanceof HitBoxSquare && box2 instanceof HitBoxSquare) {
@@ -20,7 +25,31 @@ public class HitBoxMath {
         }
         return isBox;
     }
+*/
+    //Collider is object that is hittting other objects, so player and such
+    public static boolean isBroadPlaneColliding(HitBoxSquare collider, ArrayList<HitBoxSquare> hitBoxes){
+        boolean isHit = false;
+        for(HitBoxSquare hitBox : hitBoxes){
+            if(collider.getXMax() >= hitBox.getXMin() && collider.getXMin() <= hitBox.getXMax()){
+                if(collider.getYMax() >= hitBox.getYMin() && collider.getYMin() <= hitBox.getYMax()){
+                    if(collider.getZMax() >= hitBox.getZMin() && collider.getZMin() <= hitBox.getZMax()){
+                        setCollidedHitbox(hitBox);
+                        isHit = true;
+                    }
+                }
+            }
+        }
+        return isHit;
+    }
 
+    private static void setCollidedHitbox(HitBoxSquare hitBox){
+        tempCollidedHitBox = hitBox;
+    }
+
+    public static HitBoxSquare getCollidedHitbox(){
+        return tempCollidedHitBox;
+    }
+/*
     private static boolean isCollidingCSHybrid(HitBox box1, HitBox box2) {
         HitBox[] boxes = new HitBox[2];
         HitBoxCircle circle = null;
@@ -216,8 +245,8 @@ public class HitBoxMath {
         }
         return corners;
     }
-
-    private static float[] rotate(float inx, float inz, float outx, float outz, float inRot, float outRot) {
+*/
+    public static float[] rotate(float inx, float inz, float outx, float outz, float inRot, float outRot) {
         float yrot = -inRot;
         float xoff = outx - inx;
         float zoff = outz - inz;

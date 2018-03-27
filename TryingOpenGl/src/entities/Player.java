@@ -60,6 +60,7 @@ public class Player extends Entity {
 			//gravity = 0;
 			//jumpStartTime = 0; 
 			super.getPosition().y = terrainHeight;
+			super.getBox().setPosition(terrainHeight, 'y');
 			isInAir = false;
 		}
 
@@ -68,9 +69,7 @@ public class Player extends Entity {
 	private void jump(){
 		if(!isInAir){	
 			this.upwardsVelocity = JUMP_POWER;
-			//gravity = toolBox.Maths.GRAVITY;
 			isInAir = true;
-			//jumpStartTime = (float) (System.currentTimeMillis() / 1000);
 		}
 		
 	}

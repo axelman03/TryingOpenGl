@@ -17,7 +17,7 @@ public abstract class HitBox {
         return hitBoxID;
     }
 
-    public void setPosition(Vector3f pos) {
+    public void increasePosition(Vector3f pos) {
         position = pos;
     }
 

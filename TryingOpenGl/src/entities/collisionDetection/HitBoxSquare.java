@@ -5,18 +5,22 @@ import org.lwjgl.util.vector.Vector3f;
 public class HitBoxSquare extends HitBox{
     //public Vector3f[] corners = new Vector3f[8];
 
-    private float xMin;
-    private float xMax;
+    //-Min/Max is actual square coordinate
+    //-Min/MaxNoRot is coordinate without rotation, so that when object is rotated the math is on original so that its not rotating with new cube and adding
+    //-Min/MaxOrig is coordinate without rotation or position, used when teleporting the object to set its position with the coordinate offsets
+    private float xMin, xMinNoRot, xMinOrig;
+    private float xMax, xMaxNoRot, xMaxOrig;
 
-    private float yMin;
-    private float yMax;
+    private float yMin, yMinNoRot, yMinOrig;
+    private float yMax, yMaxNoRot, yMaxOrig;
 
-    private float zMin;
-    private float zMax;
+    private float zMin, zMinNoRot, zMinOrig;
+    private float zMax, zMaxNoRot, zMaxOrig;
 
     private Vector3f pointMin;  //c1
     private Vector3f pointMax;  //c8
     private Vector3f rotation;
+    /*
     private Vector3f c2;
 
     private Vector3f c3;
@@ -26,7 +30,7 @@ public class HitBoxSquare extends HitBox{
     private Vector3f c6;
 
     private Vector3f c7;
-
+*/
 
 
     public HitBoxSquare(float xMin, float xMax, float yMin, float yMax, float zMin, float zMax, float scale, Vector3f rotation) {
@@ -38,13 +42,30 @@ public class HitBoxSquare extends HitBox{
         this.yMax = yMax;
         this.zMin = zMin;
         this.zMax = zMax;
+
+
+        xMinNoRot = xMin;
+        xMaxNoRot = xMax;
+        yMinNoRot = yMin;
+        yMaxNoRot = yMax;
+        zMinNoRot = zMin;
+        zMaxNoRot = zMax;
+
+        xMinOrig = xMin;
+        xMaxOrig = xMax;
+        yMinOrig = yMin;
+        yMaxOrig = yMax;
+        zMinOrig = zMin;
+        zMaxOrig = zMax;
+
         this.rotation = rotation;
         setScale(scale);
         HitBoxManager.addHitBox(this);
     }
 
+/*
     private void generateCorners(float xMin, float xMax, float yMin, float yMax, float zMin, float zMax) {
-        pointMin = new Vector3f(xMin, yMin, zMin);
+
         c2 = new Vector3f(xMin, yMax, zMin);
 
         c3 = new Vector3f(xMax, yMin, zMin);
@@ -54,11 +75,12 @@ public class HitBoxSquare extends HitBox{
         c6 = new Vector3f(xMin, yMax, zMax);
 
         c7 = new Vector3f(xMax, yMin, zMax);
-        pointMax = new Vector3f(xMax, yMax, zMax);
 
 
 
-        /*
+
+
+
         corners[0] = c1;
         corners[1] = c2;
         corners[2] = c3;
@@ -67,9 +89,9 @@ public class HitBoxSquare extends HitBox{
         corners[5] = c6;
         corners[6] = c7;
         corners[7] = c8;
-        */
-    }
 
+    }
+*/
     public void setScale(float scale) {
         super.setScale(scale);
         xMin = xMin * scale;
@@ -79,11 +101,25 @@ public class HitBoxSquare extends HitBox{
         zMin = zMin * scale;
         zMax = zMax * scale;
 
-        generateCorners(xMin, xMax, yMin, yMax, zMin, zMax);
+        xMinNoRot = xMinNoRot * scale;
+        xMaxNoRot = xMaxNoRot * scale;
+        yMinNoRot = yMinNoRot * scale;
+        yMaxNoRot = yMaxNoRot * scale;
+        zMinNoRot = zMinNoRot * scale;
+        zMaxNoRot = zMaxNoRot * scale;
+
+        xMinOrig = xMinOrig * scale;
+        xMaxOrig = xMaxOrig * scale;
+        yMinOrig = yMinOrig * scale;
+        yMaxOrig = yMaxOrig * scale;
+        zMinOrig = zMinOrig * scale;
+        zMaxOrig = zMaxOrig * scale;
+
+        //generateCorners(xMin, xMax, yMin, yMax, zMin, zMax);
     }
 
-    public void setPosition(Vector3f position){
-        super.setPosition(position);
+    public void increasePosition(Vector3f position){
+        super.increasePosition(position);
         xMin = xMin + position.x;
         xMax = xMax + position.x;
         yMin = yMin + position.y;
@@ -91,18 +127,67 @@ public class HitBoxSquare extends HitBox{
         zMin = zMin + position.z;
         zMax = zMax + position.z;
 
-        generateCorners(xMin, xMax, yMin, yMax, zMin, zMax);
+        xMinNoRot = xMinNoRot + position.x;
+        xMaxNoRot = xMaxNoRot + position.x;
+        yMinNoRot = yMinNoRot + position.y;
+        yMaxNoRot = yMaxNoRot + position.y;
+        zMinNoRot = zMinNoRot + position.z;
+        zMaxNoRot = zMaxNoRot + position.z;
+
+        //generateCorners(xMin, xMax, yMin, yMax, zMin, zMax);
+    }
+
+    public void setPosition(float position, char axis){
+        switch (axis){
+            case 'x':
+                xMin = xMinOrig + position;
+                xMax = xMaxOrig + position;
+                xMinNoRot = xMinOrig + position;
+                xMaxNoRot = xMaxOrig + position;
+                break;
+            case 'y':
+                yMin = yMinOrig + position;
+                yMax = yMaxOrig + position;
+                yMinNoRot = yMinOrig + position;
+                yMaxNoRot = yMaxOrig + position;
+                break;
+            case 'z':
+                zMin = zMinOrig + position;
+                zMax = zMaxOrig + position;
+                zMinNoRot = zMinOrig + position;
+                zMaxNoRot = zMaxOrig + position;
+                break;
+        }
+    }
+
+    public void setPosition(Vector3f position){
+
+        xMin = xMinOrig + position.x;
+        xMax = xMaxOrig + position.x;
+        yMin = yMinOrig + position.y;
+        yMax = yMaxOrig + position.y;
+        zMin = zMinOrig + position.z;
+        zMax = zMaxOrig + position.z;
+
+        xMinNoRot = xMinOrig + position.x;
+        xMaxNoRot = xMaxOrig + position.x;
+        yMinNoRot = yMinOrig + position.y;
+        yMaxNoRot = yMaxOrig + position.y;
+        zMinNoRot = zMinOrig + position.z;
+        zMaxNoRot = zMaxOrig + position.z;
     }
 
     public void setRotation(Vector3f rotation, Vector3f position){
+        pointMin = new Vector3f(xMinNoRot, yMinNoRot, zMinNoRot);
+        pointMax = new Vector3f(xMaxNoRot, yMaxNoRot, zMaxNoRot);
         super.setRotation(rotation);
         if(this.rotation.x == rotation.x && this.rotation.z == rotation.z && this.rotation.y == rotation.y){
-                    generateCorners(xMin, xMax, yMin, yMax, zMin, zMax);
+
+            //generateCorners(xMin, xMax, yMin, yMax, zMin, zMax);
         }
         else{
             pointMin = rotate(rotation, position, pointMin);
             pointMax = rotate(rotation,position, pointMax);
-
             xMin = pointMin.x;
             yMin = pointMin.y;
             zMin = pointMin.z;
@@ -110,21 +195,14 @@ public class HitBoxSquare extends HitBox{
             xMax = pointMax.x;
             yMax = pointMax.y;
             zMax = pointMax.z;
-
-            System.out.println();
-            //System.out.println(xMax + " " + yMax + " " + zMax);
-            //System.out.println(getXMin() + " " + getYMin() + " " + getZMin());
-
-            System.out.println();
-            generateCorners(xMin, xMax, yMin, yMax, zMin, zMax);
+            //generateCorners(xMin, xMax, yMin, yMax, zMin, zMax);
             this.rotation = rotation;
         }
 
     }
 
 
-    public Vector3f rotate(Vector3f rotation, Vector3f position, Vector3f point) {
-        //This Math is not working it seems, it just keeps adding
+    private Vector3f rotate(Vector3f rotation, Vector3f position, Vector3f point) {
         //https://stackoverflow.com/questions/6721544/circular-rotation-around-an-arbitrary-axis
         float rotXAroundX;
         float rotYAroundX;
@@ -141,7 +219,7 @@ public class HitBoxSquare extends HitBox{
         float originX = point.x - position.x;
         float originY = point.y - position.y;
         float originZ = point.z - position.z;
-        //Rotate around Z axis (not X like stated)
+        //Rotate around Z axis
         rotXAroundZ = (float) (originX * Math.cos(Math.toRadians(rotation.z)) - (originY * Math.sin(Math.toRadians(rotation.z))));
         rotYAroundZ = (float)((originX *  Math.sin(Math.toRadians(rotation.z))) + (originY * Math.cos(Math.toRadians(rotation.z))));
         rotZAroundZ = originZ;
@@ -153,9 +231,20 @@ public class HitBoxSquare extends HitBox{
         rotYAroundX = (float)((rotYAroundY * Math.cos(Math.toRadians(rotation.x))) - (rotZAroundY * Math.sin(Math.toRadians(rotation.x))));
         rotZAroundX = (float)((rotYAroundY * Math.sin(Math.toRadians(rotation.x))) + (rotZAroundY * Math.cos(Math.toRadians(rotation.x))));
         rotXAroundX = rotXAroundY;
-        System.out.println(rotXAroundX + " " +  rotYAroundX + " " + rotZAroundX);
-        //System.out.println(point.x + rotXAroundX + " " + point.y + rotYAroundX + " " + point.z + rotZAroundX);
-        return new Vector3f(point.x + rotXAroundX, point.y + rotYAroundX, point.z + rotZAroundX);
+        //System.out.println(rotXAroundX + " " +  rotYAroundX + " " + rotZAroundX);
+
+        if(rotation.x == 0 && rotation.z == 0){
+            return new Vector3f(point.x + rotXAroundX, point.y, point.z + rotZAroundX);
+        }
+        else if(rotation.x == 0 && rotation.y == 0){
+            return new Vector3f(point.x + rotXAroundX, point.y + rotYAroundX, point.z);
+        }
+        else if(rotation.y == 0 && rotation.z == 0){
+            return new Vector3f(point.x, point.y + rotYAroundX, point.z + rotZAroundX);
+        }
+        else{
+            return new Vector3f(point.x + rotXAroundX, point.y + rotYAroundX, point.z + rotZAroundX);
+        }
     }
 
     public float getXMin() {

@@ -52,8 +52,7 @@ import water.WaterRenderer;
 import water.WaterShader;
 import water.WaterTile;
 //ToDo: Make collision Detection Work
-	//Make sure math is right, reduce some if needed
-		//then add narrow sweep, make broad sweep less resource intensive if possible, so its not checking every object every time
+	//add narrow sweep
 		//experiment with different shapes and with simple object meshes
 public class TestScene extends SceneSetup{
 	public final static int GRIDX = 2;
@@ -210,14 +209,12 @@ public class TestScene extends SceneSetup{
         TexturedModel tree = new TexturedModel(OBJLoader.loadObjModel("lowPolyTree", loader),new ModelTexture(loader.loadTexture("lowPolyTree")), OBJLoader.getMaxVertices(), OBJLoader.getMinVertices());
 
         car = new TexturedModel(OBJLoader.loadObjModel("bullet350_3", loader), new ModelTexture(loader.loadTexture("bullet350Skin2_Texture")), OBJLoader.getMaxVertices(), OBJLoader.getMinVertices());
-        System.out.println(OBJLoader.getMaxVertices());
-		System.out.println(OBJLoader.getMinVertices());
         entities.add(new Entity(car, new Vector3f(35, 5, -75), 0, 0, 0, 6f, car.getMaxVertices(), car.getMinVertices()));
         entities.get(1).setBox(HitBoxType.Square);
         hitBoxes.add(entities.get(1).getBox());
-		System.out.println(entities.get(1).getBox().getPosition());
-		System.out.println(entities.get(1).getBox().getXMax() + " " + entities.get(1).getBox().getYMax() + " " + entities.get(1).getBox().getZMax());
-		System.out.println(entities.get(1).getBox().getXMin() + " " + entities.get(1).getBox().getYMin() + " " + entities.get(1).getBox().getZMin());
+		//System.out.println(entities.get(1).getBox().getPosition());
+		//System.out.println(entities.get(1).getBox().getXMax() + " " + entities.get(1).getBox().getYMax() + " " + entities.get(1).getBox().getZMax());
+		//System.out.println(entities.get(1).getBox().getXMin() + " " + entities.get(1).getBox().getYMin() + " " + entities.get(1).getBox().getZMin());
         //Loading Models and Stuff - make separate class to do this
         Random random = new Random(676452);
        
@@ -394,16 +391,6 @@ public class TestScene extends SceneSetup{
 			entities.add(1, new Entity(car, new Vector3f(35, 10, -75), 0, 0, 0, 10f, car.getMaxVertices(), car.getMinVertices()));
 			entities.get(1).setBox(HitBoxType.Square);
 		}
-
-		//System.out.println(player.getBox().getPosition());
-	   	//System.out.println(player.getPosition());
-		//System.out.println(entities.get(1).getBox().getPosition());
-		//System.out.println(entities.get(1).getBox().getXMax() + " " + entities.get(1).getBox().getYMax() + " " + entities.get(1).getBox().getZMax());
-		//System.out.println(entities.get(1).getBox().getXMin() + " " + entities.get(1).getBox().getYMin() + " " + entities.get(1).getBox().getZMin());
-
-		//System.out.println(player.getBox().getXMax() + " " + player.getBox().getYMax() + " " + player.getBox().getZMax());
-		//System.out.println(player.getBox().getXMin() + " " + player.getBox().getYMin() + " " + player.getBox().getZMin());
-		//System.out.println();
 
 		if(HitBoxMath.isBroadPlaneColliding(player.getBox(), hitBoxes)){
 	   	 	System.out.println("Collision");

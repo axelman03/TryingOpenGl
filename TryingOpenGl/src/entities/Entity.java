@@ -79,7 +79,7 @@ public class Entity {
 		this.position.y+=dy;
 		this.position.z+=dz;
 		if (hasHitBox) {
-			box.setPosition(new Vector3f(dx, dy, dz));
+			box.increasePosition(new Vector3f(dx, dy, dz));
 		}
 	}
 	
@@ -88,7 +88,7 @@ public class Entity {
 		this.rotY+=dy;
 		this.rotZ+=dz;
 		if (hasHitBox) {
-			box.setRotation(new Vector3f(dx, dy, dz), getPosition());
+			box.setRotation(new Vector3f(rotX + dx, rotY + dy, rotZ + dz), getPosition());
 		}
 	}
 	

@@ -31,8 +31,8 @@ public class HitBoxMath {
         boolean isHit = false;
         for(HitBoxSquare hitBox : hitBoxes){
             if(collider.getXMax() >= hitBox.getXMin() && collider.getXMin() <= hitBox.getXMax()){
-                if(collider.getYMax() >= hitBox.getYMin() && collider.getYMin() <= hitBox.getYMax()){
-                    if(collider.getZMax() >= hitBox.getZMin() && collider.getZMin() <= hitBox.getZMax()){
+                if(collider.getZMax() >= hitBox.getZMin() && collider.getZMin() <= hitBox.getZMax()){
+                    if(collider.getYMax() >= hitBox.getYMin() && collider.getYMin() <= hitBox.getYMax()){
                         setCollidedHitbox(hitBox);
                         isHit = true;
                     }

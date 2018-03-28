@@ -8,6 +8,7 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import entities.collisionDetection.RawHitBoxMesh;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
 import org.lwjgl.opengl.GL11;
@@ -54,6 +55,19 @@ public class Loader {
 		storeDataInAttributeList(3,3,tangents);
 		unbindVAO();
 		return new RawModel(vaoID,indices.length);	
+	}
+
+	public RawHitBoxMesh loadToVAO(float[] positions,/* float[] textureCoords, float[] normals, float[] tangents, */int[] indices){
+		int vaoID = createVAO();
+		bindIndicesBuffer(indices);
+		storeDataInAttributeList(0,3,positions);
+		/*
+		storeDataInAttributeList(1,2,textureCoords);
+		storeDataInAttributeList(2,3,normals);
+		storeDataInAttributeList(3,3,tangents);
+		*/
+		unbindVAO();
+		return new RawHitBoxMesh(vaoID,indices.length);
 	}
 	
 	public int createEmptyVbo(int floatCount) {

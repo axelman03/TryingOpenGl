@@ -52,8 +52,12 @@ import water.WaterRenderer;
 import water.WaterShader;
 import water.WaterTile;
 //ToDo: Make collision Detection Work
-	//add narrow sweep
-		//experiment with different shapes and with simple object meshes
+/*
+	add narrow sweep
+	experiment with different shapes and with simple object meshes
+	https://github.com/kmammou/v-hacd  - program to make the simple meshes
+	https://www.toptal.com/game/video-game-physics-part-ii-collision-detection-for-solid-objects
+*/
 public class TestScene extends SceneSetup{
 	public final static int GRIDX = 2;
 	public final static int GRIDY = 2;

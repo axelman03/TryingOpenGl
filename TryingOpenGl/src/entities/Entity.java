@@ -2,6 +2,7 @@ package entities;
 
 import entities.collisionDetection.HitBoxSquare;
 import entities.collisionDetection.HitBoxType;
+import entities.collisionDetection.RawHitBoxMesh;
 import org.lwjgl.util.vector.Vector3f;
 
 import models.TexturedModel;
@@ -18,6 +19,7 @@ public class Entity {
 
 	private HitBoxSquare box;
 	private boolean hasHitBox = false;
+	private RawHitBoxMesh hitBoxMesh;
 
 	private Vector3f maxVertices;
 	private Vector3f minVertices;
@@ -51,15 +53,10 @@ public class Entity {
 		return box;
 	}
 
-	public void setBox(HitBoxType type) {
+	public void setBox(RawHitBoxMesh mesh) {
 		hasHitBox = true;
-		switch (type){
-			case Circle:
-				break;
-			case Square:
-				box = new HitBoxSquare(minVertices.x, maxVertices.x, minVertices.y, maxVertices.y, minVertices.z, maxVertices.z, scale, new Vector3f(rotX, rotY, rotZ));
-				break;
-		}
+		hitBoxMesh = mesh;
+		box = new HitBoxSquare(minVertices.x, maxVertices.x, minVertices.y, maxVertices.y, minVertices.z, maxVertices.z, scale, new Vector3f(rotX, rotY, rotZ));
 		box.setPosition(new Vector3f(position.x, position.y, position.z));
 		box.setRotation(new Vector3f(rotX, rotY, rotZ));
 	}

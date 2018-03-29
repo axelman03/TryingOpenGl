@@ -17,20 +17,9 @@ public class HitBoxSquare extends HitBox{
     private float zMin, zMinNoRot, zMinOrig;
     private float zMax, zMaxNoRot, zMaxOrig;
 
-    private Vector3f pointMin;  //c1
-    private Vector3f pointMax;  //c8
+    private Vector3f pointMin;
+    private Vector3f pointMax;
     private Vector3f rotation;
-    /*
-    private Vector3f c2;
-
-    private Vector3f c3;
-    private Vector3f c4;
-
-    private Vector3f c5;
-    private Vector3f c6;
-
-    private Vector3f c7;
-*/
 
 
     public HitBoxSquare(float xMin, float xMax, float yMin, float yMax, float zMin, float zMax, float scale, Vector3f rotation) {
@@ -63,35 +52,6 @@ public class HitBoxSquare extends HitBox{
         HitBoxManager.addHitBox(this);
     }
 
-/*
-    private void generateCorners(float xMin, float xMax, float yMin, float yMax, float zMin, float zMax) {
-
-        c2 = new Vector3f(xMin, yMax, zMin);
-
-        c3 = new Vector3f(xMax, yMin, zMin);
-        c4 = new Vector3f(xMax, yMax, zMin);
-
-        c5 = new Vector3f(xMin, yMin, zMax);
-        c6 = new Vector3f(xMin, yMax, zMax);
-
-        c7 = new Vector3f(xMax, yMin, zMax);
-
-
-
-
-
-
-        corners[0] = c1;
-        corners[1] = c2;
-        corners[2] = c3;
-        corners[3] = c4;
-        corners[4] = c5;
-        corners[5] = c6;
-        corners[6] = c7;
-        corners[7] = c8;
-
-    }
-*/
     public void setScale(float scale) {
         super.setScale(scale);
         xMin = xMin * scale;
@@ -115,7 +75,6 @@ public class HitBoxSquare extends HitBox{
         zMinOrig = zMinOrig * scale;
         zMaxOrig = zMaxOrig * scale;
 
-        //generateCorners(xMin, xMax, yMin, yMax, zMin, zMax);
     }
 
     public void increasePosition(Vector3f position){
@@ -134,7 +93,6 @@ public class HitBoxSquare extends HitBox{
         zMinNoRot = zMinNoRot + position.z;
         zMaxNoRot = zMaxNoRot + position.z;
 
-        //generateCorners(xMin, xMax, yMin, yMax, zMin, zMax);
     }
 
     public void setPosition(float position, char axis){
@@ -183,7 +141,6 @@ public class HitBoxSquare extends HitBox{
         super.setRotation(rotation);
         if(this.rotation.x == rotation.x && this.rotation.z == rotation.z && this.rotation.y == rotation.y){
 
-            //generateCorners(xMin, xMax, yMin, yMax, zMin, zMax);
         }
         else{
             pointMin = rotate(rotation, position, pointMin);
@@ -195,7 +152,6 @@ public class HitBoxSquare extends HitBox{
             xMax = pointMax.x;
             yMax = pointMax.y;
             zMax = pointMax.z;
-            //generateCorners(xMin, xMax, yMin, yMax, zMin, zMax);
             this.rotation = rotation;
         }
 

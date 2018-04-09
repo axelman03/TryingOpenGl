@@ -102,18 +102,21 @@ public class HitBoxSquare extends HitBox{
                 xMax = xMaxOrig + position;
                 xMinNoRot = xMinOrig + position;
                 xMaxNoRot = xMaxOrig + position;
+                this.position.x = position;
                 break;
             case 'y':
                 yMin = yMinOrig + position;
                 yMax = yMaxOrig + position;
                 yMinNoRot = yMinOrig + position;
                 yMaxNoRot = yMaxOrig + position;
+                this.position.y = position;
                 break;
             case 'z':
                 zMin = zMinOrig + position;
                 zMax = zMaxOrig + position;
                 zMinNoRot = zMinOrig + position;
                 zMaxNoRot = zMaxOrig + position;
+                this.position.z = position;
                 break;
         }
     }

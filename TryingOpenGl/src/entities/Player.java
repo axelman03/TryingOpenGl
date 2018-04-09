@@ -61,6 +61,7 @@ public class Player extends Entity {
 			//jumpStartTime = 0; 
 			super.getPosition().y = terrainHeight;
 			super.getBox().setPosition(terrainHeight, 'y');
+			super.getHitBoxMesh().setPosition(terrainHeight, 'y');
 			isInAir = false;
 		}
 

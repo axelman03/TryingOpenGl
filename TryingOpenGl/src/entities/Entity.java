@@ -1,12 +1,10 @@
 package entities;
 
-import entities.collisionDetection.HitBoxSquare;
-import entities.collisionDetection.HitBoxType;
-import entities.collisionDetection.RawHitBoxMesh;
+import entities.collisionDetection.*;
 import org.lwjgl.util.vector.Vector3f;
 
 import models.TexturedModel;
-import entities.collisionDetection.HitBox;
+import renderEngine.Loader;
 
 public class Entity {
 	
@@ -53,9 +51,9 @@ public class Entity {
 		return box;
 	}
 
-	public void setBox(RawHitBoxMesh mesh) {
+	public void setBox(String objectMeshName) {
 		hasHitBox = true;
-		hitBoxMesh = mesh;
+		hitBoxMesh = OBJHitBoxMeshLoader.loadObjHitBoxMesh(objectMeshName, position, new Vector3f(rotX, rotY, rotZ), scale);
 		box = new HitBoxSquare(minVertices.x, maxVertices.x, minVertices.y, maxVertices.y, minVertices.z, maxVertices.z, scale, new Vector3f(rotX, rotY, rotZ));
 		box.setPosition(new Vector3f(position.x, position.y, position.z));
 		box.setRotation(new Vector3f(rotX, rotY, rotZ));
@@ -77,6 +75,7 @@ public class Entity {
 		this.position.z+=dz;
 		if (hasHitBox) {
 			box.increasePosition(new Vector3f(dx, dy, dz));
+			hitBoxMesh.increasePosition(new Vector3f(dx, dy, dz));
 		}
 	}
 	
@@ -86,6 +85,7 @@ public class Entity {
 		this.rotZ+=dz;
 		if (hasHitBox) {
 			box.setRotation(new Vector3f(rotX + dx, rotY + dy, rotZ + dz), getPosition());
+			hitBoxMesh.setRotation(new Vector3f(rotX + dx, rotY + dy, rotZ + dz));
 		}
 	}
 	
@@ -94,6 +94,10 @@ public class Entity {
 	}
 	public Vector3f getPosition() {
 		return position;
+	}
+
+	public RawHitBoxMesh getHitBoxMesh() {
+		return hitBoxMesh;
 	}
 
 	public void setPosition(Vector3f position) {

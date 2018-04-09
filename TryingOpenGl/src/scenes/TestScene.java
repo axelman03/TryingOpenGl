@@ -322,7 +322,7 @@ public class TestScene extends SceneSetup{
 
 	@Override
 	public void createPlayer() {
-    	player.setBox();
+    	player.setBox("PersonHitBoxMesh");
         //Loading the Player
 	}
 	

@@ -16,7 +16,7 @@ public class OBJHitBoxMeshLoader {
 
     private static float[] verticesArray;
 
-    public static RawHitBoxMesh loadObjHitBoxMesh(String fileName, Loader loader) {
+    public static RawHitBoxMesh loadObjHitBoxMesh(String fileName, Vector3f position, Vector3f rotation, float scale) {
         FileReader fr = null;
         try {
             fr = new FileReader(new File("TryingOpenGl/res/" + fileName + ".obj"));
@@ -81,7 +81,7 @@ public class OBJHitBoxMeshLoader {
         for (int i = 0; i < indices.size(); i++) {
             indicesArray[i] = indices.get(i);
         }
-        return /*loader.loadToVAO(verticesArray, normalsArray, indicesArray)*/ new RawHitBoxMesh(new HitBoxMeshVAO(verticesArray, normalsArray, indicesArray), indicesArray.length);
+        return new RawHitBoxMesh(new HitBoxMeshVAO(verticesArray, normalsArray, indicesArray), indicesArray.length, position, rotation, scale);
     }
 
     private static void processVertex(String[] vertexData, List<Integer> indices, List<Vector3f> normals, float[] normalsArray) {

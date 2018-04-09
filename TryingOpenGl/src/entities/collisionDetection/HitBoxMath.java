@@ -49,6 +49,7 @@ public class HitBoxMath {
     public static HitBoxSquare getCollidedHitbox(){
         return tempCollidedHitBox;
     }
+
 /*
     private static boolean isCollidingCSHybrid(HitBox box1, HitBox box2) {
         HitBox[] boxes = new HitBox[2];

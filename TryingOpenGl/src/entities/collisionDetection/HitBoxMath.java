@@ -1,6 +1,7 @@
 package entities.collisionDetection;
 
 import org.lwjgl.util.vector.Vector3f;
+import org.lwjglx.debug.org.eclipse.jetty.servlet.Source;
 import toolBox.Maths;
 
 import java.util.ArrayList;
@@ -50,7 +51,105 @@ public class HitBoxMath {
         return tempCollidedHitBox;
     }
 
+    //Read comments to do for third dimension
+    public boolean narrowPlaneCollision(HitBoxMeshVAO collider, HitBoxMeshVAO collided){
+        boolean collideLoop = true;
+        int loop = 0;
+        ArrayList<Vector3f> simplex = new ArrayList<Vector3f>();
+        Vector3f vecDirection = null;
+        Vector3f.sub(collided.getPosition(), collider.getPosition(), vecDirection);
+        Vector3f p1 = getSupport(collider, collided, vecDirection);
+        simplex.add(p1);
+        vecDirection.negate(vecDirection);
+
+        while(true){
+            Vector3f p2 = getSupport(collider, collided, vecDirection);
+            simplex.add(p2);
+            // make sure that the last point we added actually passed the origin
+            if (Vector3f.dot(simplex.get(simplex.size() - 1), vecDirection) <= 0){ //This works on a 2D plane, but what about a 3D plane? Do I multiply that with the Dot of another Vector to get it in a triangle or what?
+                // if the point added last was not past the origin in the direction of vecDirection then the Minkowski Sum cannot possibly contain the origin since the last point added is on the edge of the Minkowski Difference
+                collideLoop = false;
+            }
+            else{
+                // otherwise we need to determine if the origin is in the current simplex
+                if(simplex.contains(Origin)){
+                    //If it does, there is a collision
+                    collideLoop = true;
+                }
+                else{
+                    // otherwise we cannot be certain so find the edge who is closest to the origin and use its normal (in the direction of the origin) as the new vecDirection and continue the loop
+                    //Make loop iterate twice before testing different sides, since its 3D
+                    if(loop <= 2){
+                        loop++;
+                    }
+                    else{
+                        simplex.remove(simplex.size() - 2);
+                    }
+                    vecDirection = getDirection(p1, p2);
+
+                }
+            }
+        }
+        return collideLoop;
+    }
+
+    //gets the direction of the new vector for each iteration
+    private Vector3f getDirection(Vector3f a, Vector3f b){
+        //the vectors subtracting a from b
+        Vector3f AB = new Vector3f(b.x - a.x, b.y - a.y, b.z - a.z);
+        Vector3f AO = new Vector3f(0 - a.x, 0 - a.y, 0 - a.z);
+        float ADot = Vector3f.dot(AB, AB);
+        float BDot = Vector3f.dot(AO, AB);
+        Vector3f vecDirectionA = new Vector3f(AO.x * ADot, AO.y * ADot, AO.z * ADot);
+        Vector3f vecDirectionB = new Vector3f(AB.x * BDot, AB.y * BDot, AB.z * BDot);
+        Vector3f vecDirection = new Vector3f((vecDirectionA.x - vecDirectionB.x)/ BDot, (vecDirectionA.y - vecDirectionB.y) / BDot, (vecDirectionA.z - vecDirectionB.z) / BDot);
+        return vecDirection;
+    }
+
+    //Returns the support function of the shape of the Minkowski sum, so a vertex on the edge of the shape
+    private Vector3f getSupport(HitBoxMeshVAO collider, HitBoxMeshVAO collided, Vector3f vectorDirection){
+        Vector3f p1 = getFarthestPoint(collider, vectorDirection);
+        Vector3f p2 = getFarthestPoint(collided, vectorDirection.negate(vectorDirection));
+        Vector3f p3 = new Vector3f(p1.x - p2.x, p1.y - p2.y, p1.z - p2.z);
+        return p3;
+    }
+
+    //Returns the farthest vertex on the object given from the vector direction given
+    private Vector3f getFarthestPoint(HitBoxMeshVAO collider, Vector3f vectorDirection){
+        Vector3f largest;
+        float largestTemp = 0;
+        float testTemp;
+        int indexTemp = 0;
+        for(int x = 0; x < collider.getVertexPositionsSize() - 2; x = x + 3){
+            testTemp = Math.abs(Vector3f.dot(vectorDirection, new Vector3f(collider.getVertexPositions(x), collider.getVertexPositions(x + 1), collider.getVertexPositions(x + 2))));
+            if (testTemp > largestTemp){
+                largestTemp = testTemp;
+                indexTemp = x;
+            }
+        }
+        largest = new Vector3f(collider.getVertexPositions(indexTemp), collider.getVertexPositions(indexTemp + 1), collider.getVertexPositions(indexTemp + 2));
+        return largest;
+    }
 /*
+    private ArrayList<Vector3f> minkowskiDifferenceObject(HitBoxMeshVAO collider, HitBoxMeshVAO collided){
+        ArrayList<Vector3f> differenceObject = new ArrayList<Vector3f>();
+        for(int x = 0; x < collider.getVertexPositionsSize() - 2; x = x + 3){
+            for(int c = 0; c < collided.getVertexPositionsSize(); c = c + 3){
+                differenceObject.add(new Vector3f(collider.getVertexPositions(x) + (-collided.getVertexPositions(c)), collider.getVertexPositions(x + 1) + (-collided.getVertexPositions(c + 1)), collider.getVertexPositions(x + 2) + (-collided.getVertexPositions(c + 2))));
+            }
+        }
+
+        for(Vector3f vertex : differenceObject){
+            for(Vector3f vertices : differenceObject){
+                if(vertex == vertices){
+                    differenceObject.remove(vertices);
+                }
+            }
+        }
+        return differenceObject;
+    }
+    */
+    /*
     private static boolean isCollidingCSHybrid(HitBox box1, HitBox box2) {
         HitBox[] boxes = new HitBox[2];
         HitBoxCircle circle = null;

@@ -57,6 +57,8 @@ public class RawHitBoxMesh {
             transformedVao.setVertexPositions(z,transformedVao.getVertexPositions(z) + position.z);
             transformedVaoNoRot.setVertexPositions(z,transformedVaoNoRot.getVertexPositions(z) + position.z);
         }
+        transformedVao.setPosition(position);
+        transformedVaoNoRot.setPosition(position);
     }
 
     private void transformVaoSetPosition(Vector3f position) {
@@ -72,6 +74,8 @@ public class RawHitBoxMesh {
             transformedVao.setVertexPositions(z,vao.getVertexPositions(z) + position.z);
             transformedVaoNoRot.setVertexPositions(z,vao.getVertexPositions(z) + position.z);
         }
+        transformedVao.setPosition(position);
+        transformedVaoNoRot.setPosition(position);
     }
 
     private void transformVaoSetPosition(float position, char axis) {
@@ -98,6 +102,8 @@ public class RawHitBoxMesh {
                 }
                 break;
         }
+        transformedVao.setPosition(this.position);
+        transformedVaoNoRot.setPosition(this.position);
 
     }
 
@@ -108,7 +114,7 @@ public class RawHitBoxMesh {
         }
         else{
             for(int c = 0; c < transformedVaoNoRot.getVertexPositionsSize() - 2; c = c + 3) {
-                rotate(rotation, position, new Vector3f(transformedVaoNoRot.getVertexPositions(c), transformedVaoNoRot.getVertexPositions(c + 1), transformedVaoNoRot.getVertexPositions(c + 1)), c);
+                rotate(rotation, position, new Vector3f(transformedVaoNoRot.getVertexPositions(c), transformedVaoNoRot.getVertexPositions(c + 1), transformedVaoNoRot.getVertexPositions(c + 2)), c);
                 this.rotation = rotation;
             }
         }

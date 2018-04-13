@@ -1,13 +1,25 @@
 package entities.collisionDetection;
 
+import org.lwjgl.util.vector.Vector3f;
+
 public class HitBoxMeshVAO {
     private float[] vertexPositions;
     private float[] vertexNormals;
     private int[] vertexIndices;
+    private Vector3f position;
+
     public HitBoxMeshVAO(float[] positions, float[] normals, int[] indices){
         vertexPositions = positions;
         vertexNormals = normals;
         vertexIndices = indices;
+    }
+
+    public Vector3f getPosition(){
+        return position;
+    }
+
+    public void setPosition(Vector3f position){
+        this.position = position;
     }
 
     public float[] getVertexPositions() {

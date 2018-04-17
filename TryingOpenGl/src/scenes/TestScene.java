@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Random;
 
 import entities.collisionDetection.HitBoxMath;
+import entities.collisionDetection.HitBoxMeshVAO;
 import entities.collisionDetection.HitBoxSquare;
 import entities.collisionDetection.HitBoxType;
 import org.lwjgl.input.Keyboard;
@@ -151,6 +152,9 @@ public class TestScene extends SceneSetup{
 		soundSource = new Source();
 		AL10.alDistanceModel(AL11.AL_EXPONENT_DISTANCE_CLAMPED);  //The farther from sound, the less you hear the noise; look at the last sound tutorial as reference for models
 
+
+
+
     }
    	
 	@Override
@@ -188,8 +192,18 @@ public class TestScene extends SceneSetup{
 	    HeightsGenerator.smoothBetweenTerrains(terrain2, terrain3);
 	    HeightsGenerator.smoothBetweenTerrains(terrain3, terrain4);
 	    HeightsGenerator.smoothBetweenTerrains(terrain4, terrain1);
-	    
-		
+
+		float[] vertexPositions1 = {4,11,0,9,9,0,4,5,0};
+		float[] vertexPositions2 = {5,7,0,12,7,0,7,3,0,10,2,0};
+		float[] vertexNormals = new float[0];
+		int[] vertexIndices = new int[0];
+		HitBoxMeshVAO hit1 = new HitBoxMeshVAO(vertexPositions1, vertexNormals, vertexIndices);
+		HitBoxMeshVAO hit2 = new HitBoxMeshVAO(vertexPositions2, vertexNormals, vertexIndices);
+		hit1.setPosition(new Vector3f(5.5f,8.5f,0));  //5.5,8.5,0
+		hit2.setPosition(new Vector3f(9,5, 0));  //9,5,0
+		if(HitBoxMath.narrowPlaneCollision(hit1, hit2)){
+			System.out.println("Collision");
+		}
 	}
 
 	//To make Object textures work, select all in blender at bottom, and hit ctrl-J or join
@@ -214,7 +228,7 @@ public class TestScene extends SceneSetup{
 
         car = new TexturedModel(OBJLoader.loadObjModel("bullet350_3", loader), new ModelTexture(loader.loadTexture("bullet350Skin2_Texture")), OBJLoader.getMaxVertices(), OBJLoader.getMinVertices());
         entities.add(new Entity(car, new Vector3f(35, 5, -75), 0, 0, 0, 6f, car.getMaxVertices(), car.getMinVertices()));
-        entities.get(1).setBox();
+        //entities.get(1).setBox();
         hitBoxes.add(entities.get(1).getBox());
 		//System.out.println(entities.get(1).getBox().getPosition());
 		//System.out.println(entities.get(1).getBox().getXMax() + " " + entities.get(1).getBox().getYMax() + " " + entities.get(1).getBox().getZMax());
@@ -393,12 +407,13 @@ public class TestScene extends SceneSetup{
 		if (Keyboard.isKeyDown(Keyboard.KEY_R)){
 	   	 	car.setTexture(new ModelTexture(loader.loadTexture("bullet350Skin1_Texture")));
 			entities.add(1, new Entity(car, new Vector3f(35, 10, -75), 0, 0, 0, 10f, car.getMaxVertices(), car.getMinVertices()));
-			entities.get(1).setBox();
+			//entities.get(1).setBox();
 		}
 
-		if(HitBoxMath.isBroadPlaneColliding(player.getBox(), hitBoxes)){
-	   	 	System.out.println("Collision");
-		}
+		//if(HitBoxMath.isBroadPlaneColliding(player.getBox(), hitBoxes)){
+	   	 	//System.out.println("Collision");
+		//}
+
 
 
 

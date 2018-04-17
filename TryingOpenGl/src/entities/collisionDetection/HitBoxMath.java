@@ -9,6 +9,9 @@ import java.util.ArrayList;
 public class HitBoxMath {
 
     private static HitBoxSquare tempCollidedHitBox;
+
+    private static ArrayList<Vector3f> simplex = new ArrayList<Vector3f>();
+    private static Vector3f vecDirection = null;
 /*
     public static boolean isColliding(HitBox box1, HitBox box2) {
         boolean isBox = false;
@@ -51,71 +54,121 @@ public class HitBoxMath {
         return tempCollidedHitBox;
     }
 
+
     //Read comments to do for third dimension
-    public boolean narrowPlaneCollision(HitBoxMeshVAO collider, HitBoxMeshVAO collided){
-        boolean collideLoop = true;
-        int loop = 0;
-        ArrayList<Vector3f> simplex = new ArrayList<Vector3f>();
-        Vector3f vecDirection = null;
-        Vector3f.sub(collided.getPosition(), collider.getPosition(), vecDirection);
+    public static boolean narrowPlaneCollision(HitBoxMeshVAO collider, HitBoxMeshVAO collided){
+        //boolean collideLoop = true;
+        vecDirection = new Vector3f(collided.getPosition().x - collider.getPosition().x, collided.getPosition().y - collider.getPosition().y, collided.getPosition().z - collider.getPosition().z);
+        //Vector3f.sub(collided.getPosition(), collider.getPosition(), vecDirection);
         Vector3f p1 = getSupport(collider, collided, vecDirection);
         simplex.add(p1);
-        vecDirection.negate(vecDirection);
+        vecDirection = new Vector3f(-vecDirection.x, -vecDirection.y, -vecDirection.z);
 
         while(true){
             Vector3f p2 = getSupport(collider, collided, vecDirection);
             simplex.add(p2);
-            // make sure that the last point we added actually passed the origin
+            //make sure that the last point we added actually passed the origin
             if (Vector3f.dot(simplex.get(simplex.size() - 1), vecDirection) <= 0){ //This works on a 2D plane, but what about a 3D plane? Do I multiply that with the Dot of another Vector to get it in a triangle or what?
-                // if the point added last was not past the origin in the direction of vecDirection then the Minkowski Sum cannot possibly contain the origin since the last point added is on the edge of the Minkowski Difference
-                collideLoop = false;
+                //if the point added last was not past the origin in the direction of vecDirection then the Minkowski Sum cannot possibly contain the origin since the last point added is on the edge of the Minkowski Difference
+                //collideLoop = false;
+                vecDirection = null;
+                simplex.clear();
+                return false;
             }
             else{
-                // otherwise we need to determine if the origin is in the current simplex
-                if(simplex.contains(Origin)){
+                //otherwise we need to determine if the origin is in the current simplex
+                if(containsOrigin(simplex)){
                     //If it does, there is a collision
-                    collideLoop = true;
+                    //collideLoop = true;
+                    vecDirection = null;
+                    simplex.clear();
+                    return true;
                 }
-                else{
-                    // otherwise we cannot be certain so find the edge who is closest to the origin and use its normal (in the direction of the origin) as the new vecDirection and continue the loop
-                    //Make loop iterate twice before testing different sides, since its 3D
-                    if(loop <= 2){
-                        loop++;
-                    }
-                    else{
-                        simplex.remove(simplex.size() - 2);
-                    }
-                    vecDirection = getDirection(p1, p2);
 
-                }
             }
         }
-        return collideLoop;
+        //return collideLoop;
     }
 
-    //gets the direction of the new vector for each iteration
-    private Vector3f getDirection(Vector3f a, Vector3f b){
+    private static boolean containsOrigin(ArrayList<Vector3f> simplex) {
+        // get the last point added to the simplex
+        Vector3f a = simplex.get(simplex.size() - 1);
+        // compute AO (same thing as -A)
+        Vector3f ao = new Vector3f(-a.x, -a.y, -a.z);
+        if (simplex.size() == 3) {
+            // then its the triangle case
+            // get b and c
+            Vector3f b = simplex.get(simplex.size() - 2);
+            Vector3f c = simplex.get(simplex.size() - 3);
+            // compute the edges
+            Vector3f ab = getEdges(a, b);
+            Vector3f ac = getEdges(a, c);
+            // compute the normals
+            Vector3f abPerp = getDirection(ac, ab, ab);
+            Vector3f acPerp = getDirection(ab, ac, ac);
+            // is the origin in R4
+            if (Vector3f.dot(abPerp, ao) > 0) {
+                // remove point c
+                simplex.remove(simplex.size() - 3);
+                // set the new direction to abPerp
+                vecDirection = abPerp;
+            } else {
+                // is the origin in R3
+                if (Vector3f.dot(acPerp, ao) > 0) {
+                    // remove point b
+                    simplex.remove(simplex.size() - 2);
+                    // set the new direction to acPerp
+                    vecDirection = acPerp;
+                } else{
+                    // otherwise we know its in R5 so we can return true
+                    return true;
+                }
+            }
+        } else {
+            // then its the line segment case
+            Vector3f b = simplex.get(simplex.size() - 2);
+            // compute AB
+            Vector3f ab = getEdges(a, b);
+            // get the perp to AB in the direction of the origin
+            Vector3f abPerp = getDirection(ab, ao, ab);
+            // set the direction to abPerp
+            vecDirection = abPerp;
+        }
+        return false;
+    }
+
+    //gets the direction of the new vector for each iteration, and for Origin Testing, Its the vector perpendicular to the line
+    /*
+    (A x B) x C = B(C.dot(A)) – A(C.dot(B))
+    The Perpendicular math to get the different sides of the triangle
+    */
+    private static Vector3f getDirection(Vector3f a, Vector3f b, Vector3f c){
         //the vectors subtracting a from b
-        Vector3f AB = new Vector3f(b.x - a.x, b.y - a.y, b.z - a.z);
-        Vector3f AO = new Vector3f(0 - a.x, 0 - a.y, 0 - a.z);
-        float ADot = Vector3f.dot(AB, AB);
-        float BDot = Vector3f.dot(AO, AB);
-        Vector3f vecDirectionA = new Vector3f(AO.x * ADot, AO.y * ADot, AO.z * ADot);
-        Vector3f vecDirectionB = new Vector3f(AB.x * BDot, AB.y * BDot, AB.z * BDot);
-        Vector3f vecDirection = new Vector3f((vecDirectionA.x - vecDirectionB.x)/ BDot, (vecDirectionA.y - vecDirectionB.y) / BDot, (vecDirectionA.z - vecDirectionB.z) / BDot);
+
+        float aDot = Vector3f.dot(c, a);
+        float bDot = Vector3f.dot(c, b);
+        Vector3f vecDirectionA = new Vector3f(b.x * aDot, b.y * aDot, b.z * aDot);
+        Vector3f  vecDirectionB = new Vector3f(a.x * bDot, a.y * bDot, a.z * bDot);
+        Vector3f vecDirection = new Vector3f((vecDirectionA.x - vecDirectionB.x)/ bDot, (vecDirectionA.y - vecDirectionB.y) / bDot, (vecDirectionA.z - vecDirectionB.z) / bDot);
         return vecDirection;
     }
 
+    private static Vector3f getEdges(Vector3f a, Vector3f b){
+        Vector3f ab = new Vector3f(b.x - a.x, b.y - a.y, b.z - a.z);
+        return ab;
+    }
+
+
     //Returns the support function of the shape of the Minkowski sum, so a vertex on the edge of the shape
-    private Vector3f getSupport(HitBoxMeshVAO collider, HitBoxMeshVAO collided, Vector3f vectorDirection){
+    private static Vector3f getSupport(HitBoxMeshVAO collider, HitBoxMeshVAO collided, Vector3f vectorDirection){
         Vector3f p1 = getFarthestPoint(collider, vectorDirection);
-        Vector3f p2 = getFarthestPoint(collided, vectorDirection.negate(vectorDirection));
+        Vector3f p2 = getFarthestPoint(collided, new Vector3f(-vectorDirection.x, -vectorDirection.y, -vectorDirection.z));
         Vector3f p3 = new Vector3f(p1.x - p2.x, p1.y - p2.y, p1.z - p2.z);
         return p3;
     }
 
     //Returns the farthest vertex on the object given from the vector direction given
-    private Vector3f getFarthestPoint(HitBoxMeshVAO collider, Vector3f vectorDirection){
+    private static Vector3f getFarthestPoint(HitBoxMeshVAO collider, Vector3f vectorDirection){
         Vector3f largest;
         float largestTemp = 0;
         float testTemp;
@@ -130,6 +183,8 @@ public class HitBoxMath {
         largest = new Vector3f(collider.getVertexPositions(indexTemp), collider.getVertexPositions(indexTemp + 1), collider.getVertexPositions(indexTemp + 2));
         return largest;
     }
+
+
 /*
     private ArrayList<Vector3f> minkowskiDifferenceObject(HitBoxMeshVAO collider, HitBoxMeshVAO collided){
         ArrayList<Vector3f> differenceObject = new ArrayList<Vector3f>();

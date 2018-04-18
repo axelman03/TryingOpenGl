@@ -228,7 +228,7 @@ public class TestScene extends SceneSetup{
 
         car = new TexturedModel(OBJLoader.loadObjModel("bullet350_3", loader), new ModelTexture(loader.loadTexture("bullet350Skin2_Texture")), OBJLoader.getMaxVertices(), OBJLoader.getMinVertices());
         entities.add(new Entity(car, new Vector3f(35, 5, -75), 0, 0, 0, 6f, car.getMaxVertices(), car.getMinVertices()));
-        //entities.get(1).setBox();
+        entities.get(1).setBox("bullet350HitBoxMesh");
         hitBoxes.add(entities.get(1).getBox());
 		//System.out.println(entities.get(1).getBox().getPosition());
 		//System.out.println(entities.get(1).getBox().getXMax() + " " + entities.get(1).getBox().getYMax() + " " + entities.get(1).getBox().getZMax());

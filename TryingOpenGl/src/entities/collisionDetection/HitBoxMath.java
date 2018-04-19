@@ -1,5 +1,6 @@
 package entities.collisionDetection;
 
+import entities.Entity;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjglx.debug.org.eclipse.jetty.servlet.Source;
 import toolBox.Maths;
@@ -31,9 +32,9 @@ public class HitBoxMath {
     }
 */
     //Collider is object that is hittting other objects, so player and such
-    public static boolean isBroadPlaneColliding(HitBoxSquare collider, ArrayList<HitBoxSquare> hitBoxes){
+    public static boolean isBroadPlaneColliding(HitBoxSquare collider, ArrayList<Entity> entities){
         boolean isHit = false;
-        for(HitBoxSquare hitBox : hitBoxes){
+        for(Entity hitBox : hitBoxes){
             if(collider.getXMax() >= hitBox.getXMin() && collider.getXMin() <= hitBox.getXMax()){
                 if(collider.getZMax() >= hitBox.getZMin() && collider.getZMin() <= hitBox.getZMax()){
                     if(collider.getYMax() >= hitBox.getYMin() && collider.getYMin() <= hitBox.getYMax()){
@@ -99,34 +100,45 @@ public class HitBoxMath {
             // compute the edges
             Vector3f ab = getEdges(a, b);
             Vector3f ac = getEdges(a, c);
-            Vector3f ad = getEdges(a, d);
+            //Vector3f ad = getEdges(a, d);
             Vector3f bc = getEdges(b, c);
             Vector3f bd = getEdges(b, d);
             Vector3f cd = getEdges(c, d);
             // compute the faces
             //Vector3f abPerp = getDirection(ac, ab, ab);
             //Vector3f acPerp = getDirection(ab, ac, ac);
-            Vector3f abcFacePerp = getDirection(ab, ac, bc);
-            Vector3f abdFacePerp = getDirection(ab, ad, bd);
-            Vector3f acdFacePerp = getDirection(ac, ad, cd);
-            Vector3f bcdFacePerp = getDirection(bc, bd, cd);
-            // is the origin in R4
-            if (Vector3f.dot(abPerp, ao) > 0) {
+            Vector3f abcFacePerp = getFaceDirection(ab, bc);
+            Vector3f abdFacePerp = getFaceDirection(ab, bd);
+            Vector3f acdFacePerp = getFaceDirection(ac, cd);
+            Vector3f bcdFacePerp = getFaceDirection(bc, cd);
+            // Origin Checking
+            if (Vector3f.dot(abcFacePerp, ao) > 0) {
+                // remove point d
+                simplex.remove(simplex.size() - 4);
+                // set the new direction to abcFacePerp
+                vecDirection = abcFacePerp;
+            }
+            else if (Vector3f.dot(abdFacePerp, ao) > 0) {
                 // remove point c
                 simplex.remove(simplex.size() - 3);
-                // set the new direction to abPerp
-                vecDirection = abPerp;
-            } else {
-                // is the origin in R3
-                if (Vector3f.dot(acPerp, ao) > 0) {
-                    // remove point b
-                    simplex.remove(simplex.size() - 2);
-                    // set the new direction to acPerp
-                    vecDirection = acPerp;
-                } else{
-                    // otherwise we know its in R5 so we can return true
-                    return true;
-                }
+                // set the new direction to abdFacePerp
+                vecDirection = abdFacePerp;
+            }
+            else if (Vector3f.dot(acdFacePerp, ao) > 0) {
+                // remove point b
+                simplex.remove(simplex.size() - 2);
+                // set the new direction to acdFacePerp
+                vecDirection = acdFacePerp;
+            }
+            else if (Vector3f.dot(bcdFacePerp, ao) > 0) {
+                // remove point a
+                simplex.remove(simplex.size() - 1);
+                // set the new direction to bcdFacePerp
+                vecDirection = bcdFacePerp;
+            }
+            else{
+                // otherwise we know its in R5 so we can return true
+                return true;
             }
         }
         else if (simplex.size() == 3) {
@@ -136,13 +148,13 @@ public class HitBoxMath {
             Vector3f c = simplex.get(simplex.size() - 3);
             // compute the edges
             Vector3f ab = getEdges(a, b);
-            Vector3f ac = getEdges(a, c);
+            //Vector3f ac = getEdges(a, c);
             Vector3f bc = getEdges(b, c);
             // compute the normals
             //Vector3f abPerp = getDirection(ac, ab, ab);
             //Vector3f acPerp = getDirection(ab, ac, ac);
             //Vector3f bcPerp = getDirection(ac, bc, bc);
-            Vector3f facePerp = getFaceDirection(ab, ac, bc);
+            Vector3f facePerp = getFaceDirection(ab, bc);
 
             vecDirection = facePerp;
         }
@@ -159,7 +171,10 @@ public class HitBoxMath {
         return false;
     }
 
-    private static Vector3f getFaceDirection(Vector3f a, Vector3f b, Vector3f c){
+    private static Vector3f getFaceDirection(Vector3f a, Vector3f b){
+        Vector3f normal = new Vector3f(0,0,0);
+        Vector3f.cross(a, b, normal);
+        return normal;
 
     }
 

@@ -59,9 +59,9 @@ public class OBJHitBoxMeshLoader {
                 String[] vertex2 = currentLine[2].split("/");
                 String[] vertex3 = currentLine[3].split("/");
 
-                processVertex(vertex1, indices, normals, normalsArray);
-                processVertex(vertex2, indices, normals, normalsArray);
-                processVertex(vertex3, indices, normals, normalsArray);
+                processVertex(vertex1, indices/*, normals, normalsArray*/);
+                processVertex(vertex2, indices/*, normals, normalsArray*/);
+                processVertex(vertex3, indices/*, normals, normalsArray*/);
                 line = reader.readLine();
             }
             reader.close();
@@ -81,17 +81,18 @@ public class OBJHitBoxMeshLoader {
         for (int i = 0; i < indices.size(); i++) {
             indicesArray[i] = indices.get(i);
         }
-        return new RawHitBoxMesh(new HitBoxMeshVAO(verticesArray, normalsArray, indicesArray), indicesArray.length, position, rotation, scale);
+        return new RawHitBoxMesh(new HitBoxMeshVAO(verticesArray/*, normalsArray, indicesArray*/), indicesArray.length, position, rotation, scale);
     }
 
-    private static void processVertex(String[] vertexData, List<Integer> indices, List<Vector3f> normals, float[] normalsArray) {
+    private static void processVertex(String[] vertexData, List<Integer> indices/*, List<Vector3f> normals, float[] normalsArray*/) {
         int currentVertexPointer = Integer.parseInt(vertexData[0]) - 1;
         indices.add(currentVertexPointer);
-        Vector3f currentNorm = normals.get(Integer.parseInt(vertexData[2]) - 1);
+        /*
+        Vector3f currentNorm = normals.get(Integer.parseInt(vertexData[2]));
         normalsArray[currentVertexPointer * 3] = currentNorm.x;
         normalsArray[currentVertexPointer * 3 + 1] = currentNorm.y;
         normalsArray[currentVertexPointer * 3 + 2] = currentNorm.z;
-
+        */
     }
 
 }

@@ -1,5 +1,6 @@
 package entities.collisionDetection;
 
+import entities.Entity;
 import org.lwjgl.util.vector.Vector3f;
 
 public class HitBoxSquare extends HitBox{
@@ -20,9 +21,10 @@ public class HitBoxSquare extends HitBox{
     private Vector3f pointMin;
     private Vector3f pointMax;
     private Vector3f rotation;
+    private Entity entity;
 
 
-    public HitBoxSquare(float xMin, float xMax, float yMin, float yMax, float zMin, float zMax, float scale, Vector3f rotation) {
+    public HitBoxSquare(float xMin, float xMax, float yMin, float yMax, float zMin, float zMax, float scale, Vector3f rotation, Entity entity) {
         pointMin = new Vector3f(xMin, yMin, zMin);
         pointMax = new Vector3f(xMax, yMax, zMax);
         this.xMin = xMin;
@@ -50,6 +52,10 @@ public class HitBoxSquare extends HitBox{
         this.rotation = rotation;
         setScale(scale);
         HitBoxManager.addHitBox(this);
+    }
+
+    public Entity getEntity(){
+        return entity;
     }
 
     public void setScale(float scale) {

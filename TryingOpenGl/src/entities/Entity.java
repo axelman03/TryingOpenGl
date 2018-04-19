@@ -54,7 +54,7 @@ public class Entity {
 	public void setBox(String objectMeshName) {
 		hasHitBox = true;
 		hitBoxMesh = OBJHitBoxMeshLoader.loadObjHitBoxMesh(objectMeshName, position, new Vector3f(rotX, rotY, rotZ), scale);
-		box = new HitBoxSquare(minVertices.x, maxVertices.x, minVertices.y, maxVertices.y, minVertices.z, maxVertices.z, scale, new Vector3f(rotX, rotY, rotZ));
+		box = new HitBoxSquare(minVertices.x, maxVertices.x, minVertices.y, maxVertices.y, minVertices.z, maxVertices.z, scale, new Vector3f(rotX, rotY, rotZ), this);
 		box.setPosition(new Vector3f(position.x, position.y, position.z));
 		box.setRotation(new Vector3f(rotX, rotY, rotZ));
 	}

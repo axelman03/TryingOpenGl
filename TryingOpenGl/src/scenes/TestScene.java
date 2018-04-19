@@ -193,17 +193,7 @@ public class TestScene extends SceneSetup{
 	    HeightsGenerator.smoothBetweenTerrains(terrain3, terrain4);
 	    HeightsGenerator.smoothBetweenTerrains(terrain4, terrain1);
 
-		float[] vertexPositions1 = {4,11,0,9,9,0,4,5,0};
-		float[] vertexPositions2 = {5,7,0,12,7,0,7,3,0,10,2,0};
-		float[] vertexNormals = new float[0];
-		int[] vertexIndices = new int[0];
-		HitBoxMeshVAO hit1 = new HitBoxMeshVAO(vertexPositions1, vertexNormals, vertexIndices);
-		HitBoxMeshVAO hit2 = new HitBoxMeshVAO(vertexPositions2, vertexNormals, vertexIndices);
-		hit1.setPosition(new Vector3f(5.5f,8.5f,0));  //5.5,8.5,0
-		hit2.setPosition(new Vector3f(9,5, 0));  //9,5,0
-		if(HitBoxMath.narrowPlaneCollision(hit1, hit2)){
-			System.out.println("Collision");
-		}
+
 	}
 
 	//To make Object textures work, select all in blender at bottom, and hit ctrl-J or join
@@ -410,9 +400,12 @@ public class TestScene extends SceneSetup{
 			//entities.get(1).setBox();
 		}
 
-		//if(HitBoxMath.isBroadPlaneColliding(player.getBox(), hitBoxes)){
-	   	 	//System.out.println("Collision");
-		//}
+		if(HitBoxMath.isBroadPlaneColliding(player.getBox(), hitBoxes)){
+	   	 	if(HitBoxMath.narrowPlaneCollision(player.getHitBoxMesh().getTransformedVao(), HitBoxMath.getCollidedHitbox().getEntity().getHitBoxMesh().getTransformedVao())){
+	   	 		System.out.println("Collision");
+			}
+		}
+
 
 
 

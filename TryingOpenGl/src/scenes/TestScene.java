@@ -400,9 +400,9 @@ public class TestScene extends SceneSetup{
 			//entities.get(1).setBox();
 		}
 
-		if(HitBoxMath.isBroadPlaneColliding(player.getBox(), hitBoxes)){
-	   	 	if(HitBoxMath.narrowPlaneCollision(player.getHitBoxMesh().getTransformedVao(), HitBoxMath.getCollidedHitbox().getEntity().getHitBoxMesh().getTransformedVao())){
-	   	 		System.out.println("Collision");
+		if(HitBoxMath.isBroadPlaneColliding(player, entities)){
+	   	 	if(HitBoxMath.narrowPlaneCollision(player.getHitBoxMesh().getTransformedVao(), entities.get(HitBoxMath.getCollidedEntityIndex()).getHitBoxMesh().getTransformedVao())){
+	   	 		System.out.println("Collision2");
 			}
 		}
 

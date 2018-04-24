@@ -72,22 +72,31 @@ public class HitBoxMath {
             Vector3f p2 = getSupport(collider, collided, vecDirection);
             simplex.add(p2);
             //make sure that the last point we added actually passed the origin
-            if (Vector3f.dot(simplex.get(simplex.size() - 1), vecDirection) <= 0){ //This works on a 2D plane, but what about a 3D plane? Do I multiply that with the Dot of another Vector to get it in a triangle or what?
+            if (Vector3f.dot(simplex.get(simplex.size() - 1), vecDirection) <= 0 || simplex.get(simplex.size() - 1) == simplex.get(simplex.size() - 2)){
+                /*
                 System.out.println(Vector3f.dot(simplex.get(simplex.size() - 1), vecDirection));
-                //System.out.println(simplex);
-                //System.out.println(vecDirection);
-                //if the point added last was not past the origin in the direction of vecDirection then the Minkowski Sum cannot possibly contain the origin since the last point added is on the edge of the Minkowski Difference
                 System.out.println(simplex);
-                System.out.println(minkowskiSum(collider, collided));
+                System.out.println(vecDirection);
+                //if the point added last was not past the origin in the direction of vecDirection then the Minkowski Sum cannot possibly contain the origin since the last point added is on the edge of the Minkowski Difference
+                //System.out.println(simplex);
+                //minkowskiSum(collider, collided);
                 System.out.println();
+                System.out.println();
+                */
+                //System.out.println(Vector3f.dot(vecDirection, new Vector3f(1,1,1)));
                 vecDirection = null;
                 simplex.clear();
                 return false;
             }
             else{
                 //otherwise we need to determine if the origin is in the current simplex
-                if(containsOrigin(simplex)){
+                if(containsOrigin(simplex) || Vector3f.dot(vecDirection, new Vector3f(1,1,1)) < 1 || Vector3f.dot(vecDirection, new Vector3f(1,1,1)) > -1){
                     //If it does, there is a collision
+                    /*
+                    System.out.println(Vector3f.dot(simplex.get(simplex.size() - 1), vecDirection));
+                    System.out.println(simplex);
+                    System.out.println(vecDirection);
+                    */
                     vecDirection = null;
                     simplex.clear();
                     return true;
@@ -101,13 +110,17 @@ public class HitBoxMath {
         // get the last point added to the simplex
         Vector3f a = simplex.get(simplex.size() - 1);
         // compute AO (same thing as -A)
-        Vector3f ao = new Vector3f(-a.x, -a.y, -a.z);
+        Vector3f aO = new Vector3f(-a.x, -a.y, -a.z);
         if (simplex.size() == 4) {
             // then its the tetrahedron case
             // get b and c
             Vector3f b = simplex.get(simplex.size() - 2);
             Vector3f c = simplex.get(simplex.size() - 3);
             Vector3f d = simplex.get(simplex.size() - 4);
+
+            Vector3f bO = new Vector3f(-b.x, -b.y, -b.z);
+            Vector3f cO = new Vector3f(-c.x, -c.y, -c.z);
+            Vector3f dO = new Vector3f(-d.x, -d.y, -d.z);
             // compute the edges
             Vector3f ab = getEdges(a, b);
             Vector3f ac = getEdges(a, c);
@@ -123,28 +136,28 @@ public class HitBoxMath {
             Vector3f acdFacePerp = getFaceDirection(ac, cd);
             Vector3f bcdFacePerp = getFaceDirection(bc, cd);
             // Origin Checking
-            if (Vector3f.dot(abcFacePerp, ao) > 0) {
+            if (Vector3f.dot(abcFacePerp, dO) > 0) {
                 // remove point d
                 simplex.remove(simplex.size() - 4);
                 // set the new direction to abcFacePerp
                 vecDirection = abcFacePerp;
                 //System.out.println(vecDirection);
             }
-            else if (Vector3f.dot(abdFacePerp, ao) > 0) {
+            else if (Vector3f.dot(abdFacePerp, cO) > 0) {
                 // remove point c
                 simplex.remove(simplex.size() - 3);
                 // set the new direction to abdFacePerp
                 vecDirection = abdFacePerp;
                 //System.out.println(vecDirection);
             }
-            else if (Vector3f.dot(acdFacePerp, ao) > 0) {
+            else if (Vector3f.dot(acdFacePerp, bO) > 0) {
                 // remove point b
                 simplex.remove(simplex.size() - 2);
                 // set the new direction to acdFacePerp
                 vecDirection = acdFacePerp;
                 //System.out.println(vecDirection);
             }
-            else if (Vector3f.dot(bcdFacePerp, ao) > 0) {
+            else if (Vector3f.dot(bcdFacePerp, aO) > 0) {
                 // remove point a
                 simplex.remove(simplex.size() - 1);
                 // set the new direction to bcdFacePerp
@@ -180,7 +193,7 @@ public class HitBoxMath {
             // compute AB
             Vector3f ab = getEdges(a, b);
             // get the perp to AB in the direction of the origin
-            Vector3f abPerp = getDirection(ab, ao, ab);
+            Vector3f abPerp = getDirection(ab, aO, ab);
             // set the direction to abPerp
             vecDirection = abPerp;
         }
@@ -209,7 +222,7 @@ public class HitBoxMath {
         float x =  (vecDirectionA.x - vecDirectionB.x);
         float y =  (vecDirectionA.y - vecDirectionB.y);
         float z =  (vecDirectionA.z - vecDirectionB.z);
-        Vector3f vecDirection = new Vector3f(x/Math.abs(x), y/Math.abs(x), z/Math.abs(x));
+        Vector3f vecDirection = new Vector3f(x/bDot, y/bDot, z/bDot);
         return vecDirection;
     }
 
@@ -235,7 +248,7 @@ public class HitBoxMath {
         float testTemp;
         int indexTemp = 0;
         for(int x = 0; x < collider.getVertexPositionsSize() - 2; x = x + 3){
-            testTemp = /*Math.abs(*/Vector3f.dot(vectorDirection, new Vector3f(collider.getVertexPositions(x), collider.getVertexPositions(x + 1), collider.getVertexPositions(x + 2)))/*)*/;
+            testTemp = Vector3f.dot(vectorDirection, new Vector3f(collider.getVertexPositions(x), collider.getVertexPositions(x + 1), collider.getVertexPositions(x + 2)));
             //System.out.println(testTemp);
             if (testTemp > largestTemp){
                 largestTemp = testTemp;
@@ -246,15 +259,5 @@ public class HitBoxMath {
         return largest;
     }
 
-
-    private static ArrayList<Vector3f> minkowskiSum(HitBoxMeshVAO collider, HitBoxMeshVAO collided){
-        ArrayList<Vector3f> sum = new ArrayList<>();
-        for(int x = 0; x < collider.getVertexPositions().length -2; x = x + 3){
-            for(int y = 0; y < collided.getVertexPositions().length -2; y = y + 3){
-                sum.add(new Vector3f(collider.getVertexPositions(x) - collided.getVertexPositions(y), collider.getVertexPositions(x + 1) - collided.getVertexPositions(y + 1), collider.getVertexPositions(x + 1) - collided.getVertexPositions(y + 1)));
-            }
-        }
-        return sum;
-    }
 
 }

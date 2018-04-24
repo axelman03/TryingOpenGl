@@ -19,12 +19,27 @@ public class RawHitBoxMesh {
     public RawHitBoxMesh(HitBoxMeshVAO vao, int vertexCount, Vector3f position, Vector3f rotation, float scale){
         this.vao = vao;
         this.vertexCount = vertexCount;
-        transformedVao = vao;
-        transformedVaoNoRot = vao;
 
+        float[] emptyTransform = new float[vao.getVertexPositionsSize()];
+        float[] emptyTransformNoRot = new float[vao.getVertexPositionsSize()];
+        transformedVao = new HitBoxMeshVAO(emptyTransform);
+        transformedVaoNoRot = new HitBoxMeshVAO(emptyTransformNoRot);
+        createVaos(vao);
         setScale(scale);
         setPosition(position);
         setRotation(rotation);
+        /*
+        for(int x = 0; x < vao.getVertexPositionsSize()-2; x = x + 3){
+            System.out.println(transformedVao.getVertexPositions(x) + " " + transformedVao.getVertexPositions(x + 1) + " " + transformedVao.getVertexPositions(x + 2));
+        }
+        */
+    }
+
+    private void createVaos(HitBoxMeshVAO vao){
+        for(int x = 0; x < vao.getVertexPositionsSize(); x++){
+            transformedVao.setVertexPositions(x,vao.getVertexPositions(x));
+            transformedVaoNoRot.setVertexPositions(x,vao.getVertexPositions(x));
+        }
     }
 
     public HitBoxMeshVAO getVao() {
@@ -42,6 +57,8 @@ public class RawHitBoxMesh {
             transformedVaoNoRot.setVertexPositions(c, transformedVaoNoRot.getVertexPositions(c) * scale);
             transformedVao.setVertexPositions(c, transformedVao.getVertexPositions(c) * scale);
         }
+
+
     }
 
     private void transformVaoIncreasePosition(Vector3f position) {

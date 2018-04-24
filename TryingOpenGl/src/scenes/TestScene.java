@@ -6,10 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import entities.collisionDetection.HitBoxMath;
-import entities.collisionDetection.HitBoxMeshVAO;
-import entities.collisionDetection.HitBoxSquare;
-import entities.collisionDetection.HitBoxType;
+import entities.collisionDetection.*;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.AL11;
@@ -219,6 +216,14 @@ public class TestScene extends SceneSetup{
         car = new TexturedModel(OBJLoader.loadObjModel("bullet350_3", loader), new ModelTexture(loader.loadTexture("bullet350Skin2_Texture")), OBJLoader.getMaxVertices(), OBJLoader.getMinVertices());
         entities.add(new Entity(car, new Vector3f(35, 5, -75), 0, 0, 0, 6f, car.getMaxVertices(), car.getMinVertices()));
         entities.get(1).setBox("bullet350HitBoxMesh");
+        /*
+        for(int x = 0; x < entities.get(1).getHitBoxMesh().getTransformedVao().getVertexPositions().length - 2; x = x + 3) {
+			System.out.println(entities.get(1).getHitBoxMesh().getTransformedVao().getVertexPositions(x));
+			System.out.println(entities.get(1).getHitBoxMesh().getTransformedVao().getVertexPositions(x + 1));
+			System.out.println(entities.get(1).getHitBoxMesh().getTransformedVao().getVertexPositions(x + 2));
+			System.out.println();
+		}
+		*/
         hitBoxes.add(entities.get(1).getBox());
 		//System.out.println(entities.get(1).getBox().getPosition());
 		//System.out.println(entities.get(1).getBox().getXMax() + " " + entities.get(1).getBox().getYMax() + " " + entities.get(1).getBox().getZMax());
@@ -400,11 +405,7 @@ public class TestScene extends SceneSetup{
 			//entities.get(1).setBox();
 		}
 
-		if(HitBoxMath.isBroadPlaneColliding(player, entities)){
-	   	 	if(HitBoxMath.narrowPlaneCollision(player.getHitBoxMesh().getTransformedVao(), entities.get(HitBoxMath.getCollidedEntityIndex()).getHitBoxMesh().getTransformedVao())){
-	   	 		System.out.println("Collision2");
-			}
-		}
+		player.wallCollision(entities);
 
 
 

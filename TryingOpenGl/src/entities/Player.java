@@ -3,6 +3,7 @@ package entities;
 import java.util.ArrayList;
 import java.util.Timer;
 
+import entities.collisionDetection.HitBoxMath;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -12,14 +13,14 @@ import terrain.Terrain;
 
 public class Player extends Entity {
 	
-	private static final float RUN_SPEED = 20;
-	private static final float TURN_SPEED = 160;
-	private static final float JUMP_POWER = 30;
+	public static final float RUN_SPEED = 20;
+	public static final float TURN_SPEED = 160;
+	public static final float JUMP_POWER = 30;
 	
-	private float currentSpeed = 0;
-	private float currentTurnSpeed = 0;
+	public float currentSpeed = 0;
+	public float currentTurnSpeed = 0;
 	//private float upwardsInitialVelocity = 0;
-	private float upwardsVelocity = 0;
+	public float upwardsVelocity = 0;
 	//private float gravity = 0;
 	//private float jumpStartTime = 0;
 	//private float jumpCurrentTime = 0;
@@ -92,6 +93,40 @@ public class Player extends Entity {
 		}
 		if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)){
 			jump();
+		}
+	}
+
+	public void wallCollision(ArrayList<Entity> entities){
+		if(HitBoxMath.isBroadPlaneColliding(this, entities)){
+			if(HitBoxMath.narrowPlaneCollision(this.getHitBoxMesh().getTransformedVao(), entities.get(HitBoxMath.getCollidedEntityIndex()).getHitBoxMesh().getTransformedVao())){
+				System.out.println("Collision2");
+				if (Keyboard.isKeyDown(Keyboard.KEY_W)){
+					currentSpeed = 0;
+					if (Keyboard.isKeyDown(Keyboard.KEY_S)){
+						currentSpeed = -RUN_SPEED;
+					}
+				}else if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
+					currentSpeed = 0;
+					if (Keyboard.isKeyDown(Keyboard.KEY_W)){
+						currentSpeed = RUN_SPEED;
+					}
+				}
+
+				if (Keyboard.isKeyDown(Keyboard.KEY_D)){
+					currentTurnSpeed = 0;
+					if (Keyboard.isKeyDown(Keyboard.KEY_A)){
+						currentSpeed = TURN_SPEED;
+					}
+				}else if (Keyboard.isKeyDown(Keyboard.KEY_A)){
+					currentTurnSpeed = 0;
+					if (Keyboard.isKeyDown(Keyboard.KEY_D)){
+						currentSpeed = -TURN_SPEED;
+					}
+				}
+				if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)){
+					//jump();
+				}
+			}
 		}
 	}
 	

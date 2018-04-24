@@ -57,6 +57,12 @@ public class Entity {
 		box = new HitBoxSquare(minVertices.x, maxVertices.x, minVertices.y, maxVertices.y, minVertices.z, maxVertices.z, scale, new Vector3f(rotX, rotY, rotZ), this);
 		box.setPosition(new Vector3f(position.x, position.y, position.z));
 		box.setRotation(new Vector3f(rotX, rotY, rotZ));
+		/*
+		System.out.println();
+		System.out.println(box.getXMax() + " " + box.getYMax() + " " + box.getZMax());
+		System.out.println(box.getXMin() + " " + box.getYMin() + " " + box.getZMin());
+		System.out.println();
+		*/
 	}
 
 	public float getTextureXOffset(){

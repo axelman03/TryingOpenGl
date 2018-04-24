@@ -1,6 +1,7 @@
 package entities.collisionDetection;
 
 import entities.Entity;
+import org.lwjgl.Sys;
 import org.lwjgl.util.vector.Vector3f;
 
 public class HitBoxSquare extends HitBox{
@@ -80,6 +81,7 @@ public class HitBoxSquare extends HitBox{
         yMaxOrig = yMaxOrig * scale;
         zMinOrig = zMinOrig * scale;
         zMaxOrig = zMaxOrig * scale;
+
 
     }
 

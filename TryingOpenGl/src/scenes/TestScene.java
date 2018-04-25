@@ -64,7 +64,7 @@ public class TestScene extends SceneSetup{
 	
 	Terrain[][] terrain;
 	ArrayList<Entity> entities;
-	List<Entity> normalMapEntities;
+	ArrayList<Entity> normalMapEntities;
 	List<Light>lights;
 	List<GuiTexture>guis;
 	List<WaterTile>waters;
@@ -216,6 +216,18 @@ public class TestScene extends SceneSetup{
         car = new TexturedModel(OBJLoader.loadObjModel("bullet350_3", loader), new ModelTexture(loader.loadTexture("bullet350Skin2_Texture")), OBJLoader.getMaxVertices(), OBJLoader.getMinVertices());
         entities.add(new Entity(car, new Vector3f(35, 5, -75), 0, 0, 0, 6f, car.getMaxVertices(), car.getMinVertices()));
         entities.get(1).setBox("bullet350HitBoxMesh");
+		/*
+		entities.add(new Entity(tree,  new Vector3f(35, 5, -75),0,0, 0, 1, tree.getMaxVertices(), tree.getMinVertices()));
+		entities.get(1).setBox("lowPolyTreeTrunk_1_HitBoxMesh");
+		entities.get(1).addMesh("lowPolyTreeTrunk_2_HitBoxMesh");
+		entities.get(1).addMesh("lowPolyTreeTrunk_3_HitBoxMesh");
+		entities.get(1).addMesh("lowPolyTreeTrunk_4_HitBoxMesh");
+		entities.get(1).addMesh("lowPolyTreeTrunk_5_HitBoxMesh");
+		entities.get(1).addMesh("lowPolyTreeTrunk_6_HitBoxMesh");
+		entities.get(1).addMesh("lowPolyTreeLeaves_1_HitBoxMesh");
+		entities.get(1).addMesh("lowPolyTreeLeaves_2_HitBoxMesh");
+		entities.get(1).addMesh("lowPolyTreeLeaves_3_HitBoxMesh");
+		*/
         /*
         for(int x = 0; x < entities.get(1).getHitBoxMesh().getTransformedVao().getVertexPositions().length - 2; x = x + 3) {
 			System.out.println(entities.get(1).getHitBoxMesh().getTransformedVao().getVertexPositions(x));
@@ -287,7 +299,9 @@ public class TestScene extends SceneSetup{
         barrelModel.getTexture().setShineDamper(10);
         barrelModel.getTexture().setReflectivity(0.1f);
         normalMapEntities.add(new Entity(barrelModel, new Vector3f(75, 10, -75), 0, 0, 0, 1f, barrelModel.getMaxVertices(), barrelModel.getMinVertices()));
-        
+		normalMapEntities.get(0).setBox("bullet350HitBoxMesh");
+		hitBoxes.add(normalMapEntities.get(0).getBox());
+
         TexturedModel crateModel = new TexturedModel(NormalMappedObjLoader.loadOBJ("crate", loader), new ModelTexture(loader.loadTexture("crate")), OBJLoader.getMaxVertices(), OBJLoader.getMinVertices());
         crateModel.getTexture().setNormalMap(loader.loadTexture("crateNormal"));
         crateModel.getTexture().setShineDamper(10);
@@ -391,7 +405,7 @@ public class TestScene extends SceneSetup{
 	   		    	if(terrain[q][c].getX() + terrain[q][c].getSize() > player.getPosition().x) {
 	   		    		if(terrain[q][c].getZ() <= player.getPosition().z) {
 	   		            	if(terrain[q][c].getZ() + terrain[q][c].getSize() > player.getPosition().z) {
-	   		                	player.move(terrain[q][c], entities);
+	   		                	player.move(terrain[q][c], entities, normalMapEntities);
 	   		            	}
 	   		        	}
 	   		    	}
@@ -404,8 +418,6 @@ public class TestScene extends SceneSetup{
 			entities.add(1, new Entity(car, new Vector3f(35, 10, -75), 0, 0, 0, 10f, car.getMaxVertices(), car.getMinVertices()));
 			//entities.get(1).setBox();
 		}
-
-		player.wallCollision(entities);
 
 
 

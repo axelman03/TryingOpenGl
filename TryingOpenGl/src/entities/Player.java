@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Timer;
 
 import entities.collisionDetection.HitBoxMath;
+import entities.collisionDetection.RawHitBoxMesh;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -32,8 +33,8 @@ public class Player extends Entity {
 		super(model, position, rotX, rotY, rotZ, scale, maxVertices, minVertices);
 		
 	}
-	public void move(Terrain terrain, ArrayList<Entity> entities){
-		checkInputs();
+	public void move(Terrain terrain, ArrayList<Entity> entities,  ArrayList<Entity> normalMappedEntities){
+		checkInputs(entities, normalMappedEntities);
 
 
 		for(Entity entity : entities){
@@ -62,7 +63,9 @@ public class Player extends Entity {
 			//jumpStartTime = 0; 
 			super.getPosition().y = terrainHeight;
 			super.getBox().setPosition(terrainHeight, 'y');
-			super.getHitBoxMesh().setPosition(terrainHeight, 'y');
+			for(RawHitBoxMesh playerMesh : this.getHitBoxMesh()) {
+				playerMesh.setPosition(terrainHeight, 'y');
+			}
 			isInAir = false;
 		}
 
@@ -76,26 +79,52 @@ public class Player extends Entity {
 		
 	}
 	
-	private void checkInputs(){
+	private void checkInputs(ArrayList<Entity> entities,  ArrayList<Entity> normalMappedEntities){
+		if(HitBoxMath.isBroadPlaneColliding(this, entities)) {
+			for(RawHitBoxMesh playerMesh : this.getHitBoxMesh()) {
+				for(RawHitBoxMesh entityMesh : entities.get(HitBoxMath.getCollidedEntityIndex()).getHitBoxMesh()) {
+					if (HitBoxMath.narrowPlaneCollision(playerMesh.getTransformedVao(), entityMesh.getTransformedVao())) {
+						System.out.println("Collision");
+					}
+				}
+			}
+		}
+
+		if(HitBoxMath.isBroadPlaneColliding(this, normalMappedEntities)) {
+			for(RawHitBoxMesh playerMesh : this.getHitBoxMesh()) {
+				for(RawHitBoxMesh entityMesh : normalMappedEntities.get(HitBoxMath.getCollidedEntityIndex()).getHitBoxMesh()) {
+					if (HitBoxMath.narrowPlaneCollision(playerMesh.getTransformedVao(), entityMesh.getTransformedVao())) {
+						System.out.println("Collision2");
+					}
+				}
+			}
+		}
+
 		if (Keyboard.isKeyDown(Keyboard.KEY_W)){
 			this.currentSpeed = RUN_SPEED;
-		}else if (Keyboard.isKeyDown(Keyboard.KEY_S)){
+		}
+		else if (Keyboard.isKeyDown(Keyboard.KEY_S)){
 			this.currentSpeed = -RUN_SPEED;
-		}else{
+		}
+		else{
 			this.currentSpeed = 0;
 		}
+
 		if (Keyboard.isKeyDown(Keyboard.KEY_D)){
 			this.currentTurnSpeed = -TURN_SPEED;
-		}else if (Keyboard.isKeyDown(Keyboard.KEY_A)){
+		}
+		else if (Keyboard.isKeyDown(Keyboard.KEY_A)){
 			this.currentTurnSpeed = TURN_SPEED;
-		}else{
+		}
+		else{
 			this.currentTurnSpeed = 0;
 		}
+
 		if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)){
 			jump();
 		}
 	}
-
+/*
 	public void wallCollision(ArrayList<Entity> entities){
 		if(HitBoxMath.isBroadPlaneColliding(this, entities)){
 			if(HitBoxMath.narrowPlaneCollision(this.getHitBoxMesh().getTransformedVao(), entities.get(HitBoxMath.getCollidedEntityIndex()).getHitBoxMesh().getTransformedVao())){
@@ -129,5 +158,5 @@ public class Player extends Entity {
 			}
 		}
 	}
-	
+	*/
 }

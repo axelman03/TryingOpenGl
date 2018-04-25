@@ -6,6 +6,8 @@ import org.lwjgl.util.vector.Vector3f;
 import models.TexturedModel;
 import renderEngine.Loader;
 
+import java.util.ArrayList;
+
 public class Entity {
 	
 	private TexturedModel model;
@@ -17,11 +19,12 @@ public class Entity {
 
 	private HitBoxSquare box;
 	private boolean hasHitBox = false;
-	private RawHitBoxMesh hitBoxMesh;
+
+	private ArrayList<RawHitBoxMesh> hitBoxMeshes;
 
 	private Vector3f maxVertices;
 	private Vector3f minVertices;
-	
+
 	public Entity(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale, Vector3f maxVertices, Vector3f minVertices) {
 		super();
 		this.model = model;
@@ -53,7 +56,10 @@ public class Entity {
 
 	public void setBox(String objectMeshName) {
 		hasHitBox = true;
-		hitBoxMesh = OBJHitBoxMeshLoader.loadObjHitBoxMesh(objectMeshName, position, new Vector3f(rotX, rotY, rotZ), scale);
+		hitBoxMeshes = new ArrayList<>();
+		RawHitBoxMesh hitBoxMesh = OBJHitBoxMeshLoader.loadObjHitBoxMesh(objectMeshName, position, new Vector3f(rotX, rotY, rotZ), scale);
+		hitBoxMeshes.add(hitBoxMesh);
+
 		box = new HitBoxSquare(minVertices.x, maxVertices.x, minVertices.y, maxVertices.y, minVertices.z, maxVertices.z, scale, new Vector3f(rotX, rotY, rotZ), this);
 		box.setPosition(new Vector3f(position.x, position.y, position.z));
 		box.setRotation(new Vector3f(rotX, rotY, rotZ));
@@ -63,6 +69,10 @@ public class Entity {
 		System.out.println(box.getXMin() + " " + box.getYMin() + " " + box.getZMin());
 		System.out.println();
 		*/
+	}
+	public void addMesh(String objectMeshName){
+		RawHitBoxMesh hitBoxMesh = OBJHitBoxMeshLoader.loadObjHitBoxMesh(objectMeshName, position, new Vector3f(rotX, rotY, rotZ), scale);
+		hitBoxMeshes.add(hitBoxMesh);
 	}
 
 	public float getTextureXOffset(){
@@ -81,7 +91,9 @@ public class Entity {
 		this.position.z+=dz;
 		if (hasHitBox) {
 			box.increasePosition(new Vector3f(dx, dy, dz));
-			hitBoxMesh.increasePosition(new Vector3f(dx, dy, dz));
+			for(RawHitBoxMesh hitBoxMesh: hitBoxMeshes) {
+				hitBoxMesh.increasePosition(new Vector3f(dx, dy, dz));
+			}
 		}
 	}
 	
@@ -91,7 +103,9 @@ public class Entity {
 		this.rotZ+=dz;
 		if (hasHitBox) {
 			box.setRotation(new Vector3f(rotX + dx, rotY + dy, rotZ + dz), getPosition());
-			hitBoxMesh.setRotation(new Vector3f(rotX + dx, rotY + dy, rotZ + dz));
+			for(RawHitBoxMesh hitBoxMesh: hitBoxMeshes) {
+				hitBoxMesh.setRotation(new Vector3f(rotX + dx, rotY + dy, rotZ + dz));
+			}
 		}
 	}
 	
@@ -102,8 +116,8 @@ public class Entity {
 		return position;
 	}
 
-	public RawHitBoxMesh getHitBoxMesh() {
-		return hitBoxMesh;
+	public ArrayList<RawHitBoxMesh> getHitBoxMesh() {
+		return hitBoxMeshes;
 	}
 
 	public void setPosition(Vector3f position) {

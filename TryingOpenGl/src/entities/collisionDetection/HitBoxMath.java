@@ -72,7 +72,8 @@ public class HitBoxMath {
             Vector3f p2 = getSupport(collider, collided, vecDirection);
             simplex.add(p2);
             //make sure that the last point we added actually passed the origin
-            if (Vector3f.dot(simplex.get(simplex.size() - 1), vecDirection) <= 0 || simplex.get(simplex.size() - 1) == simplex.get(simplex.size() - 2)){
+            if (Vector3f.dot(simplex.get(simplex.size() - 1), vecDirection) <= -5 || simplex.get(simplex.size() - 1) == simplex.get(simplex.size() - 2)){
+                //System.out.println( Vector3f.dot(vecDirection, new Vector3f(1,1,1)));
                 /*
                 System.out.println(Vector3f.dot(simplex.get(simplex.size() - 1), vecDirection));
                 System.out.println(simplex);
@@ -83,20 +84,25 @@ public class HitBoxMath {
                 System.out.println();
                 System.out.println();
                 */
-                //System.out.println(Vector3f.dot(vecDirection, new Vector3f(1,1,1)));
+                //System.out.println(Vector3f.dot(simplex.get(simplex.size() - 1), vecDirection));
+                //System.out.println(Math.sqrt(Math.pow(vecDirection.x, 2) + Math.pow(vecDirection.y, 2) + Math.pow(vecDirection.z, 2)));
                 vecDirection = null;
                 simplex.clear();
                 return false;
             }
             else{
                 //otherwise we need to determine if the origin is in the current simplex
-                if(containsOrigin(simplex) || Vector3f.dot(vecDirection, new Vector3f(1,1,1)) < 1 || Vector3f.dot(vecDirection, new Vector3f(1,1,1)) > -1){
+                if(containsOrigin(simplex) || (Vector3f.dot(vecDirection, new Vector3f(1,1,1)) < 2 && Vector3f.dot(vecDirection, new Vector3f(1,1,1)) > -2)){
                     //If it does, there is a collision
                     /*
                     System.out.println(Vector3f.dot(simplex.get(simplex.size() - 1), vecDirection));
                     System.out.println(simplex);
                     System.out.println(vecDirection);
                     */
+                    //System.out.println( Vector3f.dot(vecDirection, new Vector3f(1,1,1)));
+                    //System.out.println(simplex);
+                    //System.out.println(vecDirection);
+                    //System.out.println();
                     vecDirection = null;
                     simplex.clear();
                     return true;

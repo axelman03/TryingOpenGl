@@ -216,6 +216,10 @@ public class TestScene extends SceneSetup{
         car = new TexturedModel(OBJLoader.loadObjModel("bullet350_3", loader), new ModelTexture(loader.loadTexture("bullet350Skin2_Texture")), OBJLoader.getMaxVertices(), OBJLoader.getMinVertices());
         entities.add(new Entity(car, new Vector3f(35, 5, -75), 0, 0, 0, 6f, car.getMaxVertices(), car.getMinVertices()));
         entities.get(1).setBox("bullet350HitBoxMesh");
+		//entities.get(1).addMesh("bullet350_2_HitBoxMesh2");
+		//entities.get(1).addMesh("bullet350_3_HitBoxMesh2");
+		//entities.get(1).addMesh("bullet350_4_HitBoxMesh2");
+
 		/*
 		entities.add(new Entity(tree,  new Vector3f(35, 5, -75),0,0, 0, 1, tree.getMaxVertices(), tree.getMinVertices()));
 		entities.get(1).setBox("lowPolyTreeTrunk_1_HitBoxMesh");
@@ -299,8 +303,9 @@ public class TestScene extends SceneSetup{
         barrelModel.getTexture().setShineDamper(10);
         barrelModel.getTexture().setReflectivity(0.1f);
         normalMapEntities.add(new Entity(barrelModel, new Vector3f(75, 10, -75), 0, 0, 0, 1f, barrelModel.getMaxVertices(), barrelModel.getMinVertices()));
-		normalMapEntities.get(0).setBox("bullet350HitBoxMesh");
-		hitBoxes.add(normalMapEntities.get(0).getBox());
+        //System.out.println(barrelModel.getMaxVertices() + "\n" + barrelModel.getMinVertices());
+		//normalMapEntities.get(0).setBox("barrelHitBoxMesh");
+		//hitBoxes.add(normalMapEntities.get(0).getBox());
 
         TexturedModel crateModel = new TexturedModel(NormalMappedObjLoader.loadOBJ("crate", loader), new ModelTexture(loader.loadTexture("crate")), OBJLoader.getMaxVertices(), OBJLoader.getMinVertices());
         crateModel.getTexture().setNormalMap(loader.loadTexture("crateNormal"));
@@ -418,7 +423,28 @@ public class TestScene extends SceneSetup{
 			entities.add(1, new Entity(car, new Vector3f(35, 10, -75), 0, 0, 0, 10f, car.getMaxVertices(), car.getMinVertices()));
 			//entities.get(1).setBox();
 		}
+		//System.out.println(player.getPosition());
 
+		if(HitBoxMath.isBroadPlaneColliding(player, entities)) {
+			for(RawHitBoxMesh playerMesh : player.getHitBoxMesh()) {
+				for(RawHitBoxMesh entityMesh : entities.get(1).getHitBoxMesh()) {
+					if (HitBoxMath.narrowPlaneCollision(playerMesh.getTransformedVao(), entityMesh.getTransformedVao())) {
+						System.out.println("Collision");
+					}
+				}
+			}
+		}
+/*
+		//if(HitBoxMath.isBroadPlaneColliding(this, normalMappedEntities)) {
+			for(RawHitBoxMesh playerMesh : player.getHitBoxMesh()) {
+				for(RawHitBoxMesh entityMesh : normalMapEntities.get(0).getHitBoxMesh()) {
+					if (HitBoxMath.narrowPlaneCollision(playerMesh.getTransformedVao(), entityMesh.getTransformedVao())) {
+						System.out.println("Collision2");
+					}
+				}
+			}
+		//}
+*/
 
 
 

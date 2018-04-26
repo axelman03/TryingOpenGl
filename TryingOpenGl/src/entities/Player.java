@@ -80,6 +80,7 @@ public class Player extends Entity {
 	}
 	
 	private void checkInputs(ArrayList<Entity> entities,  ArrayList<Entity> normalMappedEntities){
+		/*
 		if(HitBoxMath.isBroadPlaneColliding(this, entities)) {
 			for(RawHitBoxMesh playerMesh : this.getHitBoxMesh()) {
 				for(RawHitBoxMesh entityMesh : entities.get(HitBoxMath.getCollidedEntityIndex()).getHitBoxMesh()) {
@@ -99,7 +100,7 @@ public class Player extends Entity {
 				}
 			}
 		}
-
+		*/
 		if (Keyboard.isKeyDown(Keyboard.KEY_W)){
 			this.currentSpeed = RUN_SPEED;
 		}

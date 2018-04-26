@@ -28,11 +28,11 @@ public class RawHitBoxMesh {
         setScale(scale);
         setPosition(position);
         setRotation(rotation);
-        /*
+
         for(int x = 0; x < vao.getVertexPositionsSize()-2; x = x + 3){
             System.out.println(transformedVao.getVertexPositions(x) + " " + transformedVao.getVertexPositions(x + 1) + " " + transformedVao.getVertexPositions(x + 2));
         }
-        */
+
     }
 
     private void createVaos(HitBoxMeshVAO vao){

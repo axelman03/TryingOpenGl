@@ -430,6 +430,11 @@ public class TestScene extends SceneSetup{
 				for(RawHitBoxMesh entityMesh : entities.get(1).getHitBoxMesh()) {
 					if (HitBoxMath.narrowPlaneCollision(playerMesh.getTransformedVao(), entityMesh.getTransformedVao())) {
 						System.out.println("Collision");
+						float penatrationDistance = HitBoxMath.penatrationDistance(playerMesh.getTransformedVao(), entityMesh.getTransformedVao());
+						System.out.println(penatrationDistance);
+					}
+					else {
+						System.out.println(HitBoxMath.getDistance(playerMesh.getTransformedVao(), entityMesh.getTransformedVao()));
 					}
 				}
 			}

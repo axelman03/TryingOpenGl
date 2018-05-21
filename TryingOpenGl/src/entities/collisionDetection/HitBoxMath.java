@@ -17,7 +17,7 @@ public class HitBoxMath {
     private static Vector3f vecDirectionCollision = null;
     private static Vector3f vecDirectionDistance = null;
 
-    private static final float TOLERANCE = 0.00001f;
+    //private static final float TOLERANCE = 1f;
 
     //Collider is object that is hittting other objects, so player and such
     public static boolean isBroadPlaneColliding(Entity colliderEntity, ArrayList<Entity> entities){
@@ -44,9 +44,6 @@ public class HitBoxMath {
     private static void setCollidedEntityIndex(int index){
         tempEntityIndex = index;
     }
-    public static int getCollidedEntityIndex(){
-        return tempEntityIndex;
-    }
 
 
 
@@ -61,7 +58,7 @@ public class HitBoxMath {
             Vector3f p2 = getSupport(collider, collided, vecDirectionCollision);
             simplexCollision.add(p2);
             //make sure that the last point we added actually passed the origin
-            if ((Vector3f.dot(simplexCollision.get(simplexCollision.size() - 1), vecDirectionCollision) <= -10) && simplexCollision.size() > 2 || simplexCollision.get(simplexCollision.size() - 1) == simplexCollision.get(simplexCollision.size() - 2)){
+            if ((Vector3f.dot(simplexCollision.get(simplexCollision.size() - 1), vecDirectionCollision) <= 0 && simplexCollision.size() > 1) || (simplexCollision.get(simplexCollision.size() - 1) == simplexCollision.get(simplexCollision.size() - 2)) || iterationCount == 400){
                 //System.out.println( Vector3f.dot(vecDirection, new Vector3f(1,1,1)));
 /*
                 System.out.println(Vector3f.dot(simplexCollision.get(simplexCollision.size() - 1), vecDirectionCollision));
@@ -76,17 +73,16 @@ public class HitBoxMath {
 
                 //System.out.println(Vector3f.dot(simplex.get(simplex.size() - 1), vecDirection));
                 //System.out.println(Math.sqrt(Math.pow(vecDirection.x, 2) + Math.pow(vecDirection.y, 2) + Math.pow(vecDirection.z, 2)));
-                simplexPenatration = new ArrayList<>();
-                for(Vector3f points : simplexPenatration){
-                    simplexPenatration.add(points);
-                }
+                //simplexPenatration = new ArrayList<>();
+
+
                 vecDirectionCollision = null;
                 simplexCollision.clear();
                 return false;
             }
             else{
                 //otherwise we need to determine if the origin is in the current simplex
-                if((containsOrigin(simplexCollision) || (Vector3f.dot(vecDirectionCollision, new Vector3f(1,1,1)) < 2 && Vector3f.dot(vecDirectionCollision, new Vector3f(1,1,1)) > -2)) && simplexCollision.size() == 4  || iterationCount == 100){
+                if((containsOrigin(simplexCollision) || (Vector3f.dot(vecDirectionCollision, new Vector3f(1,1,1)) == 0/*< 1 && Vector3f.dot(vecDirectionCollision, new Vector3f(1,1,1)) > -1*/)) && simplexCollision.size() > 3){
                     //If it does, there is a collision
                     /*
                     System.out.println(Vector3f.dot(simplex.get(simplex.size() - 1), vecDirection));
@@ -96,7 +92,17 @@ public class HitBoxMath {
                     //System.out.println( Vector3f.dot(vecDirection, new Vector3f(1,1,1)));
                     //System.out.println(simplex);
                     //System.out.println(vecDirection);
-                    //System.out.println();
+                    //System.out.println(findClippingPoints(collider, collided, vecDirectionCollision));
+                    if(simplexPenatration.size() > simplexCollision.size()){
+                        for(int x = simplexPenatration.size() - 1; x > simplexCollision.size(); x--){
+                            simplexPenatration.remove(x);
+                        }
+                    }
+
+                    for(int x = 0; x < simplexCollision.size(); x++){
+                        simplexPenatration.add(simplexCollision.get(x));
+                    }
+
                     vecDirectionCollision = null;
                     simplexCollision.clear();
                     return true;
@@ -133,43 +139,70 @@ public class HitBoxMath {
             // compute the faces
             //Vector3f abPerp = getDirection(ac, ab, ab);
             //Vector3f acPerp = getDirection(ab, ac, ac);
-            Vector3f abcFacePerp = getNormalDirection(ab, ac);
-            Vector3f abdFacePerp = getNormalDirection(ab, ad);
-            Vector3f acdFacePerp = getNormalDirection(ac, ad);
-            Vector3f bcdFacePerp = getNormalDirection(bc, bd);
+            Vector3f abcFacePerp1 = getNormalDirection(ab, ac);
+            Vector3f abcFacePerp2 = getNormalDirection(ab, bc);
+            Vector3f abcFacePerp3 = getNormalDirection(ac, bc);
+
+            Vector3f abdFacePerp1 = getNormalDirection(ab, ad);
+            Vector3f abdFacePerp2 = getNormalDirection(ab, bd);
+            Vector3f abdFacePerp3 = getNormalDirection(ad, bd);
+
+            Vector3f acdFacePerp1 = getNormalDirection(ac, ad);
+            Vector3f acdFacePerp2 = getNormalDirection(ac, cd);
+            Vector3f acdFacePerp3 = getNormalDirection(ad, cd);
+
+            Vector3f bcdFacePerp1 = getNormalDirection(bc, bd);
+            Vector3f bcdFacePerp2 = getNormalDirection(bc, cd);
+            Vector3f bcdFacePerp3 = getNormalDirection(bd, cd);
 
             // Origin Checking
-            if (Vector3f.dot(abcFacePerp, dO) > 0) {
+            if (Vector3f.dot(abcFacePerp1, dO) > 0) {
                 // remove point d
                 simplex.remove(simplex.size() - 4);
                 // set the new direction to abcFacePerp
-                vecDirectionCollision = abcFacePerp;
-                //System.out.println(vecDirection);
-                //System.out.println("Iterate part 3");
+                vecDirectionCollision = abcFacePerp1;
+            }else if (Vector3f.dot(abcFacePerp2, dO) > 0) {
+                simplex.remove(simplex.size() - 4);
+                vecDirectionCollision = abcFacePerp2;
+            }else if (Vector3f.dot(abcFacePerp3, dO) > 0) {
+                simplex.remove(simplex.size() - 4);
+                vecDirectionCollision = abcFacePerp3;
             }
-            else if (Vector3f.dot(abdFacePerp, cO) > 0) {
+            else if (Vector3f.dot(abdFacePerp1, cO) > 0) {
                 // remove point c
                 simplex.remove(simplex.size() - 3);
                 // set the new direction to abdFacePerp
-                vecDirectionCollision = abdFacePerp;
-                //System.out.println(vecDirection);
-                //System.out.println("Iterate part 4");
+                vecDirectionCollision = abdFacePerp1;
+            }else if (Vector3f.dot(abdFacePerp2, cO) > 0) {
+                simplex.remove(simplex.size() - 3);
+                vecDirectionCollision = abdFacePerp2;
+            }else if (Vector3f.dot(abdFacePerp3, cO) > 0) {
+                simplex.remove(simplex.size() - 3);
+                vecDirectionCollision = abdFacePerp3;
             }
-            else if (Vector3f.dot(acdFacePerp, bO) > 0) {
+            else if (Vector3f.dot(acdFacePerp1, bO) > 0) {
                 // remove point b
                 simplex.remove(simplex.size() - 2);
                 // set the new direction to acdFacePerp
-                vecDirectionCollision = acdFacePerp;
-                //System.out.println(vecDirection);
-                //System.out.println("Iterate part 5");
+                vecDirectionCollision = acdFacePerp1;
+            }else if (Vector3f.dot(acdFacePerp2, bO) > 0) {
+                simplex.remove(simplex.size() - 2);
+                vecDirectionCollision = acdFacePerp2;
+            }else if (Vector3f.dot(acdFacePerp3, bO) > 0) {
+                simplex.remove(simplex.size() - 2);
+                vecDirectionCollision = acdFacePerp3;
             }
-            else if (Vector3f.dot(bcdFacePerp, aO) > 0) {
+            else if (Vector3f.dot(bcdFacePerp1, aO) > 0) {
                 // remove point a
                 simplex.remove(simplex.size() - 1);
                 // set the new direction to bcdFacePerp
-                vecDirectionCollision = bcdFacePerp;
-                //System.out.println(vecDirection);
-                //System.out.println("Iterate part 6");
+                vecDirectionCollision = bcdFacePerp1;
+            }else if (Vector3f.dot(bcdFacePerp2, aO) > 0) {
+                simplex.remove(simplex.size() - 1);
+                vecDirectionCollision = bcdFacePerp2;
+            }else if (Vector3f.dot(bcdFacePerp3, aO) > 0) {
+                simplex.remove(simplex.size() - 1);
+                vecDirectionCollision = bcdFacePerp3;
             }
             else{
                 // otherwise we know its in R5 so we can return true
@@ -181,17 +214,30 @@ public class HitBoxMath {
             // get b and c
             Vector3f b = simplex.get(simplex.size() - 2);
             Vector3f c = simplex.get(simplex.size() - 3);
+
+            Vector3f bO = new Vector3f(-b.x, -b.y, -b.z);
+            Vector3f cO = new Vector3f(-c.x, -c.y, -c.z);
+
             // compute the edges
             Vector3f ab = getEdges(a, b);
             //Vector3f ac = getEdges(a, c);
             Vector3f ac = getEdges(a, c);
+            Vector3f bc = getEdges(b, c);
             // compute the normals
             //Vector3f abPerp = getDirection(ac, ab, ab);
             //Vector3f acPerp = getDirection(ab, ac, ac);
             //Vector3f bcPerp = getDirection(ac, bc, bc);
-            Vector3f facePerp = getNormalDirection(ab, ac);
+            Vector3f facePerp1 = getNormalDirection(ab, ac);
+            Vector3f facePerp2 = getNormalDirection(ab, bc);
+            Vector3f facePerp3 = getNormalDirection(ac, bc);
+            if (Vector3f.dot(facePerp1, aO) > 0) {
+                vecDirectionCollision = facePerp1;
+            }else if (Vector3f.dot(facePerp2, bO) > 0) {
+                vecDirectionCollision = facePerp2;
+            }else if (Vector3f.dot(facePerp3, cO) > 0) {
+                vecDirectionCollision = facePerp3;
+            }
 
-            vecDirectionCollision = facePerp;
             //System.out.println(vecDirection);
             //System.out.println("Iterate part 2");
         }
@@ -208,6 +254,9 @@ public class HitBoxMath {
         }
         return false;
     }
+
+
+
 
     public static float getDistance(HitBoxMeshVAO collider, HitBoxMeshVAO collided){
         int iterationCount = 0;
@@ -278,54 +327,48 @@ public class HitBoxMath {
         }
     }
 
+
+
+
     //Gets the depth of the collision
     public static float penatrationDistance(HitBoxMeshVAO collider, HitBoxMeshVAO collided){
-
-        //Termination simplex from GJK is the simplex for the penatration depth
-        // loop to find the collision information
-        while (true) {
-            // obtain the feature (edge for 2D) closest to the origin on the Minkowski Difference
-            float[] e = findClosestEdge(simplexPenatration);
-            // obtain a new support point in the direction of the edge normal
-            //new Vector3f(e[1], e[2], e[3]) = e.normal
-            Vector3f p = getSupport(collider, collided, new Vector3f(e[1], e[2], e[3]));
-            // check the distance from the origin to the edge against the distance p is along e.normal
-            float d = Vector3f.dot(p, new Vector3f(e[1], e[2], e[3]));
-            if (d - e[0] < TOLERANCE) {
-                // the tolerance should be something positive close to zero (ex. 0.00001)
-
-                // if the difference is less than the tolerance then we can assume that we cannot expand the simplex any further and we have our solution
-                //Vector3f normal = new Vector3f(e[1], e[2], e[3]);
-                return d;
-            } else {
-                // we haven't reached the edge of the Minkowski Difference so continue expanding by adding the new point to the simplex in between the points that made the closest edge
-                simplexPenatration.add((int)(e[4]), p);
-            }
-        }
+        float[] e = findClosestEdge(simplexPenatration);
+        Vector3f p = getSupport(collider, collided, new Vector3f(e[1], e[2], e[3]));
+        // check the distance from the origin to the edge against the distance p is along e.normal
+        float d = Vector3f.dot(p, new Vector3f(e[1], e[2], e[3]));
+        return d;
     }
 
     //This will give information on the closest edge to the origin, x is distance, y is normal, and z is index
     private static float[] findClosestEdge(ArrayList<Vector3f> simplex){
+        int count = 0;
         float[] closest = new float[5]; //The edge
+        //System.out.println(simplex);
         // prime the distance of the edge to the max
         closest[0] = Float.MAX_VALUE;
         // s is the passed in simplex
         for (int i = 0; i < simplex.size(); i++) {
+            //System.out.println(i);
             // compute the next points index
             int j = i + 1 == simplex.size() ? 0 : i + 1;
             // get the current point and the next one
             Vector3f a = simplex.get(i);
             Vector3f b = simplex.get(j);
+            //System.out.println(a);
             // create the edge vector
             Vector3f e = getEdges(a, b);
+            //System.out.println(e);
             // get the vector from the origin to a
             Vector3f oa = new Vector3f(-a.x, -a.y, -a.z); // or a - ORIGIN
             // get the vector from the edge towards the origin
             Vector3f n = getDirection(e, oa, e);
+            //System.out.println(n);
             // normalize the vector
-            n = normalise(n);
+            n = normalize(n);
             // calculate the distance from the origin to the edge
             float d = Vector3f.dot(n, a); // could use b or a here
+            //System.out.println(d);
+            //System.out.println(closest[0]);
             // check the distance against the other distances
             if (d < closest[0]) {
                 // if this edge is closer then use it
@@ -335,12 +378,153 @@ public class HitBoxMath {
                 closest[3] = n.z;
                 closest[4] = j;
             }
+            count++;
+            //System.out.println(count);
         }
         // return the closest edge we found
         return closest;
     }
 
-    private static Vector3f normalise(Vector3f a) {
+
+    //Clipping point math, still working on it, wont be finished soon enough though
+    /*
+    public static ArrayList<Vector3f> findClippingPoints(HitBoxMeshVAO collider, HitBoxMeshVAO collided, Vector3f seperationNormal){
+        ArrayList<Vector3f> referenceInfo;
+        ArrayList<Vector3f> incidentInfo;
+        // find the "best" edge for shape A
+        ArrayList<Vector3f> e1Info = findFeaturesForClippingPoints(collider, seperationNormal);
+        // find the "best" edge for shape B
+        ArrayList<Vector3f> e2Info = findFeaturesForClippingPoints(collided, new Vector3f(-seperationNormal.x, -seperationNormal.y, -seperationNormal.z));
+
+        Vector3f e1 = getEdges(e1Info.get(1), e1Info.get(2));
+        Vector3f e2 = getEdges(e2Info.get(1), e2Info.get(2));
+
+        //Get the reference and incident edges
+        boolean flip = false;
+        if (Math.abs(Vector3f.dot(e1, seperationNormal)) <= Math.abs(Vector3f.dot(e2, seperationNormal))) {
+            referenceInfo = e1Info;
+            incidentInfo = e2Info;
+        } else {
+            referenceInfo = e2Info;
+            incidentInfo = e1Info;
+            // we need to set a flag indicating that the reference and incident edge were flipped so that when we do the final clip operation, we use the right edge normal
+            flip = true;
+        }
+
+        // the edge vector
+        Vector3f referenceEdge = getEdges(referenceInfo.get(1), referenceInfo.get(2));
+        normalize(referenceEdge);
+
+        float o1 = Vector3f.dot(referenceEdge, referenceInfo.get(1));
+        // clip the incident edge by the first vertex of the reference edge
+        ArrayList<Vector3f> cp = clippingPointMath(incidentInfo.get(1), incidentInfo.get(2), referenceEdge, o1);
+        // if we dont have 2 points left then fail
+        if (cp.size() <= 1) return null;
+
+        // clip whats left of the incident edge by the second vertex of the reference edge but we need to clip in the opposite direction so we flip the direction and offset
+        float o2 = Vector3f.dot(referenceEdge, referenceInfo.get(2));
+        cp = clippingPointMath(cp.get(0), cp.get(1), new Vector3f(-referenceEdge.x, -referenceEdge.y, - referenceEdge.z), -o2);
+        // if we dont have 2 points left then fail
+        if (cp.size() <= 1) return null;
+
+        // get the reference edge normal
+        Vector3f referenceNormal = normalize(referenceEdge);
+        // if we had to flip the incident and reference edges then we need to flip the reference edge normal to clip properly
+        if (flip) {
+            referenceNormal = new Vector3f(-referenceNormal.x, -referenceNormal.y, -referenceNormal.z);
+        }
+        // get the largest depth
+        float max = Vector3f.dot(referenceInfo.get(1), referenceNormal);
+        // make sure the final points are not past this maximum
+        if (Vector3f.dot(referenceNormal, cp.get(0)) - max < 0.0) {
+            cp.remove(0);
+
+        }
+        if (Vector3f.dot(referenceNormal, cp.get(1)) - max < 0.0) {
+            cp.remove(1);
+        }
+        // return the valid points
+        return cp;
+    }
+
+
+    private static ArrayList<Vector3f> findFeaturesForClippingPoints(HitBoxMeshVAO collider, Vector3f seperationNormal){
+        ArrayList<Vector3f> edge = new ArrayList<>();
+        // Step 1: find the farthest vertex in the polygon along the separation normal
+        int c = collider.getVertexPositionsSize();
+        float max = 0;
+        int index = 1;
+        for (int i = 0; i < c - 3; i = i + 3) {
+            float projection = Vector3f.dot(seperationNormal, new Vector3f(collider.getVertexPositions(i), collider.getVertexPositions(i + 1), collider.getVertexPositions(i + 2)));
+            if (projection > max) {
+                max = projection;
+                index = i;
+            }
+        }
+
+        // step 2: now we need to use the edge that is most perpendicular, either the right or the left
+        Vector3f v =  new Vector3f(collider.getVertexPositions(index), collider.getVertexPositions(index + 1), collider.getVertexPositions(index + 2));
+        Vector3f v1 =  new Vector3f(collider.getVertexPositions(index + 3), collider.getVertexPositions(index + 4), collider.getVertexPositions(index + 5));
+        Vector3f v0;
+        if(index > 2) {
+            v0 = new Vector3f(collider.getVertexPositions(index - 3), collider.getVertexPositions(index - 2), collider.getVertexPositions(index - 1));
+        }
+        else {
+            v0 = new Vector3f(collider.getVertexPositions(index + 6), collider.getVertexPositions(index + 7), collider.getVertexPositions(index + 8));
+        }
+        // v1 to va
+        Vector3f l = getEdges(v1, v);
+        // v0 to v
+        Vector3f r = getEdges(v0, v);
+        // normalize
+        normalize(l);
+        normalize(r);
+        // the edge that is most perpendicular to n will have a dot product closer to zero
+        if (Vector3f.dot(r, seperationNormal) <= Vector3f.dot(l, seperationNormal)) {
+            // the right edge is better make sure to retain the winding direction
+            edge.add(v);
+            edge.add(v0);
+            edge.add(v);
+            return edge;
+        } else {
+            // the left edge is better make sure to retain the winding direction
+            edge.add(v);
+            edge.add(v);
+            edge.add(v1);
+            return edge;
+        }
+        // we return the maximum projection vertex (v) and the edge points making the best edge (v and either v0 or v1)
+    }
+
+
+    private static ArrayList<Vector3f> clippingPointMath(Vector3f point1, Vector3f point2, Vector3f referenceEdge, float offset) {
+        // clips the line segment points v1, v2 if they are past o along n
+        ArrayList<Vector3f> cp = new ArrayList<>();
+        float d1 = Vector3f.dot(referenceEdge, point1) - offset;
+        float d2 = Vector3f.dot(referenceEdge, point2) - offset;
+        // if either point is past o along n then we can keep the point
+        if (d1 >= 0.0) cp.add(point1);
+        if (d2 >= 0.0) cp.add(point2);
+        // finally we need to check if they are on opposing sides so that we can compute the correct point
+        if (d1 * d2 < 0.0) {
+            // if they are on different sides of the offset, d1 and d2 will be a (+) * (-) and will yield a (-) and therefore be less than zero, get the vector for the edge we are clipping
+            Vector3f e = getEdges(point1, point2);
+            // compute the location along e
+            float u = d1 / (d1 - d2);
+            e = new Vector3f(e.x * u, e.y * u, e.z * u);
+            e = new Vector3f(e.x + point1.x, e.y + point1.y, e.z + point1.z);
+            // add the point
+            cp.add(e);
+        }
+        return cp;
+
+    }
+    */
+
+
+
+
+    private static Vector3f normalize(Vector3f a) {
         float len = a.length();
         if (len != 0.0F) {
             float l = 1.0F / len;
@@ -395,7 +579,7 @@ public class HitBoxMath {
         float x =  (vecDirectionA.x - vecDirectionB.x);
         float y =  (vecDirectionA.y - vecDirectionB.y);
         float z =  (vecDirectionA.z - vecDirectionB.z);
-        Vector3f vecDirection = new Vector3f(x/bDot, y/bDot, z/bDot);
+        Vector3f vecDirection = new Vector3f(x, y, z);
         return vecDirection;
     }
 

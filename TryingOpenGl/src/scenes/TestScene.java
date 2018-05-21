@@ -216,6 +216,7 @@ public class TestScene extends SceneSetup{
         car = new TexturedModel(OBJLoader.loadObjModel("bullet350_3", loader), new ModelTexture(loader.loadTexture("bullet350Skin2_Texture")), OBJLoader.getMaxVertices(), OBJLoader.getMinVertices());
         entities.add(new Entity(car, new Vector3f(35, 5, -75), 0, 0, 0, 6f, car.getMaxVertices(), car.getMinVertices()));
         entities.get(1).setBox("bullet350HitBoxMesh");
+		//entities.get(1).setBox("bullet350_3");
 		//entities.get(1).addMesh("bullet350_2_HitBoxMesh2");
 		//entities.get(1).addMesh("bullet350_3_HitBoxMesh2");
 		//entities.get(1).addMesh("bullet350_4_HitBoxMesh2");
@@ -324,6 +325,8 @@ public class TestScene extends SceneSetup{
         carModel.getTexture().setShineDamper(10);
         carModel.getTexture().setReflectivity(0.1f);
         normalMapEntities.add(new Entity(carModel, new Vector3f(15, 10, -75), 0, 0, 0, 10f, carModel.getMaxVertices(), carModel.getMinVertices()));
+		//normalMapEntities.get(3).setBox("bullet350HitBoxMesh");
+		//hitBoxes.add(normalMapEntities.get(3).getBox());
 	}
 
 	
@@ -351,6 +354,7 @@ public class TestScene extends SceneSetup{
 	@Override
 	public void createPlayer() {
     	player.setBox("PersonHitBoxMesh");
+		//player.setBox("Person");
         //Loading the Player
 	}
 	
@@ -421,10 +425,10 @@ public class TestScene extends SceneSetup{
 		if (Keyboard.isKeyDown(Keyboard.KEY_R)){
 	   	 	car.setTexture(new ModelTexture(loader.loadTexture("bullet350Skin1_Texture")));
 			entities.add(1, new Entity(car, new Vector3f(35, 10, -75), 0, 0, 0, 10f, car.getMaxVertices(), car.getMinVertices()));
-			//entities.get(1).setBox();
+			entities.get(1).setBox("bullet350HitBoxMesh");
 		}
 		//System.out.println(player.getPosition());
-
+		/*
 		if(HitBoxMath.isBroadPlaneColliding(player, entities)) {
 			for(RawHitBoxMesh playerMesh : player.getHitBoxMesh()) {
 				for(RawHitBoxMesh entityMesh : entities.get(1).getHitBoxMesh()) {
@@ -439,6 +443,7 @@ public class TestScene extends SceneSetup{
 				}
 			}
 		}
+		*/
 /*
 		//if(HitBoxMath.isBroadPlaneColliding(this, normalMappedEntities)) {
 			for(RawHitBoxMesh playerMesh : player.getHitBoxMesh()) {

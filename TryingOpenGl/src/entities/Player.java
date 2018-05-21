@@ -28,6 +28,11 @@ public class Player extends Entity {
 	
 	private boolean isInAir = false;
 	private boolean collision = false;
+
+	private boolean collideBack = false;
+	private boolean collideFront = false;
+	private boolean collideLeft = false;
+	private boolean collideRight = false;
 	
 	public Player(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale, Vector3f maxVertices, Vector3f minVertices) {
 		super(model, position, rotX, rotY, rotZ, scale, maxVertices, minVertices);
@@ -68,6 +73,15 @@ public class Player extends Entity {
 			}
 			isInAir = false;
 		}
+		else if(isColliding(entities, normalMappedEntities)){
+			upwardsVelocity = 0;
+			super.getPosition().y = super.getPosition().y;
+			super.getBox().setPosition(super.getPosition().y, 'y');
+			for(RawHitBoxMesh playerMesh : this.getHitBoxMesh()) {
+				playerMesh.setPosition(super.getPosition().y, 'y');
+			}
+			isInAir = false;
+		}
 
 
 	}
@@ -78,86 +92,159 @@ public class Player extends Entity {
 		}
 		
 	}
-	
-	private void checkInputs(ArrayList<Entity> entities,  ArrayList<Entity> normalMappedEntities){
-		/*
-		if(HitBoxMath.isBroadPlaneColliding(this, entities)) {
-			for(RawHitBoxMesh playerMesh : this.getHitBoxMesh()) {
-				for(RawHitBoxMesh entityMesh : entities.get(HitBoxMath.getCollidedEntityIndex()).getHitBoxMesh()) {
+
+	private boolean isColliding(ArrayList<Entity> entities,  ArrayList<Entity> normalMappedEntities) {
+		if (HitBoxMath.isBroadPlaneColliding(this, entities)) {
+			for (RawHitBoxMesh playerMesh : this.getHitBoxMesh()) {
+				for (RawHitBoxMesh entityMesh : entities.get(1).getHitBoxMesh()) {
 					if (HitBoxMath.narrowPlaneCollision(playerMesh.getTransformedVao(), entityMesh.getTransformedVao())) {
 						System.out.println("Collision");
+						//float penatrationDistance = HitBoxMath.penatrationDistance(playerMesh.getTransformedVao(), entityMesh.getTransformedVao());
+						//System.out.println(penatrationDistance);
+						return true;
+
+					} else {
+						//System.out.println(HitBoxMath.getDistance(playerMesh.getTransformedVao(), entityMesh.getTransformedVao()));
+						return false;
+
 					}
 				}
 			}
+		} else if (HitBoxMath.isBroadPlaneColliding(this, normalMappedEntities)) {
+			for (RawHitBoxMesh playerMesh : this.getHitBoxMesh()) {
+				for (RawHitBoxMesh entityMesh : normalMappedEntities.get(3).getHitBoxMesh()) {
+					if (HitBoxMath.narrowPlaneCollision(playerMesh.getTransformedVao(), entityMesh.getTransformedVao())) {
+						System.out.println("Collision");
+						//float penatrationDistance = HitBoxMath.penatrationDistance(playerMesh.getTransformedVao(), entityMesh.getTransformedVao());
+						//System.out.println(penatrationDistance);
+						return true;
+
+					} else {
+						//System.out.println(HitBoxMath.getDistance(playerMesh.getTransformedVao(), entityMesh.getTransformedVao()));
+						return false;
+
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	private void checkInputs (ArrayList <Entity> entities, ArrayList <Entity> normalMappedEntities){
+
+
+		//Quick and easy collision doings
+		if ((isColliding(entities, normalMappedEntities) && collideBack != true) && (currentSpeed > 0 || collideFront)) {
+			collideFront = true;
+		}else if (isColliding(entities, normalMappedEntities) && currentSpeed < 0 && collideFront != true) {
+			collideBack = true;
+		}else if (isColliding(entities, normalMappedEntities) && currentSpeed > 0 && collideRight != true) {
+			collideLeft = true;
+		}else if (isColliding(entities, normalMappedEntities) && currentSpeed < 0 && collideLeft != true) {
+			collideRight = true;
+		} else if(!isColliding(entities, normalMappedEntities)){
+			collideFront = false;
+			collideBack = false;
+			collideLeft = false;
+			collideRight = false;
+
 		}
 
-		if(HitBoxMath.isBroadPlaneColliding(this, normalMappedEntities)) {
-			for(RawHitBoxMesh playerMesh : this.getHitBoxMesh()) {
-				for(RawHitBoxMesh entityMesh : normalMappedEntities.get(HitBoxMath.getCollidedEntityIndex()).getHitBoxMesh()) {
-					if (HitBoxMath.narrowPlaneCollision(playerMesh.getTransformedVao(), entityMesh.getTransformedVao())) {
-						System.out.println("Collision2");
-					}
-				}
-			}
-		}
-		*/
-		if (Keyboard.isKeyDown(Keyboard.KEY_W)){
+		if (Keyboard.isKeyDown(Keyboard.KEY_W) && collideFront == false) {
 			this.currentSpeed = RUN_SPEED;
-		}
-		else if (Keyboard.isKeyDown(Keyboard.KEY_S)){
+		} else if (Keyboard.isKeyDown(Keyboard.KEY_S) && collideBack == false) {
 			this.currentSpeed = -RUN_SPEED;
-		}
-		else{
+		} else {
 			this.currentSpeed = 0;
 		}
 
-		if (Keyboard.isKeyDown(Keyboard.KEY_D)){
+		if (Keyboard.isKeyDown(Keyboard.KEY_D) && collideRight == false) {
 			this.currentTurnSpeed = -TURN_SPEED;
-		}
-		else if (Keyboard.isKeyDown(Keyboard.KEY_A)){
+		} else if (Keyboard.isKeyDown(Keyboard.KEY_A) && collideLeft == false) {
 			this.currentTurnSpeed = TURN_SPEED;
-		}
-		else{
+		} else {
 			this.currentTurnSpeed = 0;
 		}
 
-		if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)){
+		if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
 			jump();
 		}
-	}
-/*
-	public void wallCollision(ArrayList<Entity> entities){
-		if(HitBoxMath.isBroadPlaneColliding(this, entities)){
-			if(HitBoxMath.narrowPlaneCollision(this.getHitBoxMesh().getTransformedVao(), entities.get(HitBoxMath.getCollidedEntityIndex()).getHitBoxMesh().getTransformedVao())){
-				System.out.println("Collision2");
-				if (Keyboard.isKeyDown(Keyboard.KEY_W)){
-					currentSpeed = 0;
-					if (Keyboard.isKeyDown(Keyboard.KEY_S)){
-						currentSpeed = -RUN_SPEED;
-					}
-				}else if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
-					currentSpeed = 0;
-					if (Keyboard.isKeyDown(Keyboard.KEY_W)){
-						currentSpeed = RUN_SPEED;
-					}
-				}
+		/*
+		if(collideFront == true){
+			if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
+				this.currentSpeed = -RUN_SPEED;
+			} else {
+				this.currentSpeed = 0;
+			}
 
-				if (Keyboard.isKeyDown(Keyboard.KEY_D)){
-					currentTurnSpeed = 0;
-					if (Keyboard.isKeyDown(Keyboard.KEY_A)){
-						currentSpeed = TURN_SPEED;
-					}
-				}else if (Keyboard.isKeyDown(Keyboard.KEY_A)){
-					currentTurnSpeed = 0;
-					if (Keyboard.isKeyDown(Keyboard.KEY_D)){
-						currentSpeed = -TURN_SPEED;
-					}
-				}
-				if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)){
-					//jump();
-				}
+			if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
+				this.currentTurnSpeed = -TURN_SPEED;
+			} else if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
+				this.currentTurnSpeed = TURN_SPEED;
+			} else {
+				this.currentTurnSpeed = 0;
+			}
+
+			if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
+				jump();
+			}
+		}else if(collideBack == true){
+			if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
+				this.currentSpeed = RUN_SPEED;
+			} else {
+				this.currentSpeed = 0;
+			}
+
+			if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
+				this.currentTurnSpeed = -TURN_SPEED;
+			} else if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
+				this.currentTurnSpeed = TURN_SPEED;
+			} else {
+				this.currentTurnSpeed = 0;
+			}
+
+			if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
+				jump();
+			}
+		}else if(collideLeft == true){
+			if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
+				this.currentSpeed = RUN_SPEED;
+			}else if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
+				this.currentSpeed = -RUN_SPEED;
+			} else {
+				this.currentSpeed = 0;
+			}
+
+			if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
+				this.currentTurnSpeed = TURN_SPEED;
+			} else {
+				this.currentTurnSpeed = 0;
+			}
+
+			if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
+				jump();
+			}
+		}else if(collideRight == true){
+			if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
+				this.currentSpeed = RUN_SPEED;
+			}else if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
+				this.currentSpeed = -RUN_SPEED;
+			} else {
+				this.currentSpeed = 0;
+			}
+
+			if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
+				this.currentTurnSpeed = -TURN_SPEED;
+			}  else {
+				this.currentTurnSpeed = 0;
+			}
+
+			if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
+				jump();
 			}
 		}
+		*/
+
 	}
-	*/
+
 }

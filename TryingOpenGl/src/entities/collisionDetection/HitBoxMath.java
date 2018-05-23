@@ -8,7 +8,7 @@ import toolBox.Maths;
 import java.util.ArrayList;
 
 public class HitBoxMath {
-
+//Use V-HCD for blender
     private static int tempEntityIndex;
 
     private static ArrayList<Vector3f> simplexCollision = new ArrayList<Vector3f>();

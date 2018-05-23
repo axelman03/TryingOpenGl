@@ -62,15 +62,15 @@ public class HitBoxMath {
                 //System.out.println( Vector3f.dot(vecDirection, new Vector3f(1,1,1)));
 /*
                 System.out.println(Vector3f.dot(simplexCollision.get(simplexCollision.size() - 1), vecDirectionCollision));
-                System.out.println(simplexCollision);
-                System.out.println(vecDirectionCollision);
-*/
                 //if the point added last was not past the origin in the direction of vecDirection then the Minkowski Sum cannot possibly contain the origin since the last point added is on the edge of the Minkowski Difference
                 //System.out.println(simplex);
                 //minkowskiSum(collider, collided);
                 //System.out.println();
                 //System.out.println();
 
+                System.out.println(simplexCollision);
+                System.out.println(vecDirectionCollision);
+*/
                 //System.out.println(Vector3f.dot(simplex.get(simplex.size() - 1), vecDirection));
                 //System.out.println(Math.sqrt(Math.pow(vecDirection.x, 2) + Math.pow(vecDirection.y, 2) + Math.pow(vecDirection.z, 2)));
                 //simplexPenatration = new ArrayList<>();
